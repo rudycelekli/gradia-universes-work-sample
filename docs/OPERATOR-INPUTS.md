@@ -1,0 +1,93 @@
+# Operator inputs for the first live agent panel
+
+The keyless engineering gates are complete without provider credentials. A
+live-model cell needs the following founder-owned inputs and nothing else.
+
+## 1. Put provider keys on this machine, never in chat
+
+```bash
+cp .env.example .env.local
+chmod 600 .env.local
+```
+
+Open `.env.local` locally and fill only the providers you intend to run:
+
+```dotenv
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
+XAI_API_KEY=
+GEMINI_API_KEY=
+```
+
+Do **not** paste keys into Codex, an issue, a command argument, a result file,
+the Gradia application environment or the public repository. Use project-
+scoped keys with the lowest useful provider quota and no account-management
+permission. The runner reads one environment variable for the selected cell,
+does not print it and keeps provider response bytes in a mode-`0700` ignored
+directory.
+
+Load the file only into the terminal that will run the cell:
+
+```bash
+set -a
+source .env.local
+set +a
+```
+
+When the run is over, close that shell or unset the four variables. Key
+rotation, provider retention settings and account-level spend alerts remain
+owner responsibilities.
+
+## 2. Send these non-secret choices in chat
+
+For each provider you want included, provide:
+
+- the exact model identifier available to your project now;
+- the provider's current input price per million tokens;
+- the provider's current output price per million tokens; and
+- whether provider terms permit retaining response bytes for private research
+  and later publishing a reviewed derived result.
+
+Avoid aliases such as `latest`. A model family name is not an exact pin.
+
+Also approve one total dollar ceiling. Recommended first pass:
+
+1. run one short control, one request and one model per provider under a
+   **$5 hard cap per model** to verify protocol and usage fields;
+2. run the chained frontier candidate exactly five times for each model under a
+   separately approved cap;
+3. inspect all five receipts, outcome signatures and grader evidence;
+4. freeze the complete five-task panel only after every smoke cell passes; and
+5. approve a separate full-panel cap from the runner's conservative reservation
+   preview. Do not infer that the smoke cap is enough for 25 long episodes.
+
+The command refuses a request that could cross its cell cap. Provider account-
+level budgets remain a second independent control.
+
+For each model, also choose a frozen temperature or explicitly choose the
+provider default. The runner records the choice. Attempt ids 1–5 are repeated
+requests, not random seeds. Results distinguish any-pass@5 capability coverage
+from all-pass@5 reliability and preserve individual failure signatures.
+
+## 3. Inputs needed later, not for the first model smoke
+
+The authenticated Gradia study requires a dedicated synthetic project, an
+author identity, a different reviewer identity and a project-scoped service
+account. AgentENV parity additionally requires an owned AgentENV cell with its
+authenticated file/credential capability enabled. Human validation requires
+two reviewers, including one independent of environment authorship.
+
+Before a public model-failure claim, each reviewer receives the blinded task
+evidence, criterion definitions and an appeal form. Disagreements, reasons and
+adjudication remain versioned evidence. A disagreement is never silently
+converted to the deterministic judge's answer.
+
+None of those may be substituted with a model-provider key, and no customer or
+Premier Lending fact is required for this fully synthetic study.
+
+## 4. Release boundary
+
+A successful provider call is not a public result. Raw responses and local
+receipts stay private until exact model/scaffold/seed/budget identities,
+provider rights, integrity replay, blinded review and Gradia's governed release
+decision all pass. The public Universe bundle remains unchanged until then.

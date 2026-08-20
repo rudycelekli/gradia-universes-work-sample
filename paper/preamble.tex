@@ -1,0 +1,85 @@
+\usepackage[margin=0.88in]{geometry}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{titling}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{lastpage}
+\usepackage{etoolbox}
+\usepackage{seqsplit}
+
+\definecolor{GradiaInk}{HTML}{191714}
+\definecolor{GradiaWarm}{HTML}{5C554E}
+\definecolor{GradiaOrange}{HTML}{D95520}
+\definecolor{GradiaSand}{HTML}{F3EEE8}
+\definecolor{GradiaLine}{HTML}{D8D0C8}
+\definecolor{GradiaBlue}{HTML}{315F7D}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=GradiaOrange,
+  citecolor=GradiaBlue,
+  urlcolor=GradiaBlue,
+  pdfborder={0 0 0},
+  pdftitle={Interruptible Universes: Evolution Witnesses for Verifiable World Change in Agent Benchmarks},
+  pdfauthor={Rudy M. Celekli - Gradia}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5.5pt plus 1.5pt minus 1pt}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,leftmargin=1.35em,topsep=4pt}
+\setcounter{tocdepth}{2}
+
+\titleformat{\section}
+  {\Large\bfseries\color{GradiaInk}}
+  {\color{GradiaOrange}\thesection}{0.7em}{}
+\titleformat{\subsection}
+  {\large\bfseries\color{GradiaInk}}
+  {\color{GradiaOrange}\thesubsection}{0.65em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{GradiaInk}}
+  {\color{GradiaOrange}\thesubsubsection}{0.55em}{}
+\titlespacing*{\section}{0pt}{18pt}{7pt}
+\titlespacing*{\subsection}{0pt}{13pt}{5pt}
+\titlespacing*{\subsubsection}{0pt}{10pt}{4pt}
+
+\pretitle{%
+  \begin{flushleft}
+  \vspace*{-1.2em}
+  {\small\sffamily\bfseries\color{GradiaOrange}\MakeUppercase{Gradia Research}\\[1.2em]}
+  \fontsize{28}{32}\selectfont\bfseries\color{GradiaInk}
+}
+\posttitle{\par\vspace{0.45em}\rule{\textwidth}{0.8pt}\vspace{0.65em}\end{flushleft}}
+\preauthor{\begin{flushleft}\large\color{GradiaWarm}}
+\postauthor{\par\end{flushleft}}
+\predate{\begin{flushleft}\small\sffamily\color{GradiaOrange}}
+\postdate{\par\vspace{0.5em}\end{flushleft}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{GradiaWarm}Interruptible Universes}
+\fancyhead[R]{\small\sffamily\color{GradiaOrange}PRE-RESULTS DRAFT}
+\fancyfoot[L]{\small\sffamily\color{GradiaWarm}Gradia Research}
+\fancyfoot[R]{\small\sffamily\color{GradiaWarm}\thepage\ / \pageref*{LastPage}}
+\renewcommand{\headrulewidth}{0.35pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\captionsetup{
+  font=small,
+  labelfont={bf,color=GradiaOrange},
+  textfont={color=GradiaWarm},
+  margin=0.04\textwidth
+}
+
+\AtBeginEnvironment{longtable}{\small}
+\renewcommand{\arraystretch}{1.16}
+\setlength{\LTpre}{7pt}
+\setlength{\LTpost}{7pt}
