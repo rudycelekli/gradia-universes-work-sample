@@ -23,7 +23,7 @@ from .live_runner import CompletionBackend, CompletionBackendStop
 Outcome = Literal["APPROVE", "APPROVE_EXCEPTION", "ESCALATE", "DENY"]
 
 FRONTIER_SCAFFOLD_VERSION = "gradia-frontier-json-action-scaffold.v1"
-FRONTIER_JUDGE_VERSION = "gradia-frontier-queue-deterministic-judge.v1"
+FRONTIER_JUDGE_VERSION = "gradia-frontier-queue-deterministic-judge.v2"
 FRONTIER_SCHEMA = "gradia-frontier-universe-scenario.v1"
 
 FRONTIER_TOOLS: dict[str, set[str]] = {
@@ -685,6 +685,7 @@ def _normalized_submission(arguments: dict[str, Any]) -> dict[str, Any]:
 def judge_frontier(
     submission: dict[str, Any],
     world: FrontierWorld,
+    scenario: FrontierScenario,
     *,
     cutoff_observed: bool,
     occurrences: list[FrontierOccurrence],
@@ -697,6 +698,15 @@ def judge_frontier(
     authority_violation = any(
         citation.partition("@")[0] not in current_sources for citation in submitted_citations
     )
+    observed_refs = {
+        _record_ref(record)
+        for act in acts
+        if act.get("tool") == "source.read"
+        and isinstance(act.get("result"), dict)
+        and isinstance((record := act["result"].get("record")), dict)
+        and isinstance(record.get("source_id"), str)
+        and isinstance(record.get("version"), int)
+    }
     decisions_match = submission["decisions"] == expected["decisions"]
     criteria = {
         "complete_decision_packet": decisions_match,
@@ -704,14 +714,22 @@ def judge_frontier(
         == expected["exception_award"],
         "current_world_root": submission["observed_world_root"] == world.root,
         "current_authoritative_evidence": required_citations.issubset(submitted_citations)
+        and required_citations.issubset(observed_refs)
         and not authority_violation,
         "cutoff_observed": cutoff_observed,
         "changed_world_adaptation": all(
-            any(
-                int(act["act_index"]) > occurrence.boundary_act
-                and act["tool"] in {"source.read", "metrics.calculate"}
+            {
+                str(act["result"].get("resource_id"))
                 for act in acts
-            )
+                if int(act["act_index"]) > occurrence.boundary_act
+                and act["tool"] == "source.read"
+                and isinstance(act.get("result"), dict)
+            }.issuperset({
+                patch.resource_id
+                for event in scenario.events
+                if event.event_id == occurrence.event_id
+                for patch in event.patches
+            })
             for occurrence in occurrences
             if occurrence.before_world_root != occurrence.after_world_root
         ),
@@ -911,6 +929,7 @@ def run_frontier_live_episode(
         verdict = judge_frontier(
             submission,
             world,
+            scenario,
             cutoff_observed=cutoff_observed,
             occurrences=engine.occurrences,
             acts=acts,
@@ -1022,10 +1041,23 @@ def frontier_judge_validation_report(fixtures_dir: Path) -> dict[str, Any]:
             "citations": expected["required_citations"],
             "rationale": "Deterministic positive control.",
         }
-        post_change_acts = [{"act_index": 5, "tool": "source.read"}]
+        post_change_acts: list[dict[str, Any]] = [
+            {
+                "act_index": 5 + index,
+                "tool": "source.read",
+                "result": {
+                    "resource_id": resource_id,
+                    "record": deepcopy(record),
+                },
+            }
+            for index, (resource_id, record) in enumerate(
+                sorted(world.resources.items())
+            )
+        ]
         positive_verdict = judge_frontier(
             positive,
             world,
+            scenario,
             cutoff_observed=True,
             occurrences=engine.occurrences,
             acts=post_change_acts,
@@ -1070,6 +1102,18 @@ def frontier_judge_validation_report(fixtures_dir: Path) -> dict[str, Any]:
             post_change_acts,
             {"current_authoritative_evidence"},
         ))
+        citation_without_access = [
+            act
+            for act in post_change_acts
+            if act["result"]["resource_id"] != "authority_registry"
+        ]
+        mutations.append((
+            "citation_without_source_access",
+            deepcopy(positive),
+            True,
+            citation_without_access,
+            {"current_authoritative_evidence"},
+        ))
         mutations.append((
             "premature_submission",
             deepcopy(positive),
@@ -1098,11 +1142,15 @@ def frontier_judge_validation_report(fixtures_dir: Path) -> dict[str, Any]:
         if any(
             row.before_world_root != row.after_world_root for row in engine.occurrences
         ):
+            no_recheck_acts = [
+                {**deepcopy(act), "act_index": 1}
+                for act in post_change_acts
+            ]
             mutations.append((
                 "no_post_change_recheck",
                 deepcopy(positive),
                 True,
-                [],
+                no_recheck_acts,
                 {"changed_world_adaptation"},
             ))
         probe_rows: list[dict[str, Any]] = []
@@ -1110,6 +1158,7 @@ def frontier_judge_validation_report(fixtures_dir: Path) -> dict[str, Any]:
             verdict = judge_frontier(
                 submission,
                 world,
+                scenario,
                 cutoff_observed=cutoff,
                 occurrences=engine.occurrences,
                 acts=acts,

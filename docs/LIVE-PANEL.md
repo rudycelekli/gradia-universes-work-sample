@@ -112,7 +112,11 @@ submission remains an eligible model failure.
 “inconsistency observed,” and `5/5` is “stable pass observed.” These labels do
 not by themselves locate the cause in model capability, scaffold, task design
 or sampling policy. Strong failure claims require the committed judge probes,
-blinded human review and appeal/adjudication evidence.
+whose current-source criterion binds citations to actual root-owned source-read
+results and whose adaptation criterion binds post-event reads to each changed
+resource, plus blinded human review and appeal/adjudication evidence. The 44
+isolated probes have canonical report digest
+`fdeea4ae15c00a0f225f48a4bde7c42e261be648dd7d7cea2ec100c64935653e`.
 
 No result should move from `results/local` into a public release until all of
 the following are true:

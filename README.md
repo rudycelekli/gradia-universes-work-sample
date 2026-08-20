@@ -67,17 +67,18 @@ information-retention preflight, not the preregistered detector experiment;
 all confirmatory results remain pending.
 
 The frontier verifier independently reconstructs five solvability admissions
-and 39 criterion-isolation probes:
+and 44 criterion-isolation probes:
 
 ```bash
 .venv/bin/gradia-universe frontier-verify
 ```
 
 It requires every positive control to pass and mutations for wrong decisions,
-wrong shared-capacity allocation, stale roots, missing citations, premature
-submission, missing post-change rechecks, undeclared authority and malformed
+wrong shared-capacity allocation, stale roots, missing citations, citations
+without a corresponding source read, premature submission, missing
+resource-specific post-change rechecks, undeclared authority and malformed
 output to fail the intended criterion. The committed judge-validation digest
-is `e502d92087bd5d36c988d66e22db14c8556c86cc44368a27d2430fea70ec550a`.
+is `fdeea4ae15c00a0f225f48a4bde7c42e261be648dd7d7cea2ec100c64935653e`.
 This validates executable grading behavior, not human or domain agreement.
 
 ## The evidence chain

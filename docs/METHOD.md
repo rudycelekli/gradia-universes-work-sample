@@ -128,9 +128,14 @@ cannot be interpreted as empirical task difficulty for language models.
 The frontier judge uses seven perfect-score criteria: complete decision packet,
 correct shared-capacity allocation, current world root, current authoritative
 evidence, cutoff observation, a post-change recheck, and output conformance.
-Its committed validation crosses five positive controls with 39 isolated
-negative probes. Each probe must fail exactly its intended criterion. Protocol,
-provider, budget and environment failures remain outside the agent score.
+Current evidence requires both the submitted version citation and a matching
+root-owned `source.read` result in the act ledger. Adaptation requires a
+post-boundary read of every resource patched by each root-changing event. Its
+committed validation crosses five positive controls with 44 isolated negative
+probes, including a citation-without-access mutation. Each probe must fail
+exactly its intended criterion. Protocol, provider, budget and environment
+failures remain outside the agent score. The canonical validation-report digest
+is `fdeea4ae15c00a0f225f48a4bde7c42e261be648dd7d7cea2ec100c64935653e`.
 
 This executable sensitivity check is necessary but not sufficient. It does not
 establish that the synthetic policy is a valid real-world policy, that humans

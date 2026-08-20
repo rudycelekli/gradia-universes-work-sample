@@ -387,9 +387,16 @@ def test_frontier_premature_submission_is_distinct_from_world_failure() -> None:
             "rationale": "Submitted without waiting.",
         },
     })
+    source_reads = [
+        json.dumps({
+            "action": "source.read",
+            "arguments": {"resource_id": resource_id},
+        })
+        for resource_id in sorted(scenario.resources)
+    ]
     receipt = run_frontier_live_episode(
         scenario,
-        ScriptedBackend([output]),
+        ScriptedBackend([*source_reads, output]),
         attempt_id=1,
     )
     assert receipt["verdict"]["passed"] is False
