@@ -19,19 +19,21 @@ capacity, staged supersession and retraction, cutoff events, and restore. Its
 committed admissions prove deterministic solvability and judge sensitivity;
 they do not yet prove empirical difficulty.
 
-This is **not** Gradia's private product repository and contains no customer or
-Premier Lending material. It is a public work sample, synthetic benchmark
-fixture and external conformance client for Gradia's authenticated API.
+This is **not** Gradia's private product repository and contains no customer
+material. It is a public work sample, synthetic benchmark fixture and external
+conformance client for Gradia's authenticated API.
 
 ## Read the paper
 
 The publication-style pre-results manuscript is
 [Interruptible Universes: Evolution Witnesses for Verifiable World Change in Agent Benchmarks](paper/INTERRUPTIBLE-UNIVERSES-PAPER-DRAFT.md).
+[Open the rendered 23-page PDF](output/pdf/INTERRUPTIBLE-UNIVERSES-PRE-RESULTS-DRAFT.pdf)
+for the publication layout.
 It formalizes the evidence object, reports the exact scripted-control harness
 checks, compares the narrow hypothesis to the closest research, and locks the
 mutation, live-model, human-review and runtime-conformance studies before any
-confirmatory result is seen. A reproducible PDF build lives beside the source;
-no unmeasured result is converted into a claim for presentation.
+confirmatory result is seen. The reproducible PDF build is tracked with the
+source; no unmeasured result is converted into a claim for presentation.
 
 ## Run it in under ten minutes
 
@@ -199,6 +201,9 @@ request/output/cost ceilings and `--confirm-live-spend`. Exact provider response
 bytes are retained with local-only permissions under the ignored result
 edition; credentials are never accepted on the command line or written to a
 receipt.
+
+Provider names identify compatible API surfaces only; they do not imply
+affiliation, sponsorship, endorsement or authorship.
 
 See [the live-panel runbook](docs/LIVE-PANEL.md). Native provider tool calling
 will be evaluated as a separately pinned scaffold, so its effect is not

@@ -1,7 +1,7 @@
 # Security and disclosure boundary
 
 This repository contains only synthetic people, organizations, policies and
-records. It does not contain Premier Lending data, customer facts, Gradia
+records. It does not contain customer data, customer facts, Gradia
 credentials, private Gradia server code, model-provider keys or production
 traces.
 

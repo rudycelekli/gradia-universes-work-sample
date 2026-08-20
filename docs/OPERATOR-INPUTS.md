@@ -82,8 +82,8 @@ evidence, criterion definitions and an appeal form. Disagreements, reasons and
 adjudication remain versioned evidence. A disagreement is never silently
 converted to the deterministic judge's answer.
 
-None of those may be substituted with a model-provider key, and no customer or
-Premier Lending fact is required for this fully synthetic study.
+None of those may be substituted with a model-provider key, and no customer
+fact is required for this fully synthetic study.
 
 ## 4. Release boundary
 
