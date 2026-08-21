@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 from .canonical import digest, load_json, write_canonical
 from .frontier import (
     FRONTIER_ANALYSIS_VERSION,
+    FRONTIER_DIAGNOSTIC_ANALYSIS_VERSION,
     FRONTIER_JUDGE_VERSION,
     FRONTIER_SCAFFOLD_VERSION,
     FrontierScenario,
@@ -22,13 +23,11 @@ from .frontier import (
 )
 from .providers import ADAPTER_VERSIONS, ProviderName, SpendPolicy, validate_model_pin
 
-SCHEMA = "gradia-frontier-live-preregistration.v3"
+SCHEMA = "gradia-frontier-live-preregistration.v4"
 _SHA = re.compile(r"[0-9a-f]{40}")
 _RFC3339_UTC = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z")
 _OFFICIAL_HOSTS: dict[ProviderName, frozenset[str]] = {
-    "openai": frozenset(
-        {"developers.openai.com", "openai.com", "platform.openai.com"}
-    ),
+    "openai": frozenset({"developers.openai.com", "openai.com", "platform.openai.com"}),
     "anthropic": frozenset({"platform.claude.com", "privacy.claude.com"}),
     "xai": frozenset({"docs.x.ai", "x.ai"}),
     "gemini": frozenset({"ai.google.dev", "policies.google.com"}),
@@ -37,6 +36,24 @@ _INTERPRETATION = (
     "Five repeated requests are descriptive observations under this exact cell. "
     "They do not establish universal model capability or research novelty."
 )
+_DIAGNOSTIC_INTERPRETATION = (
+    "One request per selected frozen task is a private development cost screen. It cannot "
+    "emit pass@k, reliability, model-ranking, frontier-difficulty, or novelty claims."
+)
+_STUDY_CONTRACTS: dict[str, dict[str, Any]] = {
+    "confirmatory_panel": {
+        "claim_status": "private_pre_results",
+        "attempt_ids": [1, 2, 3, 4, 5],
+        "analysis_version": FRONTIER_ANALYSIS_VERSION,
+        "interpretation": _INTERPRETATION,
+    },
+    "development_diagnostic": {
+        "claim_status": "private_development_diagnostic_only",
+        "attempt_ids": [1],
+        "analysis_version": FRONTIER_DIAGNOSTIC_ANALYSIS_VERSION,
+        "interpretation": _DIAGNOSTIC_INTERPRETATION,
+    },
+}
 
 
 def _exact_keys(value: dict[str, Any], expected: set[str], label: str) -> None:
@@ -165,7 +182,11 @@ def build_frontier_preregistration(
     retention_terms_url: str,
     retention_checked_at: str,
     derived_publication_posture: str,
+    study_kind: str = "confirmatory_panel",
 ) -> dict[str, Any]:
+    contract = _STUDY_CONTRACTS.get(study_kind)
+    if contract is None:
+        raise ValueError("preregistration_study_kind_invalid")
     if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", run_id):
         raise ValueError("preregistration_run_id_invalid")
     created = _timestamp(created_at, "created_at")
@@ -227,13 +248,18 @@ def build_frontier_preregistration(
     if missing:
         raise ValueError("preregistration_scenario_unknown:" + ",".join(missing))
     complete_panel = [row.scenario_id for row in rows]
-    if scenario_ids != complete_panel:
+    if study_kind == "confirmatory_panel" and scenario_ids != complete_panel:
         raise ValueError("preregistration_requires_complete_frontier_panel")
+    if study_kind == "development_diagnostic":
+        canonical_subset = [row for row in complete_panel if row in scenario_ids]
+        if not 1 <= len(scenario_ids) <= 2 or scenario_ids != canonical_subset:
+            raise ValueError("preregistration_diagnostic_scenario_set_invalid")
     admission = frontier_admission_report(root / "fixtures")
     judge_validation = frontier_judge_validation_report(root / "fixtures")
     body = {
         "schema": SCHEMA,
-        "claim_status": "private_pre_results",
+        "study_kind": study_kind,
+        "claim_status": contract["claim_status"],
         "run_id": run_id,
         "created_at": created_at,
         "git": {"sha": git_sha, "dirty": False},
@@ -245,10 +271,10 @@ def build_frontier_preregistration(
             },
             "scaffold_version": FRONTIER_SCAFFOLD_VERSION,
             "judge_version": FRONTIER_JUDGE_VERSION,
-            "analysis_version": FRONTIER_ANALYSIS_VERSION,
+            "analysis_version": contract["analysis_version"],
             "admission_report_sha256": admission["report_sha256"],
             "judge_validation_report_sha256": judge_validation["report_sha256"],
-            "attempt_ids_per_scenario": [1, 2, 3, 4, 5],
+            "attempt_ids_per_scenario": contract["attempt_ids"],
         },
         "cell": {
             "provider": provider,
@@ -284,7 +310,7 @@ def build_frontier_preregistration(
             "operator_attests_provider_account_spend_limit_enabled": True,
             "live_spend_confirmation_required": True,
         },
-        "interpretation": _INTERPRETATION,
+        "interpretation": contract["interpretation"],
     }
     return {**body, "preregistration_sha256": digest(body)}
 
@@ -296,6 +322,7 @@ def verify_frontier_preregistration(
         value,
         {
             "schema",
+            "study_kind",
             "claim_status",
             "run_id",
             "created_at",
@@ -316,7 +343,11 @@ def verify_frontier_preregistration(
     claimed = body.pop("preregistration_sha256", None)
     if body.get("schema") != SCHEMA or claimed != digest(body):
         raise ValueError("preregistration_digest_invalid")
-    if body.get("claim_status") != "private_pre_results":
+    study_kind = body.get("study_kind")
+    contract = _STUDY_CONTRACTS.get(str(study_kind))
+    if contract is None:
+        raise ValueError("preregistration_study_kind_invalid")
+    if body.get("claim_status") != contract["claim_status"]:
         raise ValueError("preregistration_claim_status_invalid")
     run_id = body.get("run_id")
     if not isinstance(run_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", run_id):
@@ -429,9 +460,7 @@ def verify_frontier_preregistration(
     if rights.get("operator_attests_private_raw_response_retention_permitted") is not True:
         raise ValueError("preregistration_response_retention_not_permitted")
     _official_source(provider, str(rights.get("official_terms_url", "")), "retention")
-    retention_checked = _timestamp(
-        str(rights.get("checked_at", "")), "retention_checked_at"
-    )
+    retention_checked = _timestamp(str(rights.get("checked_at", "")), "retention_checked_at")
     for checked, label in (
         (price_checked, "price_checked_at"),
         (retention_checked, "retention_checked_at"),
@@ -489,11 +518,7 @@ def verify_frontier_preregistration(
         or not 1 <= max_turns <= 64
     ):
         raise ValueError("preregistration_execution_limits_invalid")
-    if (
-        not isinstance(max_acts, int)
-        or isinstance(max_acts, bool)
-        or not 1 <= max_acts <= 48
-    ):
+    if not isinstance(max_acts, int) or isinstance(max_acts, bool) or not 1 <= max_acts <= 48:
         raise ValueError("preregistration_execution_limits_invalid")
     if (
         isinstance(timeout_seconds, bool)
@@ -522,25 +547,28 @@ def verify_frontier_preregistration(
         or frontier.get("scenario_sha256s") != expected_scenarios
     ):
         raise ValueError("preregistration_scenario_drift")
-    if scenario_ids != [row.scenario_id for row in rows]:
+    complete_panel = [row.scenario_id for row in rows]
+    if study_kind == "confirmatory_panel" and scenario_ids != complete_panel:
         raise ValueError("preregistration_requires_complete_frontier_panel")
+    if study_kind == "development_diagnostic":
+        canonical_subset = [row for row in complete_panel if row in scenario_ids]
+        if not 1 <= len(scenario_ids) <= 2 or scenario_ids != canonical_subset:
+            raise ValueError("preregistration_diagnostic_scenario_set_invalid")
     if frontier.get("scaffold_version") != FRONTIER_SCAFFOLD_VERSION:
         raise ValueError("preregistration_scaffold_drift")
     if frontier.get("judge_version") != FRONTIER_JUDGE_VERSION:
         raise ValueError("preregistration_judge_drift")
-    if frontier.get("analysis_version") != FRONTIER_ANALYSIS_VERSION:
+    if frontier.get("analysis_version") != contract["analysis_version"]:
         raise ValueError("preregistration_analysis_drift")
-    if frontier.get("attempt_ids_per_scenario") != [1, 2, 3, 4, 5]:
+    if frontier.get("attempt_ids_per_scenario") != contract["attempt_ids"]:
         raise ValueError("preregistration_attempts_invalid")
     admission_sha = frontier_admission_report(root / "fixtures")["report_sha256"]
     if frontier.get("admission_report_sha256") != admission_sha:
         raise ValueError("preregistration_admission_drift")
-    judge_validation_sha = frontier_judge_validation_report(root / "fixtures")[
-        "report_sha256"
-    ]
+    judge_validation_sha = frontier_judge_validation_report(root / "fixtures")["report_sha256"]
     if frontier.get("judge_validation_report_sha256") != judge_validation_sha:
         raise ValueError("preregistration_judge_validation_drift")
-    if body.get("interpretation") != _INTERPRETATION:
+    if body.get("interpretation") != contract["interpretation"]:
         raise ValueError("preregistration_interpretation_invalid")
     return value
 

@@ -257,15 +257,22 @@ The local file is ignored. Do not add keys to Gradia's application environment,
 the public bundle, a command line, or a GitHub secret until a specific CI use
 has been approved.
 
-The exact founder inputs and safe two-stage protocol-smoke/full-panel sequence are in
+The exact founder inputs and gated protocol-smoke/diagnostic/panel sequence are in
 [Operator inputs](docs/OPERATOR-INPUTS.md). Keys are entered locally and never
 sent through chat; model ids, prices and the hard budget are non-secret inputs.
 
 The provider smoke is one non-benchmark request: it cannot leak task outcomes or
-be reported as a score. The frontier command then runs all five frozen tasks,
+be reported as a score. An optional private development diagnostic may then run
+exactly one attempt on one or two preregistered tasks. It emits only a stop/go
+screening signal—never a pass rate, pass@k, reliability estimate, model ranking,
+or frontier-difficulty claim. Inspecting that diagnostic makes any later panel
+chosen in response to it post-development evidence, not an untouched
+confirmation set.
+
+The confirmatory frontier command runs all five frozen tasks,
 exactly five independent attempts per task, and records both any-pass@5
 (observed capability coverage) and all-pass@5 (observed reliability). Selective
-task preregistration is refused. Attempt ids are not represented as random seeds.
+task preregistration is refused for that panel. Attempt ids are not represented as random seeds.
 `frontier-preregister` writes the manifest; an operator must review it and make
 a public manifest-only commit before the paid command will accept it. The paid
 command derives its complete cell from that manifest rather than accepting

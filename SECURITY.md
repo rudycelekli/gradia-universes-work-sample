@@ -9,6 +9,9 @@ The authenticated integration accepts credentials only through process
 environment variables. It never prints or writes them. Public result bundles
 must pass `gradia-universe verify-public` before release; that command refuses
 known secret shapes, absolute local paths and non-synthetic provenance.
+An untracked `.env.local` is excluded from that public-artifact scan only when
+Git independently confirms the file is ignored. A force-added or already
+tracked environment file is scanned and refused like every other release input.
 
 Live-panel response bytes are retained only inside the Git-ignored
 `results/local/<run-id>/private-provider-responses/` directory with local-only

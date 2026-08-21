@@ -59,14 +59,24 @@ Also approve one total dollar ceiling. Recommended first pass:
 1. run the non-benchmark `provider-smoke`, one request and one model per provider under a
    **$5 local reservation ceiling**, with a separate provider-account spend
    limit, to verify protocol and usage fields;
-2. freeze all five v1 tasks, their judge, analysis, exact model, high reasoning,
-   provider-default temperature, rights posture and full-panel cap in one
-   manifest before inspecting any paid task outcome;
-3. commit and push that manifest alone and wait for green CI;
-4. run all 25 task attempts (five tasks × five attempts) from that manifest;
-5. inspect receipts, outcome signatures and grader evidence only after the
-   entire cell ends; and
-6. keep the panel private until blinded review and release governance pass.
+2. optionally freeze one attempt on one or two canonical tasks as a
+   `development_diagnostic`; commit and push that manifest alone, then run the
+   complete diagnostic cell without inspecting a partial result;
+3. if both eligible tasks pass, stop paid execution, review traces, and freeze a
+   disclosed v1+ plus a separately held-out v2; if a task fails, first determine
+   whether the failure is behavioral or a protocol/environment/evaluator defect;
+4. only when a complete five-task panel is still warranted, freeze its judge,
+   analysis, exact model, high reasoning, provider-default temperature, rights
+   posture and full-panel cap before inspecting any panel outcome;
+5. commit and push that panel manifest alone and wait for green CI;
+6. run all 25 task attempts (five tasks × five attempts), then inspect receipts,
+   outcome signatures and grader evidence only after the entire cell ends; and
+7. keep every result private until blinded review and release governance pass.
+
+The one-attempt diagnostic has no pass-rate denominator and cannot support
+pass@k, reliability, ranking, frontier-difficulty, or novelty language. Choosing
+or redesigning a later panel after seeing it makes that later evidence
+post-development and must be disclosed.
 
 The command refuses a request that could cross its cell cap. Provider account-
 level budgets remain a second independent control.

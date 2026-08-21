@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import subprocess
 from argparse import Namespace
 from copy import deepcopy
 from pathlib import Path
@@ -16,13 +17,18 @@ from gradia_universes.axis_candidates import (
     verify_axis_artifacts,
 )
 from gradia_universes.canonical import canonical_bytes, digest, load_json
-from gradia_universes.cli import _verify_release_text_boundary, command_provider_smoke
+from gradia_universes.cli import (
+    _verify_release_text_boundary,
+    command_frontier_diagnostic_run,
+    command_provider_smoke,
+)
 from gradia_universes.contracts import Scenario
 from gradia_universes.frontier import (
     FrontierEngine,
     FrontierScenario,
     FrontierWorld,
     analyze_five_attempt_panel,
+    analyze_frontier_diagnostic,
     frontier_admission_report,
     frontier_judge_validation_report,
     load_frontier_scenarios,
@@ -211,10 +217,7 @@ def test_two_distinct_human_files_produce_an_agreement_receipt(tmp_path: Path) -
     assert result["reviewer_count"] == 2
     assert result["adjudication_required"] == []
     for reviewer in result["reviewers"]:
-        assert all(
-            row["raw_agreement"] == 1.0
-            for row in reviewer["criteria"].values()
-        )
+        assert all(row["raw_agreement"] == 1.0 for row in reviewer["criteria"].values())
 
 
 class ScriptedBackend:
@@ -271,10 +274,7 @@ def test_live_scaffold_delivers_event_and_accepts_current_evidence() -> None:
     assert receipt["verdict"]["passed"] is True
     assert receipt["submission"]["recommendation"] == "APPROVE"
     assert len(receipt["evolution_witness"]) == 1
-    assert any(
-        row["tool"] == "inbox.read" and row["act_index"] == 3
-        for row in receipt["acts"]
-    )
+    assert any(row["tool"] == "inbox.read" and row["act_index"] == 3 for row in receipt["acts"])
 
 
 def test_live_scaffold_keeps_protocol_errors_separate_from_environment_failure() -> None:
@@ -292,10 +292,7 @@ def test_live_scaffold_keeps_protocol_errors_separate_from_environment_failure()
 
 
 def frontier_scenarios() -> dict[str, FrontierScenario]:
-    return {
-        row.scenario_id: row
-        for row in load_frontier_scenarios(ROOT / "fixtures")
-    }
+    return {row.scenario_id: row for row in load_frontier_scenarios(ROOT / "fixtures")}
 
 
 def _frontier_safe_outputs(scenario: FrontierScenario) -> list[str]:
@@ -324,9 +321,7 @@ def _frontier_safe_outputs(scenario: FrontierScenario) -> list[str]:
     for act_index, (tool, _arguments) in enumerate(actions, start=1):
         fired = engine.advance(act_index, tool, world)
         for occurrence in fired:
-            event = next(
-                row for row in scenario.events if row.event_id == occurrence.event_id
-            )
+            event = next(row for row in scenario.events if row.event_id == occurrence.event_id)
             if event.restore_after:
                 world = FrontierWorld.restore(scenario, world.snapshot())
                 engine = FrontierEngine.restore(scenario, engine.snapshot())
@@ -342,8 +337,7 @@ def _frontier_safe_outputs(scenario: FrontierScenario) -> list[str]:
         },
     }
     return [
-        json.dumps({"action": tool, "arguments": arguments})
-        for tool, arguments in actions
+        json.dumps({"action": tool, "arguments": arguments}) for tool, arguments in actions
     ] + [json.dumps(submit)]
 
 
@@ -398,21 +392,25 @@ def test_frontier_premature_submission_is_distinct_from_world_failure() -> None:
     scenario = frontier_scenarios()["frontier-static-control"]
     world = FrontierWorld(scenario)
     expected = oracle_packet(world)
-    output = json.dumps({
-        "action": "decision.submit",
-        "arguments": {
-            "decisions": expected["decisions"],
-            "exception_award": expected["exception_award"],
-            "observed_world_root": world.root,
-            "citations": expected["required_citations"],
-            "rationale": "Submitted without waiting.",
-        },
-    })
+    output = json.dumps(
+        {
+            "action": "decision.submit",
+            "arguments": {
+                "decisions": expected["decisions"],
+                "exception_award": expected["exception_award"],
+                "observed_world_root": world.root,
+                "citations": expected["required_citations"],
+                "rationale": "Submitted without waiting.",
+            },
+        }
+    )
     source_reads = [
-        json.dumps({
-            "action": "source.read",
-            "arguments": {"resource_id": resource_id},
-        })
+        json.dumps(
+            {
+                "action": "source.read",
+                "arguments": {"resource_id": resource_id},
+            }
+        )
         for resource_id in sorted(scenario.resources)
     ]
     receipt = run_frontier_live_episode(
@@ -431,15 +429,17 @@ def test_five_attempt_analysis_separates_coverage_from_reliability() -> None:
     for scenario_id, pass_count in conditions:
         for attempt_id in range(1, 6):
             passed = attempt_id <= pass_count
-            receipts.append({
-                "scenario_id": scenario_id,
-                "attempt_id": attempt_id,
-                "verdict": {
-                    "passed": passed,
-                    "environment_failure": False,
-                    "failure_classes": [] if passed else ["decision_packet_error"],
-                },
-            })
+            receipts.append(
+                {
+                    "scenario_id": scenario_id,
+                    "attempt_id": attempt_id,
+                    "verdict": {
+                        "passed": passed,
+                        "environment_failure": False,
+                        "failure_classes": [] if passed else ["decision_packet_error"],
+                    },
+                }
+            )
     analysis = analyze_five_attempt_panel(receipts)
     by_id = {row["scenario_id"]: row for row in analysis["tasks"]}
     assert by_id["stable-fail"]["classification"] == "stable_failure_observed"
@@ -447,6 +447,49 @@ def test_five_attempt_analysis_separates_coverage_from_reliability() -> None:
     assert by_id["stable-pass"]["classification"] == "stable_pass_observed"
     assert by_id["inconsistent"]["any_pass_at_5"] is True
     assert by_id["inconsistent"]["all_pass_at_5"] is False
+
+
+def test_frontier_diagnostic_is_descriptive_only_and_detects_ceiling_risk() -> None:
+    receipts = [
+        {
+            "scenario_id": scenario_id,
+            "attempt_id": 1,
+            "receipt_sha256": character * 64,
+            "verdict": {
+                "passed": True,
+                "environment_failure": False,
+                "failure_classes": [],
+            },
+        }
+        for scenario_id, character in (("task-a", "a"), ("task-b", "b"))
+    ]
+    analysis = analyze_frontier_diagnostic(receipts)
+    assert analysis["screening_signal"] == "possible_ceiling_risk"
+    assert analysis["all_eligible_tasks_passed"] is True
+    assert analysis["pass_at_k_eligible"] is False
+    assert analysis["reliability_claim_eligible"] is False
+    assert analysis["model_ranking_eligible"] is False
+    assert "empirical_pass_fraction" not in analysis
+    assert "any_pass_at_5" not in analysis
+
+
+def test_frontier_diagnostic_requires_one_unique_attempt_per_task() -> None:
+    receipt = {
+        "scenario_id": "task-a",
+        "attempt_id": 1,
+        "receipt_sha256": "a" * 64,
+        "verdict": {
+            "passed": False,
+            "environment_failure": False,
+            "failure_classes": ["decision_packet_error"],
+        },
+    }
+    with pytest.raises(ValueError, match="scenario_duplicate"):
+        analyze_frontier_diagnostic([receipt, deepcopy(receipt)])
+    changed_attempt = deepcopy(receipt)
+    changed_attempt["attempt_id"] = 2
+    with pytest.raises(ValueError, match="requires_attempt_1"):
+        analyze_frontier_diagnostic([changed_attempt])
 
 
 def test_two_pre_results_axes_each_freeze_five_seed_paired_candidates() -> None:
@@ -502,28 +545,24 @@ def test_axis_sweeps_cover_each_declared_phase_and_authority_rung_exactly_once()
         False,
         False,
     ]
-    assert len(
-        {row["treatment"]["initial_world_root"] for row in phase_cases}
-    ) == 1
-    assert len(
-        {
-            row["treatment"]["exact_witness"][0]["event_sha256"]
-            for row in phase_cases
-        }
-    ) == 1
-    assert len(
-        {row["treatment"]["initial_world_root"] for row in authority_cases}
-    ) == 1
-    assert len(
-        {
-            (
-                row["treatment"]["exact_witness"][0]["boundary_phase"],
-                row["treatment"]["exact_witness"][0]["boundary_index"],
-                row["treatment"]["exact_witness"][0]["boundary_action"],
-            )
-            for row in authority_cases
-        }
-    ) == 1
+    assert len({row["treatment"]["initial_world_root"] for row in phase_cases}) == 1
+    assert (
+        len({row["treatment"]["exact_witness"][0]["event_sha256"] for row in phase_cases}) == 1
+    )
+    assert len({row["treatment"]["initial_world_root"] for row in authority_cases}) == 1
+    assert (
+        len(
+            {
+                (
+                    row["treatment"]["exact_witness"][0]["boundary_phase"],
+                    row["treatment"]["exact_witness"][0]["boundary_index"],
+                    row["treatment"]["exact_witness"][0]["boundary_action"],
+                )
+                for row in authority_cases
+            }
+        )
+        == 1
+    )
 
 
 def test_axis_candidate_witnesses_expose_and_bind_projection_boundary_and_roots() -> None:
@@ -531,9 +570,7 @@ def test_axis_candidate_witnesses_expose_and_bind_projection_boundary_and_roots(
     for axis in corpus["axes"]:
         for case in axis["cases"]:
             witness = case["treatment"]["exact_witness"][0]
-            assert witness["visible_projection_sha256"] == digest(
-                witness["visible_projection"]
-            )
+            assert witness["visible_projection_sha256"] == digest(witness["visible_projection"])
             occurrence = {
                 key: value
                 for key, value in witness.items()
@@ -700,9 +737,7 @@ def test_provider_adapters_pin_contracts_and_never_put_keys_in_receipts(
             assert calls[0][2]["output_config"] == {"effort": "high"}
     else:
         assert "temperature" not in calls[0][2]["generationConfig"]
-        assert calls[0][2]["generationConfig"]["thinkingConfig"] == {
-            "thinkingLevel": "high"
-        }
+        assert calls[0][2]["generationConfig"]["thinkingConfig"] == {"thinkingLevel": "high"}
         assert "store" not in calls[0][2]
     assert backend.sampling_policy == {
         "temperature": None,
@@ -813,11 +848,7 @@ def test_provider_smoke_emits_protocol_only_receipt(
     )
     assert command_provider_smoke(args) == 0
     receipt = load_json(
-        tmp_path
-        / "results"
-        / "local"
-        / "openai-protocol-smoke-001"
-        / "provider-smoke.json"
+        tmp_path / "results" / "local" / "openai-protocol-smoke-001" / "provider-smoke.json"
     )
     assert receipt["benchmark_task_or_score_present"] is False
     assert receipt["claim_status"] == "private_protocol_only"
@@ -1051,9 +1082,7 @@ def test_provider_failure_consumes_reservation_and_latches_cell() -> None:
         ("input_usd_per_million_tokens", float("inf")),
     ],
 )
-def test_spend_policy_refuses_boolean_or_nonfinite_limits(
-    field: str, value: object
-) -> None:
+def test_spend_policy_refuses_boolean_or_nonfinite_limits(field: str, value: object) -> None:
     values: dict[str, object] = {
         "max_requests": 8,
         "max_output_tokens_per_request": 256,
@@ -1070,9 +1099,7 @@ def test_spend_policy_refuses_boolean_or_nonfinite_limits(
 @pytest.mark.parametrize("model", ["latest", "model-latest", " model-v1", "model v1"])
 def test_provider_refuses_unstable_or_ambiguous_model_pins(model: str) -> None:
     with pytest.raises(ValueError, match="provider_model_"):
-        CappedProviderBackend(
-            "openai", model, _spend_policy(), api_key="test-key"
-        )
+        CappedProviderBackend("openai", model, _spend_policy(), api_key="test-key")
 
 
 def test_frontier_preregistration_binds_tasks_judge_analysis_and_spend() -> None:
@@ -1098,8 +1125,9 @@ def test_frontier_preregistration_binds_tasks_judge_analysis_and_spend() -> None
     )
     verified = verify_frontier_preregistration(ROOT, registration, verify_git=False)
     assert verified["frontier"]["attempt_ids_per_scenario"] == [1, 2, 3, 4, 5]
-    assert verified["frontier"]["judge_validation_report_sha256"] == (
-        frontier_judge_validation_report(ROOT / "fixtures")["report_sha256"]
+    assert (
+        verified["frontier"]["judge_validation_report_sha256"]
+        == (frontier_judge_validation_report(ROOT / "fixtures")["report_sha256"])
     )
     assert verified["spend_policy"]["max_requests"] == 160
     assert verified["cell"]["model_identity_policy"] == (
@@ -1108,16 +1136,198 @@ def test_frontier_preregistration_binds_tasks_judge_analysis_and_spend() -> None
     assert verified["cell"]["reasoning_effort"] == "high"
     assert verified["cell"]["temperature"] is None
     assert (
-        verified["rights"][
-            "operator_attests_private_raw_response_retention_permitted"
-        ]
-        is True
+        verified["rights"]["operator_attests_private_raw_response_retention_permitted"] is True
     )
 
     tampered = deepcopy(registration)
     tampered["cell"]["requested_model"] = "different-model"
     with pytest.raises(ValueError, match="preregistration_digest_invalid"):
         verify_frontier_preregistration(ROOT, tampered, verify_git=False)
+
+
+def test_frontier_diagnostic_preregistration_binds_one_attempt_and_two_tasks() -> None:
+    scenario_ids = [
+        "frontier-document-retraction-restore",
+        "frontier-chained-cutoff",
+    ]
+    registration = build_frontier_preregistration(
+        ROOT,
+        run_id="opus-five-development-screen-001",
+        created_at="2032-04-18T16:00:00Z",
+        git_sha="a" * 40,
+        provider="anthropic",
+        requested_model="claude-opus-5",
+        scenario_ids=scenario_ids,
+        max_model_turns=32,
+        max_acts=28,
+        timeout_seconds=60,
+        spend_policy=_spend_policy(max_requests=64),
+        temperature=None,
+        reasoning_effort="high",
+        price_source_url="https://platform.claude.com/docs/en/about-claude/pricing",
+        price_checked_at="2032-04-18T15:55:00Z",
+        retention_terms_url=(
+            "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention"
+        ),
+        retention_checked_at="2032-04-18T15:56:00Z",
+        derived_publication_posture="unknown",
+        study_kind="development_diagnostic",
+    )
+    verified = verify_frontier_preregistration(ROOT, registration, verify_git=False)
+    assert verified["study_kind"] == "development_diagnostic"
+    assert verified["claim_status"] == "private_development_diagnostic_only"
+    assert verified["frontier"]["scenario_ids"] == scenario_ids
+    assert verified["frontier"]["attempt_ids_per_scenario"] == [1]
+
+    too_many = build_frontier_preregistration
+    with pytest.raises(ValueError, match="diagnostic_scenario_set_invalid"):
+        too_many(
+            ROOT,
+            run_id="opus-five-development-screen-002",
+            created_at="2032-04-18T16:00:00Z",
+            git_sha="a" * 40,
+            provider="anthropic",
+            requested_model="claude-opus-5",
+            scenario_ids=list(frontier_scenarios())[:3],
+            max_model_turns=32,
+            max_acts=28,
+            timeout_seconds=60,
+            spend_policy=_spend_policy(max_requests=64),
+            temperature=None,
+            reasoning_effort="high",
+            price_source_url="https://platform.claude.com/docs/en/about-claude/pricing",
+            price_checked_at="2032-04-18T15:55:00Z",
+            retention_terms_url=(
+                "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention"
+            ),
+            retention_checked_at="2032-04-18T15:56:00Z",
+            derived_publication_posture="unknown",
+            study_kind="development_diagnostic",
+        )
+
+
+def test_frontier_diagnostic_runner_refuses_confirmatory_manifest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        "gradia_universes.cli.load_frontier_preregistration",
+        lambda _root, _path: {"study_kind": "confirmatory_panel"},
+    )
+    with pytest.raises(ValueError, match="frontier_run_study_kind_mismatch"):
+        command_frontier_diagnostic_run(
+            Namespace(
+                root=tmp_path,
+                preregistration=tmp_path / "preregistrations" / "cell.json",
+                confirm_live_spend=True,
+            )
+        )
+
+
+def test_frontier_diagnostic_runner_writes_one_descriptive_receipt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    scenario = frontier_scenarios()["frontier-document-retraction-restore"]
+    registration = build_frontier_preregistration(
+        ROOT,
+        run_id="opus-five-development-screen-command-001",
+        created_at="2032-04-18T16:00:00Z",
+        git_sha="a" * 40,
+        provider="anthropic",
+        requested_model="claude-opus-5",
+        scenario_ids=[scenario.scenario_id],
+        max_model_turns=32,
+        max_acts=28,
+        timeout_seconds=60,
+        spend_policy=_spend_policy(max_requests=32),
+        temperature=None,
+        reasoning_effort="high",
+        price_source_url="https://platform.claude.com/docs/en/about-claude/pricing",
+        price_checked_at="2032-04-18T15:55:00Z",
+        retention_terms_url=(
+            "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention"
+        ),
+        retention_checked_at="2032-04-18T15:56:00Z",
+        derived_publication_posture="unknown",
+        study_kind="development_diagnostic",
+    )
+
+    class FakeBackend:
+        provider = "anthropic"
+        model = "claude-opus-5"
+        adapter_version = "anthropic-messages-rest.v3"
+        sampling_policy: ClassVar[dict[str, str | None]] = {
+            "temperature": None,
+            "temperature_posture": "provider_default",
+            "reasoning_effort": "high",
+            "reasoning_effort_posture": "explicit",
+            "provider_seed": None,
+            "repeat_semantics": "independent_provider_request",
+        }
+        sampling_policy_sha256 = digest(sampling_policy)
+        policy_sha256 = "a" * 64
+        estimated_cost_usd = 0.12
+        reserved_cost_usd = 0.20
+        reserved_output_tokens = 19 * 512
+
+        def __init__(self, *_args: object, **_kwargs: object) -> None:
+            self.outputs = iter(_frontier_safe_outputs(scenario))
+            self.calls = 0
+
+        def complete(self, prompt: str) -> Completion:
+            self.calls += 1
+            output = next(self.outputs)
+            return Completion(
+                provider="anthropic",
+                model="claude-opus-5",
+                resolved_model="claude-opus-5",
+                adapter_version=self.adapter_version,
+                response_id=f"response-{self.calls}",
+                output_text=output,
+                input_tokens=len(prompt.split()),
+                output_tokens=len(output.split()),
+                provider_response_sha256=digest({"prompt": prompt, "output": output}),
+                estimated_cost_usd=0.01,
+                cumulative_estimated_cost_usd=self.calls * 0.01,
+                budget_policy_sha256=self.policy_sha256,
+                cumulative_reserved_cost_usd=self.calls * 0.02,
+            )
+
+    monkeypatch.setattr(
+        "gradia_universes.cli.load_frontier_preregistration",
+        lambda _root, _path: registration,
+    )
+    monkeypatch.setattr(
+        "gradia_universes.cli.load_frontier_scenarios",
+        lambda _fixtures: [scenario],
+    )
+    monkeypatch.setattr("gradia_universes.cli.CappedProviderBackend", FakeBackend)
+    assert (
+        command_frontier_diagnostic_run(
+            Namespace(
+                root=tmp_path,
+                preregistration=tmp_path / "preregistrations" / "cell.json",
+                confirm_live_spend=True,
+            )
+        )
+        == 0
+    )
+    result = load_json(
+        tmp_path
+        / "results"
+        / "local"
+        / registration["run_id"]
+        / "diagnostic.json"
+    )
+    assert result["study_kind"] == "development_diagnostic"
+    assert result["analysis"]["screening_signal"] == "possible_ceiling_risk"
+    assert result["analysis"]["pass_at_k_eligible"] is False
+    assert "empirical_pass_fraction" not in result["analysis"]
+    receipts = list(
+        (tmp_path / "results" / "local" / registration["run_id"] / "receipts").glob(
+            "*.json"
+        )
+    )
+    assert len(receipts) == 1
 
 
 def test_frontier_preregistration_requires_official_price_source() -> None:
@@ -1282,11 +1492,21 @@ def test_public_scan_ignores_local_execution_products(tmp_path: Path) -> None:
     _verify_release_text_boundary(tmp_path)
 
 
+def test_public_scan_ignores_only_an_untracked_git_ignored_local_env(tmp_path: Path) -> None:
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    (tmp_path / ".gitignore").write_text(".env.*\n!.env.example\n", encoding="utf-8")
+    local_env = tmp_path / ".env.local"
+    local_env.write_text("ANTHROPIC_API_KEY=sk-" + "A" * 32 + "\n", encoding="utf-8")
+    _verify_release_text_boundary(tmp_path)
+
+    subprocess.run(["git", "add", "-f", ".env.local"], cwd=tmp_path, check=True)
+    with pytest.raises(ValueError, match="public_boundary_refused"):
+        _verify_release_text_boundary(tmp_path)
+
+
 def test_public_scan_refuses_a_release_file_with_a_local_path(tmp_path: Path) -> None:
     local_path = "/" + "Users/local-user/private-path\n"
-    (tmp_path / "README.md").write_text(
-        local_path, encoding="utf-8"
-    )
+    (tmp_path / "README.md").write_text(local_path, encoding="utf-8")
     with pytest.raises(ValueError, match="public_boundary_refused"):
         _verify_release_text_boundary(tmp_path)
 

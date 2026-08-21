@@ -25,6 +25,7 @@ Outcome = Literal["APPROVE", "APPROVE_EXCEPTION", "ESCALATE", "DENY"]
 FRONTIER_SCAFFOLD_VERSION = "gradia-frontier-json-action-scaffold.v1"
 FRONTIER_JUDGE_VERSION = "gradia-frontier-queue-deterministic-judge.v2"
 FRONTIER_ANALYSIS_VERSION = "gradia-frontier-five-attempt-analysis.v1"
+FRONTIER_DIAGNOSTIC_ANALYSIS_VERSION = "gradia-frontier-development-diagnostic.v1"
 FRONTIER_SCHEMA = "gradia-frontier-universe-scenario.v1"
 
 FRONTIER_TOOLS: dict[str, set[str]] = {
@@ -65,10 +66,7 @@ class FrontierPatch:
         if (
             not isinstance(path, list)
             or not path
-            or any(
-                not isinstance(item, (str, int)) or isinstance(item, bool)
-                for item in path
-            )
+            or any(not isinstance(item, (str, int)) or isinstance(item, bool) for item in path)
         ):
             raise ValueError("frontier_patch_path_invalid")
         return cls(
@@ -323,9 +321,7 @@ class FrontierEngine:
             if event.event_id in self.applied_ids:
                 continue
             trigger = event.trigger
-            matches = (
-                trigger.kind == "after_act" and trigger.act_index == act_index
-            ) or (
+            matches = (trigger.kind == "after_act" and trigger.act_index == act_index) or (
                 trigger.kind == "after_tool"
                 and trigger.tool == tool
                 and trigger.occurrence == self.tool_counts[tool]
@@ -363,9 +359,7 @@ class FrontierEngine:
         }
 
     @classmethod
-    def restore(
-        cls, scenario: FrontierScenario, snapshot: dict[str, Any]
-    ) -> FrontierEngine:
+    def restore(cls, scenario: FrontierScenario, snapshot: dict[str, Any]) -> FrontierEngine:
         engine = cls(scenario)
         engine.applied_ids = set(snapshot["applied_ids"])
         engine.occurrences = [FrontierOccurrence(**row) for row in snapshot["occurrences"]]
@@ -529,8 +523,7 @@ def oracle_packet(world: FrontierWorld) -> dict[str, Any]:
         elif (
             float(metrics["dti"]) <= float(exception["max_dti"])
             and float(metrics["ltv"]) <= float(exception["max_ltv"])
-            and float(metrics["reserve_months"])
-            >= float(exception["min_reserve_months"])
+            and float(metrics["reserve_months"]) >= float(exception["min_reserve_months"])
         ):
             outcome, reasons = "DENY", ["EXCEPTION_CAPACITY_EXHAUSTED"]
             candidates.append(application)
@@ -572,10 +565,13 @@ def _validate_frontier_semantics(scenario: FrontierScenario) -> None:
     expected = sorted(str(row["source_id"]) for row in scenario.resources.values())
     if not isinstance(authoritative, list) or sorted(authoritative) != expected:
         raise ValueError("frontier_authority_registry_mismatch")
-    if not any(
-        event.trigger.kind == "after_tool" and event.trigger.tool == "timeline.await_cutoff"
-        for event in scenario.events
-    ) and scenario.scenario_id != "frontier-static-control":
+    if (
+        not any(
+            event.trigger.kind == "after_tool" and event.trigger.tool == "timeline.await_cutoff"
+            for event in scenario.events
+        )
+        and scenario.scenario_id != "frontier-static-control"
+    ):
         raise ValueError("frontier_dynamic_scenario_requires_cutoff_event")
 
 
@@ -606,8 +602,10 @@ pass requires the complete current decision packet, not a plausible summary."""
 
 
 def _frontier_prompt(transcript: list[dict[str, Any]]) -> str:
-    return frontier_system_contract() + "\n\nTRANSCRIPT\n" + json.dumps(
-        transcript, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+    return (
+        frontier_system_contract()
+        + "\n\nTRANSCRIPT\n"
+        + json.dumps(transcript, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     )
 
 
@@ -725,12 +723,14 @@ def judge_frontier(
                 if int(act["act_index"]) > occurrence.boundary_act
                 and act["tool"] == "source.read"
                 and isinstance(act.get("result"), dict)
-            }.issuperset({
-                patch.resource_id
-                for event in scenario.events
-                if event.event_id == occurrence.event_id
-                for patch in event.patches
-            })
+            }.issuperset(
+                {
+                    patch.resource_id
+                    for event in scenario.events
+                    if event.event_id == occurrence.event_id
+                    for patch in event.patches
+                }
+            )
             for occurrence in occurrences
             if occurrence.before_world_root != occurrence.after_world_root
         ),
@@ -777,13 +777,15 @@ def run_frontier_live_episode(
         raise ValueError("frontier_limits_invalid")
     world = FrontierWorld(scenario)
     engine = FrontierEngine(scenario)
-    transcript: list[dict[str, Any]] = [{
-        "kind": "task",
-        "text": (
-            "Resolve the complete synthetic queue under the current sources and shared "
-            "exception capacity. Await the cutoff exactly once before final submission."
-        ),
-    }]
+    transcript: list[dict[str, Any]] = [
+        {
+            "kind": "task",
+            "text": (
+                "Resolve the complete synthetic queue under the current sources and shared "
+                "exception capacity. Await the cutoff exactly once before final submission."
+            ),
+        }
+    ]
     acts: list[dict[str, Any]] = []
     model_calls: list[dict[str, Any]] = []
     restore_receipts: list[dict[str, Any]] = []
@@ -797,24 +799,26 @@ def run_frontier_live_episode(
         except CompletionBackendStop as error:
             backend_stop = error
             break
-        model_calls.append({
-            "model_turn": model_turn,
-            "prompt_sha256": digest(prompt),
-            "provider": completion.provider,
-            "model": completion.model,
-            "resolved_model": completion.resolved_model,
-            "adapter_version": completion.adapter_version,
-            "response_id": completion.response_id,
-            "output_text": completion.output_text,
-            "output_text_sha256": digest(completion.output_text),
-            "input_tokens": completion.input_tokens,
-            "output_tokens": completion.output_tokens,
-            "provider_response_sha256": completion.provider_response_sha256,
-            "estimated_cost_usd": completion.estimated_cost_usd,
-            "cumulative_estimated_cost_usd": completion.cumulative_estimated_cost_usd,
-            "budget_policy_sha256": completion.budget_policy_sha256,
-            "cumulative_reserved_cost_usd": completion.cumulative_reserved_cost_usd,
-        })
+        model_calls.append(
+            {
+                "model_turn": model_turn,
+                "prompt_sha256": digest(prompt),
+                "provider": completion.provider,
+                "model": completion.model,
+                "resolved_model": completion.resolved_model,
+                "adapter_version": completion.adapter_version,
+                "response_id": completion.response_id,
+                "output_text": completion.output_text,
+                "output_text_sha256": digest(completion.output_text),
+                "input_tokens": completion.input_tokens,
+                "output_tokens": completion.output_tokens,
+                "provider_response_sha256": completion.provider_response_sha256,
+                "estimated_cost_usd": completion.estimated_cost_usd,
+                "cumulative_estimated_cost_usd": completion.cumulative_estimated_cost_usd,
+                "budget_policy_sha256": completion.budget_policy_sha256,
+                "cumulative_reserved_cost_usd": completion.cumulative_reserved_cost_usd,
+            }
+        )
         transcript.append(
             {
                 "kind": "model_output",
@@ -825,11 +829,13 @@ def run_frontier_live_episode(
         try:
             action, arguments = _parse_frontier_action(completion.output_text)
         except ValueError as error:
-            transcript.append({
-                "kind": "protocol_error",
-                "code": str(error),
-                "instruction": "Return exactly one valid JSON action object.",
-            })
+            transcript.append(
+                {
+                    "kind": "protocol_error",
+                    "code": str(error),
+                    "instruction": "Return exactly one valid JSON action object.",
+                }
+            )
             continue
         if len(acts) >= max_acts:
             break
@@ -867,27 +873,33 @@ def run_frontier_live_episode(
         except ValueError as error:
             transcript.append({"kind": "tool_error", "code": str(error), "tool": action})
             continue
-        acts.append({
-            "act_index": act_index,
-            "tool": action,
-            "arguments": deepcopy(arguments),
-            "result": result,
-            "world_root_after_act": world.root,
-            "restore_generation": world.restore_generation,
-        })
-        transcript.append({
-            "kind": "tool_result",
-            "act_index": act_index,
-            "tool": action,
-            "result": result,
-        })
+        acts.append(
+            {
+                "act_index": act_index,
+                "tool": action,
+                "arguments": deepcopy(arguments),
+                "result": result,
+                "world_root_after_act": world.root,
+                "restore_generation": world.restore_generation,
+            }
+        )
+        transcript.append(
+            {
+                "kind": "tool_result",
+                "act_index": act_index,
+                "tool": action,
+                "result": result,
+            }
+        )
         fired = engine.advance(act_index, action, world)
         for occurrence in fired:
-            transcript.append({
-                "kind": "environment_event",
-                "after_act": act_index,
-                "visible_projection": occurrence.visible_projection,
-            })
+            transcript.append(
+                {
+                    "kind": "environment_event",
+                    "after_act": act_index,
+                    "visible_projection": occurrence.visible_projection,
+                }
+            )
             event = next(row for row in scenario.events if row.event_id == occurrence.event_id)
             if event.restore_after:
                 before_generation = world.restore_generation
@@ -907,17 +919,21 @@ def run_frontier_live_episode(
                 restore_receipts.append(
                     {**receipt_body, "receipt_sha256": digest(receipt_body)}
                 )
-                transcript.append({
-                    "kind": "environment_restore",
-                    "restore_generation": world.restore_generation,
-                    "world_root": world.root,
-                })
+                transcript.append(
+                    {
+                        "kind": "environment_restore",
+                        "restore_generation": world.restore_generation,
+                        "world_root": world.root,
+                    }
+                )
         if submission is not None:
             break
     if submission is None:
         environment_failure = bool(backend_stop and backend_stop.environment_failure)
-        failure = "environment_failure" if environment_failure else (
-            "budget_stop" if backend_stop else "no_valid_submission"
+        failure = (
+            "environment_failure"
+            if environment_failure
+            else ("budget_stop" if backend_stop else "no_valid_submission")
         )
         verdict: dict[str, Any] = {
             "judge": FRONTIER_JUDGE_VERSION,
@@ -1000,25 +1016,31 @@ def frontier_admission_report(fixtures_dir: Path) -> dict[str, Any]:
         initial = oracle_packet(FrontierWorld(scenario))
         world, engine, restores = _frontier_admission_state(scenario)
         terminal = oracle_packet(world)
-        scenarios.append({
-            "scenario_id": scenario.scenario_id,
-            "scenario_sha256": digest({
+        scenarios.append(
+            {
                 "scenario_id": scenario.scenario_id,
-                "title": scenario.title,
-                "resources": scenario.resources,
-                "events": [row.private_contract() for row in scenario.events],
-                "synthetic": True,
-            }),
-            "event_count": len(scenario.events),
-            "root_changing_event_count": sum(
-                1 for row in engine.occurrences if row.before_world_root != row.after_world_root
-            ),
-            "restore_count": restores,
-            "initial_oracle_sha256": digest(initial),
-            "terminal_oracle_sha256": digest(terminal),
-            "answer_changed": initial != terminal,
-            "terminal_world_root": world.root,
-        })
+                "scenario_sha256": digest(
+                    {
+                        "scenario_id": scenario.scenario_id,
+                        "title": scenario.title,
+                        "resources": scenario.resources,
+                        "events": [row.private_contract() for row in scenario.events],
+                        "synthetic": True,
+                    }
+                ),
+                "event_count": len(scenario.events),
+                "root_changing_event_count": sum(
+                    1
+                    for row in engine.occurrences
+                    if row.before_world_root != row.after_world_root
+                ),
+                "restore_count": restores,
+                "initial_oracle_sha256": digest(initial),
+                "terminal_oracle_sha256": digest(terminal),
+                "answer_changed": initial != terminal,
+                "terminal_world_root": world.root,
+            }
+        )
     body = {
         "schema": "gradia-frontier-admission-report.v1",
         "claim_boundary": (
@@ -1053,9 +1075,7 @@ def frontier_judge_validation_report(fixtures_dir: Path) -> dict[str, Any]:
                     "record": deepcopy(record),
                 },
             }
-            for index, (resource_id, record) in enumerate(
-                sorted(world.resources.items())
-            )
+            for index, (resource_id, record) in enumerate(sorted(world.resources.items()))
         ]
         positive_verdict = judge_frontier(
             positive,
@@ -1071,91 +1091,104 @@ def frontier_judge_validation_report(fixtures_dir: Path) -> dict[str, Any]:
         wrong_decision["decisions"][0]["outcome"] = (
             "APPROVE" if current_outcome != "APPROVE" else "DENY"
         )
-        mutations.append((
-            "wrong_decision_packet",
-            wrong_decision,
-            True,
-            post_change_acts,
-            {"complete_decision_packet"},
-        ))
+        mutations.append(
+            (
+                "wrong_decision_packet",
+                wrong_decision,
+                True,
+                post_change_acts,
+                {"complete_decision_packet"},
+            )
+        )
         wrong_award = deepcopy(positive)
         wrong_award["exception_award"] = "NOT-A-CASE"
-        mutations.append((
-            "wrong_capacity_award",
-            wrong_award,
-            True,
-            post_change_acts,
-            {"exception_allocation_correct"},
-        ))
+        mutations.append(
+            (
+                "wrong_capacity_award",
+                wrong_award,
+                True,
+                post_change_acts,
+                {"exception_allocation_correct"},
+            )
+        )
         stale_root = deepcopy(positive)
         stale_root["observed_world_root"] = "0" * 64
-        mutations.append((
-            "stale_world_root",
-            stale_root,
-            True,
-            post_change_acts,
-            {"current_world_root"},
-        ))
+        mutations.append(
+            (
+                "stale_world_root",
+                stale_root,
+                True,
+                post_change_acts,
+                {"current_world_root"},
+            )
+        )
         missing_citation = deepcopy(positive)
         missing_citation["citations"] = missing_citation["citations"][1:]
-        mutations.append((
-            "missing_current_citation",
-            missing_citation,
-            True,
-            post_change_acts,
-            {"current_authoritative_evidence"},
-        ))
+        mutations.append(
+            (
+                "missing_current_citation",
+                missing_citation,
+                True,
+                post_change_acts,
+                {"current_authoritative_evidence"},
+            )
+        )
         citation_without_access = [
             act
             for act in post_change_acts
             if act["result"]["resource_id"] != "authority_registry"
         ]
-        mutations.append((
-            "citation_without_source_access",
-            deepcopy(positive),
-            True,
-            citation_without_access,
-            {"current_authoritative_evidence"},
-        ))
-        mutations.append((
-            "premature_submission",
-            deepcopy(positive),
-            False,
-            post_change_acts,
-            {"cutoff_observed"},
-        ))
-        empty_rationale = deepcopy(positive)
-        empty_rationale["rationale"] = ""
-        mutations.append((
-            "empty_rationale",
-            empty_rationale,
-            True,
-            post_change_acts,
-            {"output_contract"},
-        ))
-        rogue_authority = deepcopy(positive)
-        rogue_authority["citations"] = [*rogue_authority["citations"], "rogue@1"]
-        mutations.append((
-            "undeclared_authority",
-            rogue_authority,
-            True,
-            post_change_acts,
-            {"current_authoritative_evidence"},
-        ))
-        if any(
-            row.before_world_root != row.after_world_root for row in engine.occurrences
-        ):
-            no_recheck_acts = [
-                {**deepcopy(act), "act_index": 1}
-                for act in post_change_acts
-            ]
-            mutations.append((
-                "no_post_change_recheck",
+        mutations.append(
+            (
+                "citation_without_source_access",
                 deepcopy(positive),
                 True,
-                no_recheck_acts,
-                {"changed_world_adaptation"},
-            ))
+                citation_without_access,
+                {"current_authoritative_evidence"},
+            )
+        )
+        mutations.append(
+            (
+                "premature_submission",
+                deepcopy(positive),
+                False,
+                post_change_acts,
+                {"cutoff_observed"},
+            )
+        )
+        empty_rationale = deepcopy(positive)
+        empty_rationale["rationale"] = ""
+        mutations.append(
+            (
+                "empty_rationale",
+                empty_rationale,
+                True,
+                post_change_acts,
+                {"output_contract"},
+            )
+        )
+        rogue_authority = deepcopy(positive)
+        rogue_authority["citations"] = [*rogue_authority["citations"], "rogue@1"]
+        mutations.append(
+            (
+                "undeclared_authority",
+                rogue_authority,
+                True,
+                post_change_acts,
+                {"current_authoritative_evidence"},
+            )
+        )
+        if any(row.before_world_root != row.after_world_root for row in engine.occurrences):
+            no_recheck_acts = [{**deepcopy(act), "act_index": 1} for act in post_change_acts]
+            mutations.append(
+                (
+                    "no_post_change_recheck",
+                    deepcopy(positive),
+                    True,
+                    no_recheck_acts,
+                    {"changed_world_adaptation"},
+                )
+            )
         probe_rows: list[dict[str, Any]] = []
         for probe_id, submission, cutoff, acts, expected_failures in mutations:
             verdict = judge_frontier(
@@ -1167,26 +1200,28 @@ def frontier_judge_validation_report(fixtures_dir: Path) -> dict[str, Any]:
                 acts=acts,
             )
             failed = {
-                criterion
-                for criterion, passed in verdict["criteria"].items()
-                if not passed
+                criterion for criterion, passed in verdict["criteria"].items() if not passed
             }
-            probe_rows.append({
-                "probe_id": probe_id,
-                "expected_failed_criteria": sorted(expected_failures),
-                "observed_failed_criteria": sorted(failed),
-                "isolated_detection_passed": failed == expected_failures,
-                "failure_classes": verdict["failure_classes"],
-            })
-        scenario_rows.append({
-            "scenario_id": scenario.scenario_id,
-            "positive_control_passed": positive_verdict["passed"],
-            "probe_count": len(probe_rows),
-            "all_isolated_detection_probes_passed": all(
-                row["isolated_detection_passed"] for row in probe_rows
-            ),
-            "probes": probe_rows,
-        })
+            probe_rows.append(
+                {
+                    "probe_id": probe_id,
+                    "expected_failed_criteria": sorted(expected_failures),
+                    "observed_failed_criteria": sorted(failed),
+                    "isolated_detection_passed": failed == expected_failures,
+                    "failure_classes": verdict["failure_classes"],
+                }
+            )
+        scenario_rows.append(
+            {
+                "scenario_id": scenario.scenario_id,
+                "positive_control_passed": positive_verdict["passed"],
+                "probe_count": len(probe_rows),
+                "all_isolated_detection_probes_passed": all(
+                    row["isolated_detection_passed"] for row in probe_rows
+                ),
+                "probes": probe_rows,
+            }
+        )
     body = {
         "schema": "gradia-frontier-judge-validation.v1",
         "claim_boundary": (
@@ -1213,9 +1248,7 @@ def _wilson(successes: int, total: int) -> list[float] | None:
     phat = successes / total
     denominator = 1 + z * z / total
     center = (phat + z * z / (2 * total)) / denominator
-    margin = z * math.sqrt(
-        (phat * (1 - phat) + z * z / (4 * total)) / total
-    ) / denominator
+    margin = z * math.sqrt((phat * (1 - phat) + z * z / (4 * total)) / total) / denominator
     return [max(0.0, center - margin), min(1.0, center + margin)]
 
 
@@ -1231,7 +1264,8 @@ def analyze_five_attempt_panel(receipts: list[dict[str, Any]]) -> dict[str, Any]
         if sorted(attempt_ids) != [1, 2, 3, 4, 5]:
             raise ValueError(f"frontier_analysis_requires_attempts_1_to_5:{scenario_id}")
         eligible = [
-            row for row in cells
+            row
+            for row in cells
             if not row["verdict"]["environment_failure"]
             and row["verdict"]["failure_classes"] != ["budget_stop"]
         ]
@@ -1247,18 +1281,20 @@ def analyze_five_attempt_panel(receipts: list[dict[str, Any]]) -> dict[str, Any]
             classification = "stable_pass_observed"
         else:
             classification = "inconsistent_observed"
-        task_rows.append({
-            "scenario_id": scenario_id,
-            "attempts": 5,
-            "eligible_attempts": len(eligible),
-            "successes": successes,
-            "empirical_pass_fraction": successes / len(eligible) if eligible else None,
-            "wilson_95_descriptive": _wilson(successes, len(eligible)),
-            "any_pass_at_5": successes > 0 if len(eligible) == 5 else None,
-            "all_pass_at_5": successes == 5 if len(eligible) == 5 else None,
-            "classification": classification,
-            "outcome_signatures": dict(sorted(signatures.items())),
-        })
+        task_rows.append(
+            {
+                "scenario_id": scenario_id,
+                "attempts": 5,
+                "eligible_attempts": len(eligible),
+                "successes": successes,
+                "empirical_pass_fraction": successes / len(eligible) if eligible else None,
+                "wilson_95_descriptive": _wilson(successes, len(eligible)),
+                "any_pass_at_5": successes > 0 if len(eligible) == 5 else None,
+                "all_pass_at_5": successes == 5 if len(eligible) == 5 else None,
+                "classification": classification,
+                "outcome_signatures": dict(sorted(signatures.items())),
+            }
+        )
     successes = sum(bool(row["verdict"]["passed"]) for row in all_eligible)
     complete_tasks = [row for row in task_rows if row["eligible_attempts"] == 5]
     body = {
@@ -1274,12 +1310,71 @@ def analyze_five_attempt_panel(receipts: list[dict[str, Any]]) -> dict[str, Any]
         "empirical_pass_fraction": successes / len(all_eligible) if all_eligible else None,
         "task_coverage_any_pass_at_5": (
             sum(bool(row["any_pass_at_5"]) for row in complete_tasks) / len(complete_tasks)
-            if complete_tasks else None
+            if complete_tasks
+            else None
         ),
         "task_reliability_all_pass_at_5": (
             sum(bool(row["all_pass_at_5"]) for row in complete_tasks) / len(complete_tasks)
-            if complete_tasks else None
+            if complete_tasks
+            else None
         ),
+        "tasks": task_rows,
+    }
+    return {**body, "analysis_sha256": digest(body)}
+
+
+def analyze_frontier_diagnostic(receipts: list[dict[str, Any]]) -> dict[str, Any]:
+    """Describe a one-attempt development screen without emitting pass@k claims."""
+    if not receipts:
+        raise ValueError("frontier_diagnostic_receipts_required")
+    scenario_ids = [str(row["scenario_id"]) for row in receipts]
+    if len(scenario_ids) != len(set(scenario_ids)):
+        raise ValueError("frontier_diagnostic_scenario_duplicate")
+    if any(row.get("attempt_id") != 1 for row in receipts):
+        raise ValueError("frontier_diagnostic_requires_attempt_1")
+    task_rows: list[dict[str, Any]] = []
+    for row in sorted(receipts, key=lambda value: str(value["scenario_id"])):
+        verdict = row["verdict"]
+        environment_failure = bool(verdict["environment_failure"])
+        budget_stop = verdict["failure_classes"] == ["budget_stop"]
+        task_eligible = not environment_failure and not budget_stop
+        task_rows.append(
+            {
+                "scenario_id": row["scenario_id"],
+                "attempt_id": 1,
+                "eligible": task_eligible,
+                "passed": bool(verdict["passed"]) if task_eligible else None,
+                "failure_classes": verdict["failure_classes"],
+                "receipt_sha256": row["receipt_sha256"],
+            }
+        )
+    eligible_tasks = [row for row in task_rows if row["eligible"]]
+    tasks_passed = sum(row["passed"] is True for row in eligible_tasks)
+    if len(eligible_tasks) != len(task_rows):
+        screening_signal = "infrastructure_inconclusive"
+    elif tasks_passed == len(task_rows):
+        screening_signal = "possible_ceiling_risk"
+    else:
+        screening_signal = "meaningful_failure_observed"
+    body = {
+        "schema": FRONTIER_DIAGNOSTIC_ANALYSIS_VERSION,
+        "claim_status": "private_development_diagnostic_only",
+        "estimand_boundary": (
+            "One attempt per frozen task is a cost-screening diagnostic only. It does "
+            "not estimate pass@k, reliability, model ranking, frontier difficulty, or "
+            "research novelty. A possible ceiling signal requires trace review before "
+            "designing a disclosed successor edition."
+        ),
+        "task_count": len(task_rows),
+        "eligible_tasks": len(eligible_tasks),
+        "tasks_passed": tasks_passed,
+        "all_eligible_tasks_passed": (
+            tasks_passed == len(task_rows) if len(eligible_tasks) == len(task_rows) else None
+        ),
+        "screening_signal": screening_signal,
+        "pass_at_k_eligible": False,
+        "reliability_claim_eligible": False,
+        "model_ranking_eligible": False,
         "tasks": task_rows,
     }
     return {**body, "analysis_sha256": digest(body)}

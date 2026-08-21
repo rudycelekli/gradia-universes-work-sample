@@ -42,10 +42,26 @@ purpose as a protocol/control denominator. No task is made harder with irrelevan
 text, hidden facts or an ambiguous rubric merely to force a failure.
 
 Before paid task execution, the protocol also refuses selective-task
-preregistration, fixes all five attempts per task, requires explicit `high`
-reasoning across providers, leaves temperature at the recorded provider
-default, and requires exact requested/returned model identity. The only allowed
-pre-task paid call is a separately receipted non-benchmark protocol smoke.
+preregistration for a confirmatory panel, fixes all five attempts per task,
+requires explicit `high` reasoning across providers, leaves temperature at the
+recorded provider default, and requires exact requested/returned model identity.
+The only non-task paid call is a separately receipted protocol smoke.
+
+## Development diagnostic rule
+
+A separately typed `development_diagnostic` may bind one attempt on one or two
+canonical tasks. It exists only to avoid buying 25 attempts when a very strong
+model immediately exposes a likely ceiling. Its artifact omits empirical pass
+fractions and hard-codes pass@k, reliability, ranking, frontier-difficulty and
+novelty eligibility to false.
+
+The cell must finish before any receipt is inspected. Two eligible clean passes
+mean `possible_ceiling_risk`, not “the benchmark is easy”; execution stops and
+the traces are reviewed before a disclosed successor is designed. Any
+meaningful failure is investigated for grader, protocol, environment and task
+ambiguity defects before it is treated as behavioral signal. The diagnostic
+spends those tasks as development evidence: a later run selected or redesigned
+because of the observed result is not an untouched confirmatory panel.
 
 ## The ceiling rule
 

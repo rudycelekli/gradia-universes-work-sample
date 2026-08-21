@@ -93,12 +93,59 @@ The smoke writes `benchmark_task_or_score_present=false`. It is not a
 release-eligible frontier cell. The confirmations are operator attestations,
 not legal or provider-side proofs.
 
-The operating rule is to preregister the longer frontier-candidate suite before
-any paid outcome is inspected. Run this only from a clean public tree. The
-command freezes the clean code commit, exact scenario/admission/judge/analysis
-digests, provider/model identity rule, sampling posture, public official-source
-URLs checked no more than seven days before creation, attempts, and every
-execution and spend ceiling into a non-secret tracked manifest:
+An optional cost screen may precede the full panel. It still runs only from a
+clean tree and still requires a reviewed manifest-only commit. It freezes one
+attempt on one or two canonical tasks and cannot emit a pass rate, pass@k,
+reliability, model-ranking, frontier-difficulty, or novelty claim:
+
+```bash
+.venv/bin/gradia-universe frontier-diagnostic-preregister \
+  --run-id '<immutable-diagnostic-id>' \
+  --created-at '<RFC3339-UTC>' \
+  --provider '<openai|anthropic|xai|gemini>' \
+  --model '<exact-model-id>' \
+  --scenario frontier-document-retraction-restore \
+  --scenario frontier-chained-cutoff \
+  --max-model-turns 32 \
+  --max-acts 28 \
+  --max-provider-requests '<approved-request-cap>' \
+  --max-output-tokens '<per-request-cap>' \
+  --max-total-output-tokens '<diagnostic-cap>' \
+  --max-cost-usd '<approved-cap>' \
+  --input-usd-per-million '<current-price>' \
+  --output-usd-per-million '<current-price>' \
+  --price-source-url '<official-provider-pricing-url>' \
+  --price-checked-at '<RFC3339-UTC>' \
+  --retention-terms-url '<official-provider-data-terms-url>' \
+  --retention-checked-at '<RFC3339-UTC>' \
+  --derived-publication-posture '<operator-assessed: unknown|not_permitted|derived_only_permitted>' \
+  --reasoning-effort high \
+  --confirm-private-response-retention \
+  --confirm-provider-account-spend-limit
+```
+
+After reviewing and committing only that manifest, run it with
+`frontier-diagnostic-run`. The command writes `diagnostic.json` and one receipt
+per selected task under the ignored local result edition. If every eligible
+task passes, the signal is `possible_ceiling_risk`; stop spending, review the
+traces, and design a disclosed successor edition. A failure is
+`meaningful_failure_observed`, not proof of task quality: first exclude protocol,
+environment, evaluator and ambiguity defects. Any later panel whose launch or
+design was chosen after inspecting this screen is labeled post-development.
+
+```bash
+.venv/bin/gradia-universe frontier-diagnostic-run \
+  --preregistration preregistrations/<immutable-diagnostic-id>.json \
+  --confirm-live-spend
+```
+
+The confirmatory operating rule is to preregister the complete frontier-candidate
+suite before any task-bearing outcome is inspected. Run this only from a clean
+public tree. The command freezes the clean code commit, exact
+scenario/admission/judge/analysis digests, provider/model identity rule,
+sampling posture, public official-source URLs checked no more than seven days
+before creation, attempts, and every execution and spend ceiling into a
+non-secret tracked manifest:
 
 ```bash
 .venv/bin/gradia-universe frontier-preregister \
@@ -142,8 +189,9 @@ attest to that procedural fact. Official-source URLs reject credentials,
 queries, fragments and nonstandard ports so a public manifest cannot smuggle a
 secret through evidence metadata.
 
-Selective scenario flags are not accepted: the manifest always binds all five
-v1 tasks before any paid task outcome may be inspected. The preregistration
+Selective scenario flags are not accepted by `frontier-preregister`: the
+confirmatory manifest always binds all five v1 tasks before any paid task outcome
+may be inspected. The preregistration
 requires explicit `high` reasoning and provider-default temperature; either
 deviation is refused. Every full frontier cell reports per-task successes/5, any-pass@5,
 all-pass@5, descriptive uncertainty and failure-signature counts.
