@@ -49,11 +49,16 @@ For each provider you want included, provide:
   and later publishing a reviewed derived result.
 
 Avoid aliases such as `latest`. A model family name is not an exact pin.
+The runner separately records the model identity returned by the provider and
+refuses and latches a paid cell when that identity is missing or differs from
+the requested id. The retained provider bytes are review evidence; the cell is
+not eligible for a reported model score.
 
 Also approve one total dollar ceiling. Recommended first pass:
 
 1. run one short control, one request and one model per provider under a
-   **$5 hard cap per model** to verify protocol and usage fields;
+   **$5 local reservation ceiling**, with a separate provider-account spend
+   limit, to verify protocol and usage fields;
 2. run the chained frontier candidate exactly five times for each model under a
    separately approved cap;
 3. inspect all five receipts, outcome signatures and grader evidence;
@@ -63,6 +68,15 @@ Also approve one total dollar ceiling. Recommended first pass:
 
 The command refuses a request that could cross its cell cap. Provider account-
 level budgets remain a second independent control.
+
+Before step 2, the non-secret cell manifest is generated from a clean tree,
+reviewed, committed and pushed by itself. The live runner refuses if that
+public preregistration is missing, uncommitted, no longer the only change after
+the recorded code commit, or inconsistent with the current tasks, judge,
+analysis, adapter, prices or caps.
+This Git check proves commit ordering and manifest-only changed-file scope. It
+does not prove that no earlier private run or outcome inspection occurred;
+following and attesting to that operating rule remains the operator's duty.
 
 For each model, also choose a frozen temperature or explicitly choose the
 provider default. The runner records the choice. Attempt ids 1–5 are repeated
@@ -82,7 +96,7 @@ evidence, criterion definitions and an appeal form. Disagreements, reasons and
 adjudication remain versioned evidence. A disagreement is never silently
 converted to the deterministic judge's answer.
 
-None of those may be substituted with a model-provider key, and no customer
+None of those may be substituted with a model-provider key, and no organization
 fact is required for this fully synthetic study.
 
 ## 4. Release boundary

@@ -23,6 +23,12 @@ from .frontier import (
 from .gradia_client import GradiaClient
 from .human_review import agreement, write_packet
 from .live_runner import SCAFFOLD_VERSION, run_live_episode
+from .preregistration import (
+    build_frontier_preregistration,
+    clean_git_sha,
+    load_frontier_preregistration,
+    write_frontier_preregistration,
+)
 from .providers import CappedProviderBackend, SpendPolicy
 from .public_bundle import verify_public_bundle, write_public_bundle
 from .report import render_markdown
@@ -31,12 +37,14 @@ from .study_a import build_study_a, render_study_a, write_study_a
 
 SECRET_PATTERNS = (
     re.compile(r"sk-[A-Za-z0-9_-]{20,}"),
+    re.compile(r"AIza[A-Za-z0-9_-]{30,}"),
     re.compile(
         r"(?:api[_-]?key|authorization)[\"']?\s*[:=]\s*[\"']"
         r"(?:bearer\s+)?[A-Za-z0-9._-]{16,}[\"']",
         re.IGNORECASE,
     ),
-    re.compile("/" + r"Users/[^/\s]+/"),
+    re.compile("/" + r"(?:Users|home)/[^/\s]+/"),
+    re.compile(r"[A-Za-z]:\\Users\\[^\\\s]+\\", re.IGNORECASE),
 )
 
 # Local execution products are not release inputs. In particular, an editable
@@ -268,6 +276,10 @@ def _private_response_sink(directory: Path) -> Callable[[bytes], None]:
 def command_live_panel(args: argparse.Namespace) -> int:
     if not args.confirm_live_spend:
         raise ValueError("live_spend_confirmation_required")
+    if not args.confirm_private_response_retention:
+        raise ValueError("private_response_retention_confirmation_required")
+    if not args.confirm_provider_account_spend_limit:
+        raise ValueError("provider_account_spend_limit_confirmation_required")
     run_id = args.run_id
     if not isinstance(run_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", run_id):
         raise ValueError("live_run_id_invalid")
@@ -342,7 +354,16 @@ def command_live_panel(args: argparse.Namespace) -> int:
         "sampling_policy": backend.sampling_policy,
         "sampling_policy_sha256": backend.sampling_policy_sha256,
         "estimated_cost_usd": backend.estimated_cost_usd,
+        "conservative_reserved_cost_usd": backend.reserved_cost_usd,
+        "conservative_reserved_output_tokens": backend.reserved_output_tokens,
         "cost_is_user_supplied_price_estimate_not_invoice": True,
+        "rights": {
+            "operator_attests_private_raw_response_retention_permitted": True,
+        },
+        "operator_controls": {
+            "operator_attests_provider_account_spend_limit_enabled": True,
+            "live_spend_confirmed_at_execution": True,
+        },
         "episodes": len(receipts),
         "eligible_episodes": len(eligible),
         "environment_failures": sum(
@@ -371,30 +392,16 @@ def command_live_panel(args: argparse.Namespace) -> int:
     return 0
 
 
-def command_frontier_live_panel(args: argparse.Namespace) -> int:
-    """Run exactly five independent requests for every selected candidate task."""
-    if not args.confirm_live_spend:
-        raise ValueError("live_spend_confirmation_required")
-    run_id = args.run_id
-    if not isinstance(run_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", run_id):
-        raise ValueError("live_run_id_invalid")
+def command_frontier_preregister(args: argparse.Namespace) -> int:
+    """Freeze one exact paid frontier-model cell before model outcomes exist."""
+    if not args.confirm_private_response_retention:
+        raise ValueError("preregistration_response_retention_unconfirmed")
+    if not args.confirm_provider_account_spend_limit:
+        raise ValueError("preregistration_account_limit_unconfirmed")
     root = args.root.resolve()
-    output = (root / "results" / "local" / run_id).resolve()
-    expected_parent = (root / "results" / "local").resolve()
-    if output.parent != expected_parent:
-        raise ValueError("live_output_boundary_invalid")
-    if output.exists():
-        raise ValueError("live_result_edition_exists")
-    scenarios = load_frontier_scenarios(root / "fixtures")
-    selected_ids = args.scenario or [row.scenario_id for row in scenarios]
-    by_id = {row.scenario_id: row for row in scenarios}
-    if len(selected_ids) != len(set(selected_ids)):
-        raise ValueError("live_scenario_set_duplicate")
-    missing = sorted(set(selected_ids) - set(by_id))
-    if missing:
-        raise ValueError("live_scenario_unknown:" + ",".join(missing))
-    if len(selected_ids) > 20:
-        raise ValueError("live_episode_count_out_of_bounds")
+    scenario_ids = args.scenario or [
+        row.scenario_id for row in load_frontier_scenarios(root / "fixtures")
+    ]
     policy = SpendPolicy(
         max_requests=args.max_provider_requests,
         max_output_tokens_per_request=args.max_output_tokens,
@@ -403,14 +410,68 @@ def command_frontier_live_panel(args: argparse.Namespace) -> int:
         input_usd_per_million_tokens=args.input_usd_per_million,
         output_usd_per_million_tokens=args.output_usd_per_million,
     )
+    registration = build_frontier_preregistration(
+        root,
+        run_id=args.run_id,
+        created_at=args.created_at,
+        git_sha=clean_git_sha(root),
+        provider=args.provider,
+        requested_model=args.model,
+        scenario_ids=scenario_ids,
+        max_model_turns=args.max_model_turns,
+        max_acts=args.max_acts,
+        timeout_seconds=args.timeout_seconds,
+        spend_policy=policy,
+        temperature=args.temperature,
+        price_source_url=args.price_source_url,
+        price_checked_at=args.price_checked_at,
+        retention_terms_url=args.retention_terms_url,
+        retention_checked_at=args.retention_checked_at,
+        derived_publication_posture=args.derived_publication_posture,
+    )
+    path = write_frontier_preregistration(root, registration)
+    print(
+        f"wrote frontier preregistration {registration['run_id']}: "
+        f"sha256={registration['preregistration_sha256']}; "
+        f"path={path.relative_to(root)}"
+    )
+    return 0
+
+
+def command_frontier_live_panel(args: argparse.Namespace) -> int:
+    """Run exactly five independent requests for every selected candidate task."""
+    if not args.confirm_live_spend:
+        raise ValueError("live_spend_confirmation_required")
+    root = args.root.resolve()
+    registration = load_frontier_preregistration(root, args.preregistration)
+    run_id = registration["run_id"]
+    cell = registration["cell"]
+    execution = registration["execution"]
+    output = (root / "results" / "local" / run_id).resolve()
+    expected_parent = (root / "results" / "local").resolve()
+    if output.parent != expected_parent:
+        raise ValueError("live_output_boundary_invalid")
+    if output.exists():
+        raise ValueError("live_result_edition_exists")
+    scenarios = load_frontier_scenarios(root / "fixtures")
+    selected_ids = registration["frontier"]["scenario_ids"]
+    by_id = {row.scenario_id: row for row in scenarios}
+    if len(selected_ids) != len(set(selected_ids)):
+        raise ValueError("live_scenario_set_duplicate")
+    missing = sorted(set(selected_ids) - set(by_id))
+    if missing:
+        raise ValueError("live_scenario_unknown:" + ",".join(missing))
+    if len(selected_ids) > 20:
+        raise ValueError("live_episode_count_out_of_bounds")
+    policy = SpendPolicy(**registration["spend_policy"])
     private_dir = output / "private-provider-responses"
     backend = CappedProviderBackend(
-        args.provider,
-        args.model,
+        cell["provider"],
+        cell["requested_model"],
         policy,
-        timeout_seconds=args.timeout_seconds,
+        timeout_seconds=execution["timeout_seconds"],
         response_sink=_private_response_sink(private_dir),
-        temperature=args.temperature,
+        temperature=cell["temperature"],
     )
     receipts: list[dict[str, Any]] = []
     for scenario_id in selected_ids:
@@ -420,16 +481,17 @@ def command_frontier_live_panel(args: argparse.Namespace) -> int:
                     by_id[scenario_id],
                     backend,
                     attempt_id=attempt_id,
-                    max_model_turns=args.max_model_turns,
-                    max_acts=args.max_acts,
+                    max_model_turns=execution["max_model_turns"],
+                    max_acts=execution["max_acts"],
                 )
             )
     analysis = analyze_five_attempt_panel(receipts)
     panel_body = {
         "schema": "gradia-frontier-live-model-panel.v1",
         "run_id": run_id,
-        "provider": args.provider,
-        "model": args.model,
+        "preregistration_sha256": registration["preregistration_sha256"],
+        "provider": cell["provider"],
+        "model": cell["requested_model"],
         "adapter_version": backend.adapter_version,
         "scaffold": FRONTIER_SCAFFOLD_VERSION,
         "scenario_ids": selected_ids,
@@ -439,8 +501,16 @@ def command_frontier_live_panel(args: argparse.Namespace) -> int:
         "sampling_policy_sha256": backend.sampling_policy_sha256,
         "spend_policy": policy.as_dict(),
         "spend_policy_sha256": backend.policy_sha256,
+        "price_evidence": registration["price_evidence"],
+        "rights": registration["rights"],
         "estimated_cost_usd": backend.estimated_cost_usd,
+        "conservative_reserved_cost_usd": backend.reserved_cost_usd,
+        "conservative_reserved_output_tokens": backend.reserved_output_tokens,
         "cost_is_user_supplied_price_estimate_not_invoice": True,
+        "operator_controls": {
+            **registration["operator_controls"],
+            "live_spend_confirmed_at_execution": True,
+        },
         "analysis": analysis,
         "receipt_sha256s": [row["receipt_sha256"] for row in receipts],
     }
@@ -456,6 +526,7 @@ def command_frontier_live_panel(args: argparse.Namespace) -> int:
         f"wrote local frontier panel {run_id}: "
         f"{analysis['successes']}/{analysis['eligible_attempts']} eligible passes; "
         f"estimated_cost_usd={backend.estimated_cost_usd:.6f}; "
+        f"reserved_cost_usd={backend.reserved_cost_usd:.6f}; "
         f"panel_sha256={panel['panel_sha256']}"
     )
     return 0
@@ -525,27 +596,47 @@ def parser() -> argparse.ArgumentParser:
     live.add_argument("--temperature", type=float)
     live.add_argument("--timeout-seconds", type=float, default=60.0)
     live.add_argument("--confirm-live-spend", action="store_true")
+    live.add_argument("--confirm-private-response-retention", action="store_true")
+    live.add_argument("--confirm-provider-account-spend-limit", action="store_true")
     live.set_defaults(func=command_live_panel)
-    frontier_live = sub.add_parser(
-        "frontier-live-panel",
-        help="run one capped provider/model through five attempts per candidate task",
+    preregister = sub.add_parser(
+        "frontier-preregister",
+        help="freeze one clean-tree, price-capped frontier-model cell",
     )
-    frontier_live.add_argument("--run-id", required=True)
-    frontier_live.add_argument(
+    preregister.add_argument("--run-id", required=True)
+    preregister.add_argument("--created-at", required=True)
+    preregister.add_argument(
         "--provider", choices=("openai", "anthropic", "xai", "gemini"), required=True
     )
-    frontier_live.add_argument("--model", required=True)
-    frontier_live.add_argument("--scenario", action="append")
-    frontier_live.add_argument("--max-model-turns", type=int, default=32)
-    frontier_live.add_argument("--max-acts", type=int, default=28)
-    frontier_live.add_argument("--max-provider-requests", type=int, required=True)
-    frontier_live.add_argument("--max-output-tokens", type=int, required=True)
-    frontier_live.add_argument("--max-total-output-tokens", type=int, required=True)
-    frontier_live.add_argument("--max-cost-usd", type=float, required=True)
-    frontier_live.add_argument("--input-usd-per-million", type=float, required=True)
-    frontier_live.add_argument("--output-usd-per-million", type=float, required=True)
-    frontier_live.add_argument("--temperature", type=float)
-    frontier_live.add_argument("--timeout-seconds", type=float, default=60.0)
+    preregister.add_argument("--model", required=True)
+    preregister.add_argument("--scenario", action="append")
+    preregister.add_argument("--max-model-turns", type=int, default=32)
+    preregister.add_argument("--max-acts", type=int, default=28)
+    preregister.add_argument("--max-provider-requests", type=int, required=True)
+    preregister.add_argument("--max-output-tokens", type=int, required=True)
+    preregister.add_argument("--max-total-output-tokens", type=int, required=True)
+    preregister.add_argument("--max-cost-usd", type=float, required=True)
+    preregister.add_argument("--input-usd-per-million", type=float, required=True)
+    preregister.add_argument("--output-usd-per-million", type=float, required=True)
+    preregister.add_argument("--temperature", type=float)
+    preregister.add_argument("--timeout-seconds", type=float, default=60.0)
+    preregister.add_argument("--price-source-url", required=True)
+    preregister.add_argument("--price-checked-at", required=True)
+    preregister.add_argument("--retention-terms-url", required=True)
+    preregister.add_argument("--retention-checked-at", required=True)
+    preregister.add_argument(
+        "--derived-publication-posture",
+        choices=("unknown", "not_permitted", "derived_only_permitted"),
+        required=True,
+    )
+    preregister.add_argument("--confirm-private-response-retention", action="store_true")
+    preregister.add_argument("--confirm-provider-account-spend-limit", action="store_true")
+    preregister.set_defaults(func=command_frontier_preregister)
+    frontier_live = sub.add_parser(
+        "frontier-live-panel",
+        help="run one preregistered provider/model cell through five attempts per task",
+    )
+    frontier_live.add_argument("--preregistration", type=Path, required=True)
     frontier_live.add_argument("--confirm-live-spend", action="store_true")
     frontier_live.set_defaults(func=command_frontier_live_panel)
     return cli

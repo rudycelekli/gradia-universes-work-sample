@@ -7,7 +7,13 @@ control conditions and a separate five-task frontier-candidate queue suite.
 The queue suite has four fictional cases and six synthetic source types. Names,
 identifiers, financial values, policies and event stories were authored for
 this repository. They are not derived from a lender, applicant, credit bureau
-or customer system.
+or external organization system.
+
+The repository also contains a **PRE-RESULTS** axis corpus: five frozen
+interruption-phase candidate/control pairs and five frozen authority-ladder
+candidate/control pairs. Every pair shares a fixture seed and exact initial
+synthetic world. The treatment exposes its full occurrence witness. These are
+generated candidate artifacts, not live-model outputs.
 
 ## Intended use
 
@@ -15,7 +21,9 @@ or customer system.
 - test whether an agent adapts to additions, revisions and retractions;
 - test authority handling and stale-context failures;
 - inspect exact denominators and tamper-evident receipts; and
-- test coupled queue decisions, shared capacity and pass@5 reliability; and
+- test coupled queue decisions and shared capacity;
+- inspect reproducible phase-response and authority candidate pairs without
+  treating fixture seeds as model sampling evidence;
 - exercise Gradia's public API contract from an external client.
 
 ## Prohibited interpretation
@@ -26,6 +34,10 @@ estimate model performance in a real institution or population. Frontier
 difficulty remains unmeasured until frozen live panels and human calibration
 pass. No fairness, safety or production-readiness conclusion may be drawn from
 these synthetic tasks.
+
+The axis corpus proves only construction, seed pairing, exact witness exposure,
+and isolated mutation detection. It does not estimate frontier difficulty,
+phase effects, authority effects, real-world validity, or research novelty.
 
 ## Rights
 

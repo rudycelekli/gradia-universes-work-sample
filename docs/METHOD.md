@@ -23,6 +23,12 @@ milestone, causal-proxy and full-witness projections. This is projection
 sensitivity—not a blinded detector result—and cannot fill the paper's locked
 confirmatory result table.
 
+A second engineering preflight freezes two future behavioral axes: interruption
+phase-response and source authority. It contains five synthetic candidate/control
+pairs per axis, generated from shared definitions, with the exact visible
+projection and occurrence witness exposed. These are **PRE-RESULTS** artifacts,
+not model episodes or evidence of difficulty, factor effects, or novelty.
+
 ## Research boundary and prior art
 
 Gradia does not claim to invent dynamic agent environments or interruptions.
@@ -101,6 +107,66 @@ five editions must change their answer; the static control must not. That is a
 solvability and answer-sensitivity admission, not evidence that a frontier
 model will find the task hard.
 
+## PRE-RESULTS phase-response and authority axes
+
+The two axes are defined once in `fixtures/axes/definitions.json` and generated
+by `gradia-axis-candidate-generator.v1`. Five frozen seeds are reused across the
+axes. Within every case, control and treatment have the same seed and identical
+initial synthetic world; the treatment changes only the declared factor. A seed
+is therefore a fixture identity for pairing, not a claim about model-provider
+sampling behavior.
+
+### Interruption phase-response sweep
+
+The treatment is one fixed root-owned policy revision over one fixed synthetic
+base world. Its event identity, source, message, patch, revised value, and
+expected safe response remain constant. Only the declared boundary changes:
+
+| Phase | Boundary action |
+|---|---|
+| after intake | `intake.acknowledge` |
+| after evidence read | `source.read` |
+| after metric calculation | `metrics.calculate` |
+| after provisional decision | `decision.draft` |
+| before submission | `decision.pre_submit_check` |
+
+Each matching control contains no interruption and retains the same seed and
+initial world. This design is intended for a later within-seed estimate of how
+response changes with interruption timing. The current corpus does not contain
+agent responses, so no timing effect is estimated.
+
+### Authority ladder
+
+The synthetic base world and interruption boundary are fixed after metric
+calculation. Five source classes vary from a root-owned binding source through a declared delegated
+verification channel, an authenticated human outside policy scope, unverified
+internal chat, and an unsupported external instruction. The expected response
+contract distinguishes direct root-owned application, verification against the
+root, scope-conflict escalation, ignoring an unverified instruction, and
+explicit rejection. Only the root-owned binding revision changes material
+state. This is a frozen hypothesis about safe response semantics, not empirical
+evidence about how a model or human will interpret authority.
+
+### Exact witness and preflight checks
+
+Every treatment exposes its complete synthetic initial and terminal worlds,
+material roots, manipulated dimension, event digest, boundary phase/index/action,
+visible projection and digest, previous link, and occurrence digest. Controls
+expose their matching initial world and an empty occurrence list. The committed
+validator regenerates all ten pairs and runs ten one-defect probes per case:
+frozen-identity mismatch, seed-pair mismatch, shared-initial-world mismatch,
+axis-manipulation mismatch, projection-digest mismatch, occurrence-digest
+mismatch, terminal-state mismatch, response-contract mismatch, arm-digest
+mismatch, and case-digest mismatch. All 100 probes must fail exactly one
+intended criterion.
+
+Passing that gate establishes reproducible construction and criterion
+isolation only. Before either axis can support a behavioral claim, the study
+must freeze model/scaffold/provider/sampling/budget identities, execute paired
+episodes, exclude environment failures from agent denominators, complete
+blinded two-reviewer calibration, report within-seed contrasts with uncertainty,
+and repeat across runtimes before claiming portability.
+
 ## Reference policies
 
 - `interrupt_safe` rereads authoritative sources after any declared notice.
@@ -141,6 +207,11 @@ This executable sensitivity check is necessary but not sufficient. It does not
 establish that the synthetic policy is a valid real-world policy, that humans
 agree with each criterion, or that a model failure reflects inherent model
 capability rather than the frozen scaffold.
+
+The axis-candidate validation is even narrower: its `PRE-RESULTS` report counts
+frozen pairs, exposed witnesses, and isolated synthetic mutations. Those counts
+must never be presented as frontier-model difficulty, phase or authority
+effects, or evidence of research novelty.
 
 ## Mutation study required for a paper claim
 
@@ -187,9 +258,10 @@ episodes, exact-origin localization, replay determinism and verification cost.
 
 ## Live-model panel gate
 
-The model panel must be version-pinned and budget-capped. At minimum it should
+The model panel must be identity-bound and budget-capped. At minimum it should
 cross two model families, two scaffolds where technically meaningful, all five
-conditions and five independent attempts. Every cell stores provider/model pin,
+conditions and five independent attempts. Every cell stores requested and
+provider-resolved model identities,
 sampling parameters, scaffold digest, prompt digest, tool/action ledger,
 stop reason, environment status and receipt. The preregistration must freeze
 the panel and exclusion rules before outcomes are inspected.
@@ -232,7 +304,7 @@ resolved in a new edition.
 - Successful local restore does not establish provider parity.
 - Evidence integrity can detect a bad episode without proving the agent's
   internal causal reasoning.
-- Passing the synthetic universe does not imply production or customer safety.
+- Passing the synthetic universe does not imply production or deployed-system safety.
 
 ## Reproducibility contract
 

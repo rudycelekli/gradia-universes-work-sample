@@ -34,7 +34,7 @@ It does not claim an authenticated end-to-end run.
 ## Authenticated synthetic workflow
 
 The release harness will drive these stages against a dedicated synthetic
-project—not a customer project:
+project—not an external organization deployment:
 
 1. create/freeze the spec and environment through Gradia's ordinary factory;
 2. attach the one synthetic task and five canonical scenario editions;

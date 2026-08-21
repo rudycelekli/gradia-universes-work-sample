@@ -9,8 +9,8 @@ simple question with surprisingly hard systems consequences:
 
 Five underwriting episodes exercise a static control, evidence addition,
 policy revision, evidence retraction across snapshot/restore, and an
-unauthorized chat instruction. The committed reference panel contains 15 real,
-deterministically replayed harness episodes. It is deliberately small enough
+unauthorized chat instruction. The committed reference panel contains 15
+deterministically replayed synthetic scripted-policy episodes. It is deliberately small enough
 for a researcher to audit end to end.
 
 A separate five-task **frontier-candidate suite** increases the workload to a
@@ -19,7 +19,16 @@ capacity, staged supersession and retraction, cutoff events, and restore. Its
 committed admissions prove deterministic solvability and judge sensitivity;
 they do not yet prove empirical difficulty.
 
-This is **not** Gradia's private product repository and contains no customer
+Two additional **PRE-RESULTS experimental axes** freeze five synthetic,
+seed-paired candidate/control cases each. The phase-response axis moves one
+identical authoritative revision over one fixed base world across five workflow
+boundaries. The authority ladder holds that base world and boundary fixed while
+varying five declared source classes.
+Their committed artifacts expose the complete witness and pass deterministic
+mutation-isolation checks; no model has run on them and they make no difficulty
+or novelty claim.
+
+This is **not** Gradia's internal product codebase and contains no external-organization
 material. It is a public work sample, synthetic benchmark fixture and external
 conformance client for Gradia's authenticated API.
 
@@ -27,7 +36,7 @@ conformance client for Gradia's authenticated API.
 
 The publication-style pre-results manuscript is
 [Interruptible Universes: Evolution Witnesses for Verifiable World Change in Agent Benchmarks](paper/INTERRUPTIBLE-UNIVERSES-PAPER-DRAFT.md).
-[Open the rendered 23-page PDF](output/pdf/INTERRUPTIBLE-UNIVERSES-PRE-RESULTS-DRAFT.pdf)
+[Open the rendered PDF](output/pdf/INTERRUPTIBLE-UNIVERSES-PRE-RESULTS-DRAFT.pdf)
 for the publication layout.
 It formalizes the evidence object, reports the exact scripted-control harness
 checks, compares the narrow hypothesis to the closest research, and locks the
@@ -44,6 +53,7 @@ python3 -m venv .venv
 .venv/bin/pip install -e '.[dev]'
 .venv/bin/gradia-universe verify
 .venv/bin/gradia-universe frontier-verify
+.venv/bin/python -m gradia_universes.axis_candidates verify
 ```
 
 Expected terminal line:
@@ -82,6 +92,23 @@ resource-specific post-change rechecks, undeclared authority and malformed
 output to fail the intended criterion. The committed judge-validation digest
 is `fdeea4ae15c00a0f225f48a4bde7c42e261be648dd7d7cea2ec100c64935653e`.
 This validates executable grading behavior, not human or domain agreement.
+
+The axis verifier independently regenerates ten PRE-RESULTS candidates—five
+per axis—plus ten seed-paired controls, ten exact witnesses and 100 isolated
+mutation probes:
+
+```bash
+.venv/bin/python -m gradia_universes.axis_candidates verify
+```
+
+The frozen [candidate corpus](fixtures/axes/frozen-candidates.json) includes the
+full synthetic initial and terminal worlds, manipulated dimension, visible
+projection, action boundary and occurrence digest. The generated
+[engineering report](results/reference/axis-candidates/REPORT.md) records only
+artifact-generation and mutation-isolation facts. Fixture seeds identify paired
+synthetic cases; they are not evidence that a model provider honored a sampling
+seed. Live-model, difficulty, phase-effect, authority-effect and novelty results
+remain `NOT_YET_RUN` or unclaimed.
 
 ## The evidence chain
 
@@ -192,15 +219,26 @@ preregistered live-model and blinded-human study in
 [the method](docs/METHOD.md), with raw provider responses and reviewer receipts
 released only when rights allow.
 
+The phase-response and authority-ladder corpus is also pre-results. Its ten
+candidate/control pairs and 100 probes prove that the proposed factors, pairing
+identities and exact witnesses are reproducibly encoded—not that either factor
+changes model behavior.
+
 ## Run a live model only under an explicit cap
 
 The same scaffold has key-from-environment adapters for OpenAI, Anthropic, xAI
-and Gemini. Nothing runs from a default model alias or an implicit budget. A
+and Gemini. Nothing runs from a `latest` alias or an implicit budget. A
 live cell requires an exact model id, current prices supplied by the operator,
 request/output/cost ceilings and `--confirm-live-spend`. Exact provider response
 bytes are retained with local-only permissions under the ignored result
 edition; credentials are never accepted on the command line or written to a
 receipt.
+
+Receipts preserve both the requested and provider-resolved model identity and
+refuse the cell when those identities differ. Gemini reasoning-token usage is
+included in the local output-cost estimate. Where an API exposes a per-request
+storage or logging control, the adapter sends `store: false`; that preference
+does not itself establish zero-data-retention status or override account terms.
 
 Provider names identify compatible API surfaces only; they do not imply
 affiliation, sponsorship, endorsement or authorship.
@@ -222,14 +260,21 @@ sent through chat; model ids, prices and the hard budget are non-secret inputs.
 The frontier command runs exactly five independent provider requests per task
 and records both any-pass@5 (observed capability coverage) and all-pass@5
 (observed reliability). Attempt ids are not represented as random seeds.
+`frontier-preregister` writes the manifest; an operator must review it and make
+a public manifest-only commit before the paid command will accept it. The paid
+command derives its complete cell from that manifest rather than accepting
+outcome-changing flags at execution time. Git ancestry proves repository
+ordering and changed-file scope; it cannot prove that no earlier private run or
+outcome inspection occurred, so that remains an explicit operating attestation.
 
 ## Repository map
 
 ```text
 fixtures/scenarios/         five canonical synthetic scenario editions
 fixtures/frontier/          five coupled frontier-candidate task editions
+fixtures/axes/              shared definitions and ten frozen paired candidates
 src/gradia_universes/       standalone public world, runner, judge and verifier
-results/reference/          replayable controls, admissions and judge probes
+results/reference/          replayable controls, admissions, probes and axis preflight
 release/                    deterministic Public Universe release candidate
 paper/                      manuscript, generated figures and PDF build recipe
 tests/                      adversarial integrity and behavioral tests
@@ -250,6 +295,7 @@ ruff check src tests
 mypy --strict src tests
 gradia-universe verify
 gradia-universe frontier-verify
+python -m gradia_universes.axis_candidates verify
 gradia-universe verify-public
 ```
 

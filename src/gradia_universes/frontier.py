@@ -24,6 +24,7 @@ Outcome = Literal["APPROVE", "APPROVE_EXCEPTION", "ESCALATE", "DENY"]
 
 FRONTIER_SCAFFOLD_VERSION = "gradia-frontier-json-action-scaffold.v1"
 FRONTIER_JUDGE_VERSION = "gradia-frontier-queue-deterministic-judge.v2"
+FRONTIER_ANALYSIS_VERSION = "gradia-frontier-five-attempt-analysis.v1"
 FRONTIER_SCHEMA = "gradia-frontier-universe-scenario.v1"
 
 FRONTIER_TOOLS: dict[str, set[str]] = {
@@ -801,6 +802,7 @@ def run_frontier_live_episode(
             "prompt_sha256": digest(prompt),
             "provider": completion.provider,
             "model": completion.model,
+            "resolved_model": completion.resolved_model,
             "adapter_version": completion.adapter_version,
             "response_id": completion.response_id,
             "output_text": completion.output_text,
@@ -811,6 +813,7 @@ def run_frontier_live_episode(
             "estimated_cost_usd": completion.estimated_cost_usd,
             "cumulative_estimated_cost_usd": completion.cumulative_estimated_cost_usd,
             "budget_policy_sha256": completion.budget_policy_sha256,
+            "cumulative_reserved_cost_usd": completion.cumulative_reserved_cost_usd,
         })
         transcript.append(
             {
@@ -1259,7 +1262,7 @@ def analyze_five_attempt_panel(receipts: list[dict[str, Any]]) -> dict[str, Any]
     successes = sum(bool(row["verdict"]["passed"]) for row in all_eligible)
     complete_tasks = [row for row in task_rows if row["eligible_attempts"] == 5]
     body = {
-        "schema": "gradia-frontier-five-attempt-analysis.v1",
+        "schema": FRONTIER_ANALYSIS_VERSION,
         "estimand_boundary": (
             "Attempt ids denote repeated provider requests, not provider random seeds. "
             "Any-pass@5 measures observed capability coverage; all-pass@5 measures "

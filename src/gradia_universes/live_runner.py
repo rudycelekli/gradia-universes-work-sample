@@ -43,6 +43,8 @@ class Completion:
     estimated_cost_usd: float | None = None
     cumulative_estimated_cost_usd: float | None = None
     budget_policy_sha256: str | None = None
+    resolved_model: str | None = None
+    cumulative_reserved_cost_usd: float | None = None
 
 
 class CompletionBackendStop(RuntimeError):
@@ -185,6 +187,7 @@ def run_live_episode(
                 "prompt_sha256": digest(prompt),
                 "provider": completion.provider,
                 "model": completion.model,
+                "resolved_model": completion.resolved_model,
                 "adapter_version": completion.adapter_version,
                 "response_id": completion.response_id,
                 "output_text": completion.output_text,
@@ -195,6 +198,7 @@ def run_live_episode(
                 "estimated_cost_usd": completion.estimated_cost_usd,
                 "cumulative_estimated_cost_usd": completion.cumulative_estimated_cost_usd,
                 "budget_policy_sha256": completion.budget_policy_sha256,
+                "cumulative_reserved_cost_usd": completion.cumulative_reserved_cost_usd,
             }
         )
         transcript.append(

@@ -9,7 +9,7 @@ from typing import Any
 from .canonical import canonical_bytes, digest, load_json, write_canonical
 from .runner import load_scenarios, run_panel
 
-BUNDLE_SCHEMA = "public-universe-bundle.v1"
+BUNDLE_SCHEMA = "public-universe-bundle.v2"
 FEATURED_SCENARIO = "policy-revision"
 FEATURED_POLICY = "stale_context"
 
@@ -63,8 +63,7 @@ def build_public_bundle(root: Path) -> dict[str, Any]:
         },
         "provenance": {
             "synthetic": True,
-            "customer_material": False,
-            "premier_lending_material": False,
+            "external_organization_material": False,
             "source_repository": "gradia-universes-work-sample",
             "license": "Apache-2.0",
         },
@@ -78,7 +77,7 @@ def build_public_bundle(root: Path) -> dict[str, Any]:
             "scripted_harness_validation": "measured",
             "live_model_performance": "not_measured",
             "human_judge_agreement": "not_measured",
-            "customer_validity": "not_measured",
+            "field_validity": "not_measured",
             "downstream_training_lift": "not_measured",
         },
         "featured_receipt_sha256": featured["receipt_sha256"],
@@ -101,8 +100,10 @@ def build_public_bundle(root: Path) -> dict[str, Any]:
                 "reason": "credentials never enter evidence or release artifacts",
             },
             {
-                "field": "customer_facts",
-                "reason": "the fixture is synthetic and carries no customer material",
+                "field": "external_organization_facts",
+                "reason": (
+                    "the fixture is synthetic and carries no organization-specific material"
+                ),
             },
         ],
         "limitations": [
@@ -116,7 +117,7 @@ def build_public_bundle(root: Path) -> dict[str, Any]:
                 "sensing."
             ),
             (
-                "No human agreement, live model panel, customer validity or training lift is "
+                "No human agreement, live model panel, field validity or training lift is "
                 "measured."
             ),
         ],

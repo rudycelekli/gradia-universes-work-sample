@@ -1,4 +1,4 @@
-.PHONY: setup test reproduce verify study-a frontier public-boundary all
+.PHONY: setup test reproduce verify study-a frontier axes public-boundary all
 
 setup:
 	python3 -m venv .venv
@@ -16,12 +16,16 @@ verify:
 	.venv/bin/gradia-universe verify
 	.venv/bin/gradia-universe study-a-verify
 	.venv/bin/gradia-universe frontier-verify
+	.venv/bin/python -m gradia_universes.axis_candidates verify
 
 study-a:
 	.venv/bin/gradia-universe study-a-build
 
 frontier:
 	.venv/bin/gradia-universe frontier-build
+
+axes:
+	.venv/bin/python -m gradia_universes.axis_candidates build
 
 public-boundary:
 	.venv/bin/gradia-universe verify-public

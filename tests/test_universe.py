@@ -8,6 +8,12 @@ from typing import Any
 
 import pytest
 
+from gradia_universes.axis_candidates import (
+    build_axis_validation,
+    generate_axis_candidates,
+    render_axis_validation,
+    verify_axis_artifacts,
+)
 from gradia_universes.canonical import canonical_bytes, digest, load_json
 from gradia_universes.cli import _verify_release_text_boundary
 from gradia_universes.contracts import Scenario
@@ -24,8 +30,22 @@ from gradia_universes.frontier import (
 )
 from gradia_universes.gradia_client import REQUIRED_PATHS, GradiaClient, Response
 from gradia_universes.human_review import CRITERIA, agreement, build_packet
-from gradia_universes.live_runner import Completion, run_live_episode
-from gradia_universes.providers import CappedProviderBackend, ProviderName, SpendPolicy
+from gradia_universes.live_runner import (
+    BudgetStop,
+    Completion,
+    ProviderFailure,
+    run_live_episode,
+)
+from gradia_universes.preregistration import (
+    build_frontier_preregistration,
+    verify_frontier_preregistration,
+)
+from gradia_universes.providers import (
+    MAX_PROMPT_BYTES,
+    CappedProviderBackend,
+    ProviderName,
+    SpendPolicy,
+)
 from gradia_universes.public_bundle import build_public_bundle, verify_public_bundle
 from gradia_universes.runner import AGENTS, load_scenarios, run_episode, run_panel
 from gradia_universes.study_a import build_study_a, render_study_a
@@ -428,6 +448,137 @@ def test_five_attempt_analysis_separates_coverage_from_reliability() -> None:
     assert by_id["inconsistent"]["all_pass_at_5"] is False
 
 
+def test_two_pre_results_axes_each_freeze_five_seed_paired_candidates() -> None:
+    corpus = generate_axis_candidates(ROOT / "fixtures" / "axes" / "definitions.json")
+    assert corpus["status"] == "PRE-RESULTS"
+    assert corpus["exact_witness_exposure"] is True
+    assert corpus["seed_pairing"] == {
+        "case_seeds": [1103, 1217, 1429, 1699, 1877],
+        "control_and_treatment_share_seed": True,
+        "control_and_treatment_share_initial_world": True,
+        "seed_is_fixture_generation_identity_not_model_sampling_evidence": True,
+    }
+    assert [axis["axis_id"] for axis in corpus["axes"]] == [
+        "interruption_phase_response",
+        "authority_ladder",
+    ]
+    assert [axis["case_count"] for axis in corpus["axes"]] == [5, 5]
+    for axis in corpus["axes"]:
+        for case in axis["cases"]:
+            assert case["synthetic"] is True
+            assert case["control"]["seed"] == case["treatment"]["seed"] == case["seed"]
+            assert (
+                case["control"]["initial_world_root"]
+                == case["treatment"]["initial_world_root"]
+                == case["pairing_witness"]["paired_initial_world_sha256"]
+            )
+            assert case["control"]["exact_witness"] == []
+            assert len(case["treatment"]["exact_witness"]) == 1
+
+
+def test_axis_sweeps_cover_each_declared_phase_and_authority_rung_exactly_once() -> None:
+    corpus = generate_axis_candidates(ROOT / "fixtures" / "axes" / "definitions.json")
+    phase_cases = corpus["axes"][0]["cases"]
+    authority_cases = corpus["axes"][1]["cases"]
+    assert [row["manipulated_dimension"]["boundary_index"] for row in phase_cases] == [
+        1,
+        2,
+        3,
+        4,
+        5,
+    ]
+    assert [row["manipulated_dimension"]["rung"] for row in authority_cases] == [
+        1,
+        2,
+        3,
+        4,
+        5,
+    ]
+    assert [row["manipulated_dimension"]["material_effect"] for row in authority_cases] == [
+        True,
+        False,
+        False,
+        False,
+        False,
+    ]
+    assert len(
+        {row["treatment"]["initial_world_root"] for row in phase_cases}
+    ) == 1
+    assert len(
+        {
+            row["treatment"]["exact_witness"][0]["event_sha256"]
+            for row in phase_cases
+        }
+    ) == 1
+    assert len(
+        {row["treatment"]["initial_world_root"] for row in authority_cases}
+    ) == 1
+    assert len(
+        {
+            (
+                row["treatment"]["exact_witness"][0]["boundary_phase"],
+                row["treatment"]["exact_witness"][0]["boundary_index"],
+                row["treatment"]["exact_witness"][0]["boundary_action"],
+            )
+            for row in authority_cases
+        }
+    ) == 1
+
+
+def test_axis_candidate_witnesses_expose_and_bind_projection_boundary_and_roots() -> None:
+    corpus = generate_axis_candidates(ROOT / "fixtures" / "axes" / "definitions.json")
+    for axis in corpus["axes"]:
+        for case in axis["cases"]:
+            witness = case["treatment"]["exact_witness"][0]
+            assert witness["visible_projection_sha256"] == digest(
+                witness["visible_projection"]
+            )
+            occurrence = {
+                key: value
+                for key, value in witness.items()
+                if key not in {"visible_projection", "occurrence_sha256"}
+            }
+            assert witness["occurrence_sha256"] == digest(occurrence)
+            assert witness["before_world_root"] == case["treatment"]["initial_world_root"]
+            assert witness["after_world_root"] == case["treatment"]["terminal_world_root"]
+
+
+def test_axis_validation_is_pre_results_and_every_mutation_is_isolated() -> None:
+    expected = generate_axis_candidates(ROOT / "fixtures" / "axes" / "definitions.json")
+    report = build_axis_validation(expected, expected)
+    assert report["status"] == "PRE-RESULTS"
+    assert report["live_study_status"] == "NOT_YET_RUN"
+    assert report["frozen_case_count"] == 10
+    assert report["seed_paired_control_count"] == 10
+    assert report["exact_witness_count"] == 10
+    assert report["mutation_probe_count"] == 100
+    assert report["positive_controls_passed"] is True
+    assert report["isolated_detection_passed"] is True
+    assert "no live-model performance" in report["claim_boundary"]
+    assert "frontier difficulty" in report["claim_boundary"]
+    assert "research novelty" in report["claim_boundary"]
+    public_axis_text = json.dumps(
+        {"corpus": expected, "report": report}, sort_keys=True
+    ).lower()
+    assert "named-company" not in public_axis_text
+
+
+def test_axis_candidates_and_validation_are_exact_replays() -> None:
+    corpus, report = verify_axis_artifacts(ROOT)
+    stored_corpus = json.loads(
+        (ROOT / "fixtures" / "axes" / "frozen-candidates.json").read_bytes()
+    )
+    stored_report = json.loads(
+        (ROOT / "results" / "reference" / "axis-candidates" / "validation.json").read_bytes()
+    )
+    stored_markdown = (
+        ROOT / "results" / "reference" / "axis-candidates" / "REPORT.md"
+    ).read_text(encoding="utf-8")
+    assert canonical_bytes(corpus) == canonical_bytes(stored_corpus)
+    assert canonical_bytes(report) == canonical_bytes(stored_report)
+    assert render_axis_validation(report) == stored_markdown
+
+
 def _spend_policy(*, max_requests: int = 8) -> SpendPolicy:
     return SpendPolicy(
         max_requests=max_requests,
@@ -446,6 +597,7 @@ def _spend_policy(*, max_requests: int = 8) -> SpendPolicy:
             "openai",
             {
                 "id": "resp-openai",
+                "model": "pinned-model",
                 "output": [{"content": [{"type": "output_text", "text": "{}"}]}],
                 "usage": {"input_tokens": 4, "output_tokens": 2},
             },
@@ -456,6 +608,7 @@ def _spend_policy(*, max_requests: int = 8) -> SpendPolicy:
             "xai",
             {
                 "id": "resp-xai",
+                "model": "pinned-model",
                 "output": [{"content": [{"type": "output_text", "text": "{}"}]}],
                 "usage": {"input_tokens": 4, "output_tokens": 2},
             },
@@ -466,6 +619,7 @@ def _spend_policy(*, max_requests: int = 8) -> SpendPolicy:
             "anthropic",
             {
                 "id": "msg-anthropic",
+                "model": "pinned-model",
                 "content": [{"type": "text", "text": "{}"}],
                 "usage": {"input_tokens": 4, "output_tokens": 2},
             },
@@ -476,8 +630,14 @@ def _spend_policy(*, max_requests: int = 8) -> SpendPolicy:
             "gemini",
             {
                 "responseId": "gemini-response",
+                "modelVersion": "pinned-model",
                 "candidates": [{"content": {"parts": [{"text": "{}"}]}}],
-                "usageMetadata": {"promptTokenCount": 4, "candidatesTokenCount": 2},
+                "usageMetadata": {
+                    "promptTokenCount": 4,
+                    "candidatesTokenCount": 2,
+                    "thoughtsTokenCount": 3,
+                    "totalTokenCount": 9,
+                },
             },
             "https://generativelanguage.googleapis.com/v1beta/models/pinned-model:generateContent",
             "x-goog-api-key",
@@ -515,16 +675,27 @@ def test_provider_adapters_pin_contracts_and_never_put_keys_in_receipts(
     completion = backend.complete("one prompt")
     assert completion.output_text == "{}"
     assert completion.input_tokens == 4
-    assert completion.output_tokens == 2
-    assert completion.estimated_cost_usd == pytest.approx(0.000008)
+    expected_output_tokens = 5 if provider == "gemini" else 2
+    assert completion.output_tokens == expected_output_tokens
+    assert completion.estimated_cost_usd == pytest.approx(
+        (4 + (2 * expected_output_tokens)) / 1_000_000
+    )
+    assert completion.resolved_model == "pinned-model"
+    assert completion.cumulative_reserved_cost_usd is not None
+    assert completion.estimated_cost_usd is not None
+    assert completion.cumulative_reserved_cost_usd >= completion.estimated_cost_usd
+    assert backend.reserved_output_tokens == _spend_policy().max_output_tokens_per_request
     assert test_key not in repr(completion)
     assert calls[0][0] == expected_url
     assert calls[0][1][key_header].endswith(test_key)
     if provider != "gemini":
         assert calls[0][2]["model"] == "pinned-model"
         assert calls[0][2]["temperature"] == 0.4
+        if provider in {"openai", "xai"}:
+            assert calls[0][2]["store"] is False
     else:
         assert calls[0][2]["generationConfig"]["temperature"] == 0.4
+        assert "store" not in calls[0][2]
     assert backend.sampling_policy == {
         "temperature": 0.4,
         "temperature_posture": "explicit",
@@ -549,6 +720,7 @@ def test_provider_request_budget_stops_before_network() -> None:
         return 200, json.dumps(
             {
                 "id": f"response-{calls}",
+                "model": "pinned-model",
                 "output": [{"content": [{"type": "output_text", "text": "{}"}]}],
                 "usage": {"input_tokens": 1, "output_tokens": 1},
             }
@@ -565,6 +737,378 @@ def test_provider_request_budget_stops_before_network() -> None:
     with pytest.raises(RuntimeError, match="provider_request_budget_exhausted"):
         backend.complete("second")
     assert calls == 1
+
+
+def test_provider_output_reservation_is_cumulative_before_network() -> None:
+    calls = 0
+
+    def transport(
+        _url: str,
+        _headers: dict[str, str],
+        _payload: dict[str, Any],
+        _timeout_seconds: float,
+    ) -> tuple[int, bytes]:
+        nonlocal calls
+        calls += 1
+        return 200, json.dumps(
+            {
+                "id": f"response-{calls}",
+                "model": "pinned-model",
+                "output": [{"content": [{"type": "output_text", "text": "{}"}]}],
+                "usage": {"input_tokens": 1, "output_tokens": 1},
+            }
+        ).encode()
+
+    policy = SpendPolicy(
+        max_requests=8,
+        max_output_tokens_per_request=256,
+        max_total_output_tokens=256,
+        max_cost_usd=1.0,
+        input_usd_per_million_tokens=1.0,
+        output_usd_per_million_tokens=2.0,
+    )
+    backend = CappedProviderBackend(
+        "openai",
+        "pinned-model",
+        policy,
+        transport=transport,
+        api_key="test-key",
+    )
+    backend.complete("first")
+    with pytest.raises(BudgetStop, match="provider_output_token_budget_exhausted"):
+        backend.complete("second")
+    assert backend.reserved_output_tokens == 256
+    assert calls == 1
+
+
+def test_provider_prompt_size_stops_before_network() -> None:
+    calls = 0
+
+    def transport(
+        _url: str,
+        _headers: dict[str, str],
+        _payload: dict[str, Any],
+        _timeout_seconds: float,
+    ) -> tuple[int, bytes]:
+        nonlocal calls
+        calls += 1
+        return 500, b""
+
+    backend = CappedProviderBackend(
+        "openai",
+        "pinned-model",
+        _spend_policy(),
+        transport=transport,
+        api_key="test-key",
+    )
+    with pytest.raises(BudgetStop, match="provider_prompt_bytes_limit_exhausted"):
+        backend.complete("x" * (MAX_PROMPT_BYTES + 1))
+    assert calls == 0
+    assert backend.reserved_output_tokens == 0
+
+
+def test_provider_refuses_response_without_resolved_model_identity() -> None:
+    def transport(
+        _url: str,
+        _headers: dict[str, str],
+        _payload: dict[str, Any],
+        _timeout_seconds: float,
+    ) -> tuple[int, bytes]:
+        return 200, json.dumps(
+            {
+                "id": "response-without-model",
+                "output": [{"content": [{"type": "output_text", "text": "{}"}]}],
+                "usage": {"input_tokens": 1, "output_tokens": 1},
+            }
+        ).encode()
+
+    backend = CappedProviderBackend(
+        "openai",
+        "requested-model",
+        _spend_policy(),
+        transport=transport,
+        api_key="test-key",
+    )
+    with pytest.raises(ProviderFailure, match="provider_resolved_model_missing"):
+        backend.complete("one prompt")
+    with pytest.raises(ProviderFailure, match="provider_cell_latched_after_failure"):
+        backend.complete("another prompt")
+
+
+def test_provider_refuses_resolved_model_mismatch_and_latches_cell() -> None:
+    calls = 0
+
+    def transport(
+        _url: str,
+        _headers: dict[str, str],
+        _payload: dict[str, Any],
+        _timeout_seconds: float,
+    ) -> tuple[int, bytes]:
+        nonlocal calls
+        calls += 1
+        return 200, json.dumps(
+            {
+                "id": "response-with-wrong-model",
+                "model": "different-model",
+                "output": [{"content": [{"type": "output_text", "text": "{}"}]}],
+                "usage": {"input_tokens": 1, "output_tokens": 1},
+            }
+        ).encode()
+
+    backend = CappedProviderBackend(
+        "openai",
+        "requested-model",
+        _spend_policy(),
+        transport=transport,
+        api_key="test-key",
+    )
+    with pytest.raises(ProviderFailure, match="provider_resolved_model_mismatch"):
+        backend.complete("one prompt")
+    assert backend.estimated_cost_usd > 0
+    with pytest.raises(ProviderFailure, match="provider_cell_latched_after_failure"):
+        backend.complete("another prompt")
+    assert calls == 1
+
+
+def test_gemini_usage_falls_back_to_candidates_plus_thinking_tokens() -> None:
+    def transport(
+        _url: str,
+        _headers: dict[str, str],
+        _payload: dict[str, Any],
+        _timeout_seconds: float,
+    ) -> tuple[int, bytes]:
+        return 200, json.dumps(
+            {
+                "responseId": "gemini-response",
+                "modelVersion": "requested-model",
+                "candidates": [{"content": {"parts": [{"text": "{}"}]}}],
+                "usageMetadata": {
+                    "promptTokenCount": 4,
+                    "candidatesTokenCount": 2,
+                    "thoughtsTokenCount": 7,
+                },
+            }
+        ).encode()
+
+    backend = CappedProviderBackend(
+        "gemini",
+        "requested-model",
+        _spend_policy(),
+        transport=transport,
+        api_key="test-key",
+    )
+    assert backend.complete("one prompt").output_tokens == 9
+
+
+def test_gemini_refuses_missing_provider_response_id() -> None:
+    def transport(
+        _url: str,
+        _headers: dict[str, str],
+        _payload: dict[str, Any],
+        _timeout_seconds: float,
+    ) -> tuple[int, bytes]:
+        return 200, json.dumps(
+            {
+                "modelVersion": "requested-model",
+                "candidates": [{"content": {"parts": [{"text": "{}"}]}}],
+                "usageMetadata": {
+                    "promptTokenCount": 4,
+                    "candidatesTokenCount": 2,
+                },
+            }
+        ).encode()
+
+    backend = CappedProviderBackend(
+        "gemini",
+        "requested-model",
+        _spend_policy(),
+        transport=transport,
+        api_key="test-key",
+    )
+    with pytest.raises(ProviderFailure, match="provider_response_id_missing"):
+        backend.complete("one prompt")
+
+
+def test_provider_failure_consumes_reservation_and_latches_cell() -> None:
+    calls = 0
+
+    def transport(
+        _url: str,
+        _headers: dict[str, str],
+        _payload: dict[str, Any],
+        _timeout_seconds: float,
+    ) -> tuple[int, bytes]:
+        nonlocal calls
+        calls += 1
+        return 503, b""
+
+    backend = CappedProviderBackend(
+        "openai",
+        "requested-model",
+        _spend_policy(),
+        transport=transport,
+        api_key="test-key",
+    )
+    with pytest.raises(ProviderFailure, match="provider_http_status:503"):
+        backend.complete("one prompt")
+    assert backend.reserved_cost_usd > 0
+    assert backend.reserved_output_tokens == _spend_policy().max_output_tokens_per_request
+    with pytest.raises(ProviderFailure, match="provider_cell_latched_after_failure"):
+        backend.complete("another prompt")
+    assert calls == 1
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("max_requests", True),
+        ("max_cost_usd", float("nan")),
+        ("input_usd_per_million_tokens", float("inf")),
+    ],
+)
+def test_spend_policy_refuses_boolean_or_nonfinite_limits(
+    field: str, value: object
+) -> None:
+    values: dict[str, object] = {
+        "max_requests": 8,
+        "max_output_tokens_per_request": 256,
+        "max_total_output_tokens": 2_048,
+        "max_cost_usd": 1.0,
+        "input_usd_per_million_tokens": 1.0,
+        "output_usd_per_million_tokens": 2.0,
+    }
+    values[field] = value
+    with pytest.raises(ValueError, match="spend_policy_"):
+        SpendPolicy(**values)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize("model", ["latest", "model-latest", " model-v1", "model v1"])
+def test_provider_refuses_unstable_or_ambiguous_model_pins(model: str) -> None:
+    with pytest.raises(ValueError, match="provider_model_"):
+        CappedProviderBackend(
+            "openai", model, _spend_policy(), api_key="test-key"
+        )
+
+
+def test_frontier_preregistration_binds_tasks_judge_analysis_and_spend() -> None:
+    registration = build_frontier_preregistration(
+        ROOT,
+        run_id="frozen-cell-001",
+        created_at="2032-04-18T16:00:00Z",
+        git_sha="a" * 40,
+        provider="openai",
+        requested_model="pinned-model",
+        scenario_ids=["frontier-chained-cutoff"],
+        max_model_turns=32,
+        max_acts=28,
+        timeout_seconds=60,
+        spend_policy=_spend_policy(max_requests=160),
+        temperature=0,
+        price_source_url="https://platform.openai.com/docs/pricing",
+        price_checked_at="2032-04-18T15:55:00Z",
+        retention_terms_url="https://platform.openai.com/docs/data-usage-policies",
+        retention_checked_at="2032-04-18T15:56:00Z",
+        derived_publication_posture="unknown",
+    )
+    verified = verify_frontier_preregistration(ROOT, registration, verify_git=False)
+    assert verified["frontier"]["attempt_ids_per_scenario"] == [1, 2, 3, 4, 5]
+    assert verified["frontier"]["judge_validation_report_sha256"] == (
+        frontier_judge_validation_report(ROOT / "fixtures")["report_sha256"]
+    )
+    assert verified["spend_policy"]["max_requests"] == 160
+    assert verified["cell"]["model_identity_policy"] == (
+        "provider_resolved_must_equal_requested"
+    )
+    assert (
+        verified["rights"][
+            "operator_attests_private_raw_response_retention_permitted"
+        ]
+        is True
+    )
+
+    tampered = deepcopy(registration)
+    tampered["cell"]["requested_model"] = "different-model"
+    with pytest.raises(ValueError, match="preregistration_digest_invalid"):
+        verify_frontier_preregistration(ROOT, tampered, verify_git=False)
+
+
+def test_frontier_preregistration_requires_official_price_source() -> None:
+    with pytest.raises(ValueError, match="official_price_source_required"):
+        build_frontier_preregistration(
+            ROOT,
+            run_id="frozen-cell-002",
+            created_at="2032-04-18T16:00:00Z",
+            git_sha="a" * 40,
+            provider="gemini",
+            requested_model="pinned-model",
+            scenario_ids=["frontier-static-control"],
+            max_model_turns=32,
+            max_acts=28,
+            timeout_seconds=60,
+            spend_policy=_spend_policy(max_requests=160),
+            temperature=None,
+            price_source_url="https://example.com/prices",
+            price_checked_at="2032-04-18T15:55:00Z",
+            retention_terms_url="https://ai.google.dev/terms",
+            retention_checked_at="2032-04-18T15:56:00Z",
+            derived_publication_posture="not_permitted",
+        )
+
+
+@pytest.mark.parametrize(
+    "price_url",
+    [
+        "https://platform.openai.com/docs/pricing?token=secret",
+        "https://operator@platform.openai.com/docs/pricing",
+        "https://platform.openai.com:443/docs/pricing",
+    ],
+)
+def test_frontier_preregistration_refuses_nonpublic_source_url_shapes(
+    price_url: str,
+) -> None:
+    with pytest.raises(ValueError, match="official_price_source_required"):
+        build_frontier_preregistration(
+            ROOT,
+            run_id="frozen-cell-003",
+            created_at="2032-04-18T16:00:00Z",
+            git_sha="a" * 40,
+            provider="openai",
+            requested_model="pinned-model",
+            scenario_ids=["frontier-static-control"],
+            max_model_turns=32,
+            max_acts=28,
+            timeout_seconds=60,
+            spend_policy=_spend_policy(max_requests=160),
+            temperature=None,
+            price_source_url=price_url,
+            price_checked_at="2032-04-18T15:55:00Z",
+            retention_terms_url="https://platform.openai.com/docs/data-usage-policies",
+            retention_checked_at="2032-04-18T15:56:00Z",
+            derived_publication_posture="unknown",
+        )
+
+
+def test_frontier_preregistration_refuses_stale_or_future_evidence_checks() -> None:
+    with pytest.raises(ValueError, match="price_checked_at_not_current_at_creation"):
+        build_frontier_preregistration(
+            ROOT,
+            run_id="frozen-cell-004",
+            created_at="2032-04-18T16:00:00Z",
+            git_sha="a" * 40,
+            provider="openai",
+            requested_model="pinned-model",
+            scenario_ids=["frontier-static-control"],
+            max_model_turns=32,
+            max_acts=28,
+            timeout_seconds=60,
+            spend_policy=_spend_policy(max_requests=160),
+            temperature=None,
+            price_source_url="https://platform.openai.com/docs/pricing",
+            price_checked_at="2032-04-19T15:55:00Z",
+            retention_terms_url="https://platform.openai.com/docs/data-usage-policies",
+            retention_checked_at="2032-04-18T15:56:00Z",
+            derived_publication_posture="unknown",
+        )
 
 
 class StubClient(GradiaClient):
@@ -619,6 +1163,21 @@ def test_public_scan_refuses_a_release_file_with_a_local_path(tmp_path: Path) ->
     (tmp_path / "README.md").write_text(
         local_path, encoding="utf-8"
     )
+    with pytest.raises(ValueError, match="public_boundary_refused"):
+        _verify_release_text_boundary(tmp_path)
+
+
+@pytest.mark.parametrize(
+    "local_path",
+    [
+        "/" + "home/local-user/private-path\n",
+        "C:" + "\\Users\\local-user\\private-path\n",
+    ],
+)
+def test_public_scan_refuses_cross_platform_local_paths(
+    tmp_path: Path, local_path: str
+) -> None:
+    (tmp_path / "README.md").write_text(local_path, encoding="utf-8")
     with pytest.raises(ValueError, match="public_boundary_refused"):
         _verify_release_text_boundary(tmp_path)
 

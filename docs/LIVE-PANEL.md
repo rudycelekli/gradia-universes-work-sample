@@ -18,6 +18,14 @@ The adapters use the providers' current public REST surfaces:
 - xAI Responses API; and
 - Gemini `generateContent` API.
 
+The contracts were rechecked against the four providers' official references
+on 2026-08-20. The receipt records both the requested model id and the model
+identity returned by the provider. A missing or different returned identity
+makes the cell ineligible and latches the adapter after the paid request. This
+refuses missing identity evidence or a visible server-side divergence. It does
+not prove that a provider-returned family label is immutable, so the operator
+must choose a versioned id whenever the provider exposes one.
+
 Model identifiers are never supplied by this repository. Choose and record an
 exact currently available model id immediately before preregistration. Avoid
 aliases such as `latest` when the provider offers a versioned id.
@@ -43,7 +51,17 @@ Look up the selected model's current input and output prices from the provider
 immediately before running. The command treats those numbers as an operator-
 supplied estimate, not a provider invoice. Before every request it reserves a
 conservative UTF-8 upper bound for input tokens plus the full allowed output.
-It refuses before the request if that reservation could exceed the cost cap.
+It refuses before the request if the cumulative reservation could exceed the
+cost cap. A dispatched request consumes its reservation even if the provider
+times out or returns unusable evidence, because the call may still be billable.
+For Gemini reasoning models, billable output accounting includes thinking
+tokens rather than only visible candidate text. The parsed usage produces a
+separate operator-price estimate; neither number is an invoice. The adapter
+sends `store: false` where the API exposes that request control. This is a
+storage/logging preference, not proof of zero data retention, and does not
+override account settings, provider terms or an approved data-control program.
+These local ceilings are safeguards, not substitutes for provider-account
+spend limits.
 
 Example shape—not a price recommendation or runnable model choice:
 
@@ -61,16 +79,28 @@ Example shape—not a price recommendation or runnable model choice:
   --max-cost-usd '<approved-cap>' \
   --input-usd-per-million '<current-price>' \
   --output-usd-per-million '<current-price>' \
-  --confirm-live-spend
+  --confirm-live-spend \
+  --confirm-private-response-retention \
+  --confirm-provider-account-spend-limit
 ```
 
-The longer frontier-candidate suite uses a different command. It always runs
-attempt ids 1 through 5 for each selected task; those ids label independent
-requests and are not presented as provider random seeds:
+Treat this shorter command as a local adapter smoke, not a release-eligible
+frontier cell. It confirms live spend, the operator's permission to retain raw
+response bytes privately, and the presence of a separate provider-account
+spend limit. Those confirmations are operator attestations, not legal or
+provider-side proofs.
+
+The operating rule is to preregister the longer frontier-candidate suite before
+any paid outcome is inspected. Run this only from a clean public tree. The
+command freezes the clean code commit, exact scenario/admission/judge/analysis
+digests, provider/model identity rule, sampling posture, public official-source
+URLs checked no more than seven days before creation, attempts, and every
+execution and spend ceiling into a non-secret tracked manifest:
 
 ```bash
-.venv/bin/gradia-universe frontier-live-panel \
+.venv/bin/gradia-universe frontier-preregister \
   --run-id '<immutable-cell-id>' \
+  --created-at '<RFC3339-UTC>' \
   --provider '<openai|anthropic|xai|gemini>' \
   --model '<exact-model-id>' \
   --scenario frontier-chained-cutoff \
@@ -82,9 +112,33 @@ requests and are not presented as provider random seeds:
   --max-cost-usd '<approved-cap>' \
   --input-usd-per-million '<current-price>' \
   --output-usd-per-million '<current-price>' \
+  --price-source-url '<official-provider-pricing-url>' \
+  --price-checked-at '<RFC3339-UTC>' \
+  --retention-terms-url '<official-provider-data-terms-url>' \
+  --retention-checked-at '<RFC3339-UTC>' \
+  --derived-publication-posture '<operator-assessed: unknown|not_permitted|derived_only_permitted>' \
   --temperature '<frozen-value-if-supported>' \
+  --confirm-private-response-retention \
+  --confirm-provider-account-spend-limit
+```
+
+Inspect `preregistrations/<immutable-cell-id>.json`, commit and push that file
+alone, and wait for green CI. The live command refuses an uncommitted manifest,
+a dirty tree, a changed task/judge/adapter, or a commit containing anything
+besides that one manifest:
+
+```bash
+.venv/bin/gradia-universe frontier-live-panel \
+  --preregistration preregistrations/<immutable-cell-id>.json \
   --confirm-live-spend
 ```
+
+That Git check proves only that the manifest commit follows the recorded code
+commit and contains only the expected manifest path. It cannot prove that no
+earlier private execution or outcome inspection occurred; the operator must
+attest to that procedural fact. Official-source URLs reject credentials,
+queries, fragments and nonstandard ports so a public manifest cannot smuggle a
+secret through evidence metadata.
 
 Omit `--temperature` only when the preregistration explicitly chooses the
 provider default. The panel records that omission rather than inventing a
@@ -94,7 +148,8 @@ all-pass@5, descriptive uncertainty and failure-signature counts.
 The output is written only to `results/local/<run-id>/`, which is ignored by
 Git. A run id is immutable and cannot be reused. The edition contains:
 
-- a panel receipt with the exact model, adapter, scaffold, seeds and spend
+- a panel receipt with the exact requested and returned model identities,
+  adapter, scaffold, seeds or attempt ids, and spend
   policy;
 - one evidence-bearing episode receipt per scenario/seed;
 - provider response ids, token usage, output text and response-byte digests;
@@ -121,7 +176,8 @@ isolated probes have canonical report digest
 No result should move from `results/local` into a public release until all of
 the following are true:
 
-1. the model id and pricing inputs were checked against the provider record;
+1. the requested and returned model ids match, and pricing inputs were checked
+   against the provider record;
 2. the panel, seed set, exclusions and analysis were frozen before outcomes
    were inspected;
 3. provider terms permit the intended retention and publication;
