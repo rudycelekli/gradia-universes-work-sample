@@ -19,7 +19,7 @@ The adapters use the providers' current public REST surfaces:
 - Gemini `generateContent` API.
 
 The contracts were rechecked against the four providers' official references
-on 2026-08-20. The receipt records both the requested model id and the model
+on 2026-08-21. The receipt records both the requested model id and the model
 identity returned by the provider. A missing or different returned identity
 makes the cell ineligible and latches the adapter after the paid request. This
 refuses missing identity evidence or a visible server-side divergence. It does
@@ -29,6 +29,14 @@ must choose a versioned id whenever the provider exposes one.
 Model identifiers are never supplied by this repository. Choose and record an
 exact currently available model id immediately before preregistration. Avoid
 aliases such as `latest` when the provider offers a versioned id.
+
+The common frontier cell fixes explicit `high` reasoning across all four
+adapters: Responses receives `reasoning.effort`, Messages receives
+`output_config.effort`, and Gemini receives
+`generationConfig.thinkingConfig.thinkingLevel`. Temperature is omitted and
+recorded as provider-default because the current frontier reasoning surfaces do
+not share one portable temperature contract. A different reasoning level or
+sampling posture requires a separately named preregistration.
 
 ## Credential boundary
 
@@ -63,19 +71,16 @@ override account settings, provider terms or an approved data-control program.
 These local ceilings are safeguards, not substitutes for provider-account
 spend limits.
 
-Example shape—not a price recommendation or runnable model choice:
+First run exactly one non-benchmark provider-protocol request. It verifies the
+endpoint, returned model identity, usage fields, retention sink and budget
+reservations without revealing how a model behaves on any frozen task:
 
 ```bash
-.venv/bin/gradia-universe live-panel \
-  --run-id preregistered-cell-001 \
-  --provider openai \
+.venv/bin/gradia-universe provider-smoke \
+  --run-id '<provider>-protocol-smoke-001' \
+  --provider '<openai|anthropic|xai|gemini>' \
   --model '<exact-model-id>' \
-  --seeds 11 29 47 \
-  --max-model-turns 12 \
-  --max-acts 10 \
-  --max-provider-requests 180 \
   --max-output-tokens 512 \
-  --max-total-output-tokens 92160 \
   --max-cost-usd '<approved-cap>' \
   --input-usd-per-million '<current-price>' \
   --output-usd-per-million '<current-price>' \
@@ -84,11 +89,9 @@ Example shape—not a price recommendation or runnable model choice:
   --confirm-provider-account-spend-limit
 ```
 
-Treat this shorter command as a local adapter smoke, not a release-eligible
-frontier cell. It confirms live spend, the operator's permission to retain raw
-response bytes privately, and the presence of a separate provider-account
-spend limit. Those confirmations are operator attestations, not legal or
-provider-side proofs.
+The smoke writes `benchmark_task_or_score_present=false`. It is not a
+release-eligible frontier cell. The confirmations are operator attestations,
+not legal or provider-side proofs.
 
 The operating rule is to preregister the longer frontier-candidate suite before
 any paid outcome is inspected. Run this only from a clean public tree. The
@@ -103,7 +106,6 @@ execution and spend ceiling into a non-secret tracked manifest:
   --created-at '<RFC3339-UTC>' \
   --provider '<openai|anthropic|xai|gemini>' \
   --model '<exact-model-id>' \
-  --scenario frontier-chained-cutoff \
   --max-model-turns 32 \
   --max-acts 28 \
   --max-provider-requests '<approved-request-cap>' \
@@ -117,7 +119,7 @@ execution and spend ceiling into a non-secret tracked manifest:
   --retention-terms-url '<official-provider-data-terms-url>' \
   --retention-checked-at '<RFC3339-UTC>' \
   --derived-publication-posture '<operator-assessed: unknown|not_permitted|derived_only_permitted>' \
-  --temperature '<frozen-value-if-supported>' \
+  --reasoning-effort high \
   --confirm-private-response-retention \
   --confirm-provider-account-spend-limit
 ```
@@ -140,9 +142,10 @@ attest to that procedural fact. Official-source URLs reject credentials,
 queries, fragments and nonstandard ports so a public manifest cannot smuggle a
 secret through evidence metadata.
 
-Omit `--temperature` only when the preregistration explicitly chooses the
-provider default. The panel records that omission rather than inventing a
-value. Every full frontier cell reports per-task successes/5, any-pass@5,
+Selective scenario flags are not accepted: the manifest always binds all five
+v1 tasks before any paid task outcome may be inspected. The preregistration
+requires explicit `high` reasoning and provider-default temperature; either
+deviation is refused. Every full frontier cell reports per-task successes/5, any-pass@5,
 all-pass@5, descriptive uncertainty and failure-signature counts.
 
 The output is written only to `results/local/<run-id>/`, which is ignored by

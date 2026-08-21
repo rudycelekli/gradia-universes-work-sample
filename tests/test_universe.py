@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import csv
 import json
+from argparse import Namespace
 from copy import deepcopy
 from pathlib import Path
-from typing import Any
+from typing import Any, ClassVar
 
 import pytest
 
@@ -15,7 +16,7 @@ from gradia_universes.axis_candidates import (
     verify_axis_artifacts,
 )
 from gradia_universes.canonical import canonical_bytes, digest, load_json
-from gradia_universes.cli import _verify_release_text_boundary
+from gradia_universes.cli import _verify_release_text_boundary, command_provider_smoke
 from gradia_universes.contracts import Scenario
 from gradia_universes.frontier import (
     FrontierEngine,
@@ -670,7 +671,8 @@ def test_provider_adapters_pin_contracts_and_never_put_keys_in_receipts(
         transport=transport,
         timeout_seconds=10,
         api_key=test_key,
-        temperature=0.4,
+        temperature=None,
+        reasoning_effort="high",
     )
     completion = backend.complete("one prompt")
     assert completion.output_text == "{}"
@@ -690,18 +692,38 @@ def test_provider_adapters_pin_contracts_and_never_put_keys_in_receipts(
     assert calls[0][1][key_header].endswith(test_key)
     if provider != "gemini":
         assert calls[0][2]["model"] == "pinned-model"
-        assert calls[0][2]["temperature"] == 0.4
+        assert "temperature" not in calls[0][2]
         if provider in {"openai", "xai"}:
             assert calls[0][2]["store"] is False
+            assert calls[0][2]["reasoning"] == {"effort": "high"}
+        else:
+            assert calls[0][2]["output_config"] == {"effort": "high"}
     else:
-        assert calls[0][2]["generationConfig"]["temperature"] == 0.4
+        assert "temperature" not in calls[0][2]["generationConfig"]
+        assert calls[0][2]["generationConfig"]["thinkingConfig"] == {
+            "thinkingLevel": "high"
+        }
         assert "store" not in calls[0][2]
     assert backend.sampling_policy == {
-        "temperature": 0.4,
-        "temperature_posture": "explicit",
+        "temperature": None,
+        "temperature_posture": "provider_default",
+        "reasoning_effort": "high",
+        "reasoning_effort_posture": "explicit",
         "provider_seed": None,
         "repeat_semantics": "independent_provider_request",
     }
+
+
+def test_provider_refuses_mixed_reasoning_and_temperature_posture() -> None:
+    with pytest.raises(ValueError, match="provider_reasoning_temperature_conflict"):
+        CappedProviderBackend(
+            "openai",
+            "pinned-model",
+            _spend_policy(),
+            api_key="test-key",
+            temperature=0.4,
+            reasoning_effort="high",
+        )
 
 
 def test_provider_request_budget_stops_before_network() -> None:
@@ -737,6 +759,69 @@ def test_provider_request_budget_stops_before_network() -> None:
     with pytest.raises(RuntimeError, match="provider_request_budget_exhausted"):
         backend.complete("second")
     assert calls == 1
+
+
+def test_provider_smoke_emits_protocol_only_receipt(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class FakeBackend:
+        adapter_version = "test-adapter.v1"
+        sampling_policy: ClassVar[dict[str, str | None]] = {
+            "temperature": None,
+            "temperature_posture": "provider_default",
+            "reasoning_effort": "high",
+            "reasoning_effort_posture": "explicit",
+            "provider_seed": None,
+            "repeat_semantics": "independent_provider_request",
+        }
+        sampling_policy_sha256 = digest(sampling_policy)
+        policy_sha256 = "a" * 64
+        estimated_cost_usd = 0.001
+        reserved_cost_usd = 0.002
+
+        def __init__(self, *_args: object, **_kwargs: object) -> None:
+            pass
+
+        def complete(self, _prompt: str) -> Completion:
+            return Completion(
+                provider="openai",
+                model="pinned-model",
+                resolved_model="pinned-model",
+                adapter_version=self.adapter_version,
+                response_id="response-1",
+                output_text='{"status":"ok"}',
+                input_tokens=8,
+                output_tokens=4,
+                provider_response_sha256="b" * 64,
+                estimated_cost_usd=self.estimated_cost_usd,
+            )
+
+    monkeypatch.setattr("gradia_universes.cli.CappedProviderBackend", FakeBackend)
+    args = Namespace(
+        confirm_live_spend=True,
+        confirm_private_response_retention=True,
+        confirm_provider_account_spend_limit=True,
+        run_id="openai-protocol-smoke-001",
+        root=tmp_path,
+        provider="openai",
+        model="pinned-model",
+        max_output_tokens=64,
+        max_cost_usd=1.0,
+        input_usd_per_million=1.0,
+        output_usd_per_million=2.0,
+        timeout_seconds=60.0,
+    )
+    assert command_provider_smoke(args) == 0
+    receipt = load_json(
+        tmp_path
+        / "results"
+        / "local"
+        / "openai-protocol-smoke-001"
+        / "provider-smoke.json"
+    )
+    assert receipt["benchmark_task_or_score_present"] is False
+    assert receipt["claim_status"] == "private_protocol_only"
+    assert receipt["requested_model"] == receipt["resolved_model"]
 
 
 def test_provider_output_reservation_is_cumulative_before_network() -> None:
@@ -998,12 +1083,13 @@ def test_frontier_preregistration_binds_tasks_judge_analysis_and_spend() -> None
         git_sha="a" * 40,
         provider="openai",
         requested_model="pinned-model",
-        scenario_ids=["frontier-chained-cutoff"],
+        scenario_ids=list(frontier_scenarios()),
         max_model_turns=32,
         max_acts=28,
         timeout_seconds=60,
         spend_policy=_spend_policy(max_requests=160),
-        temperature=0,
+        temperature=None,
+        reasoning_effort="high",
         price_source_url="https://platform.openai.com/docs/pricing",
         price_checked_at="2032-04-18T15:55:00Z",
         retention_terms_url="https://platform.openai.com/docs/data-usage-policies",
@@ -1019,6 +1105,8 @@ def test_frontier_preregistration_binds_tasks_judge_analysis_and_spend() -> None
     assert verified["cell"]["model_identity_policy"] == (
         "provider_resolved_must_equal_requested"
     )
+    assert verified["cell"]["reasoning_effort"] == "high"
+    assert verified["cell"]["temperature"] is None
     assert (
         verified["rights"][
             "operator_attests_private_raw_response_retention_permitted"
@@ -1041,12 +1129,13 @@ def test_frontier_preregistration_requires_official_price_source() -> None:
             git_sha="a" * 40,
             provider="gemini",
             requested_model="pinned-model",
-            scenario_ids=["frontier-static-control"],
+            scenario_ids=list(frontier_scenarios()),
             max_model_turns=32,
             max_acts=28,
             timeout_seconds=60,
             spend_policy=_spend_policy(max_requests=160),
             temperature=None,
+            reasoning_effort="high",
             price_source_url="https://example.com/prices",
             price_checked_at="2032-04-18T15:55:00Z",
             retention_terms_url="https://ai.google.dev/terms",
@@ -1074,12 +1163,13 @@ def test_frontier_preregistration_refuses_nonpublic_source_url_shapes(
             git_sha="a" * 40,
             provider="openai",
             requested_model="pinned-model",
-            scenario_ids=["frontier-static-control"],
+            scenario_ids=list(frontier_scenarios()),
             max_model_turns=32,
             max_acts=28,
             timeout_seconds=60,
             spend_policy=_spend_policy(max_requests=160),
             temperature=None,
+            reasoning_effort="high",
             price_source_url=price_url,
             price_checked_at="2032-04-18T15:55:00Z",
             retention_terms_url="https://platform.openai.com/docs/data-usage-policies",
@@ -1097,17 +1187,51 @@ def test_frontier_preregistration_refuses_stale_or_future_evidence_checks() -> N
             git_sha="a" * 40,
             provider="openai",
             requested_model="pinned-model",
-            scenario_ids=["frontier-static-control"],
+            scenario_ids=list(frontier_scenarios()),
             max_model_turns=32,
             max_acts=28,
             timeout_seconds=60,
             spend_policy=_spend_policy(max_requests=160),
             temperature=None,
+            reasoning_effort="high",
             price_source_url="https://platform.openai.com/docs/pricing",
             price_checked_at="2032-04-19T15:55:00Z",
             retention_terms_url="https://platform.openai.com/docs/data-usage-policies",
             retention_checked_at="2032-04-18T15:56:00Z",
             derived_publication_posture="unknown",
+        )
+
+
+def test_frontier_preregistration_refuses_selective_or_low_reasoning_panel() -> None:
+    common: dict[str, Any] = {
+        "root": ROOT,
+        "run_id": "frozen-cell-005",
+        "created_at": "2032-04-18T16:00:00Z",
+        "git_sha": "a" * 40,
+        "provider": "openai",
+        "requested_model": "pinned-model",
+        "max_model_turns": 32,
+        "max_acts": 28,
+        "timeout_seconds": 60,
+        "spend_policy": _spend_policy(max_requests=160),
+        "temperature": None,
+        "price_source_url": "https://platform.openai.com/docs/pricing",
+        "price_checked_at": "2032-04-18T15:55:00Z",
+        "retention_terms_url": "https://platform.openai.com/docs/data-usage-policies",
+        "retention_checked_at": "2032-04-18T15:56:00Z",
+        "derived_publication_posture": "unknown",
+    }
+    with pytest.raises(ValueError, match="reasoning_effort_must_be_high"):
+        build_frontier_preregistration(
+            **common,
+            scenario_ids=list(frontier_scenarios()),
+            reasoning_effort="medium",
+        )
+    with pytest.raises(ValueError, match="requires_complete_frontier_panel"):
+        build_frontier_preregistration(
+            **common,
+            scenario_ids=["frontier-chained-cutoff"],
+            reasoning_effort="high",
         )
 
 

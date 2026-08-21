@@ -239,6 +239,10 @@ refuse the cell when those identities differ. Gemini reasoning-token usage is
 included in the local output-cost estimate. Where an API exposes a per-request
 storage or logging control, the adapter sends `store: false`; that preference
 does not itself establish zero-data-retention status or override account terms.
+The frontier baseline fixes the strongest reasoning setting shared by all four
+adapters (`high`) and leaves temperature at the provider default. Both choices
+are recorded. A different reasoning or sampling posture is a new cell, not a
+silent rerun.
 
 Provider names identify compatible API surfaces only; they do not imply
 affiliation, sponsorship, endorsement or authorship.
@@ -253,19 +257,27 @@ The local file is ignored. Do not add keys to Gradia's application environment,
 the public bundle, a command line, or a GitHub secret until a specific CI use
 has been approved.
 
-The exact founder inputs and safe two-stage smoke/full-panel sequence are in
+The exact founder inputs and safe two-stage protocol-smoke/full-panel sequence are in
 [Operator inputs](docs/OPERATOR-INPUTS.md). Keys are entered locally and never
 sent through chat; model ids, prices and the hard budget are non-secret inputs.
 
-The frontier command runs exactly five independent provider requests per task
-and records both any-pass@5 (observed capability coverage) and all-pass@5
-(observed reliability). Attempt ids are not represented as random seeds.
+The provider smoke is one non-benchmark request: it cannot leak task outcomes or
+be reported as a score. The frontier command then runs all five frozen tasks,
+exactly five independent attempts per task, and records both any-pass@5
+(observed capability coverage) and all-pass@5 (observed reliability). Selective
+task preregistration is refused. Attempt ids are not represented as random seeds.
 `frontier-preregister` writes the manifest; an operator must review it and make
 a public manifest-only commit before the paid command will accept it. The paid
 command derives its complete cell from that manifest rather than accepting
 outcome-changing flags at execution time. Git ancestry proves repository
 ordering and changed-file scope; it cannot prove that no earlier private run or
 outcome inspection occurred, so that remains an explicit operating attestation.
+
+The five-task v1 is a frozen calibration anchor, not a promised frontier-model
+failure generator. If it produces a ceiling, that ceiling is reported intact;
+v1+ may use disclosed development traces, while a separately sealed v2 carries
+the next confirmation claim. See the
+[frontier edition policy](docs/FRONTIER-EDITION-POLICY.md).
 
 ## Repository map
 

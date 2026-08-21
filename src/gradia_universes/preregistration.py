@@ -22,7 +22,7 @@ from .frontier import (
 )
 from .providers import ADAPTER_VERSIONS, ProviderName, SpendPolicy, validate_model_pin
 
-SCHEMA = "gradia-frontier-live-preregistration.v2"
+SCHEMA = "gradia-frontier-live-preregistration.v3"
 _SHA = re.compile(r"[0-9a-f]{40}")
 _RFC3339_UTC = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z")
 _OFFICIAL_HOSTS: dict[ProviderName, frozenset[str]] = {
@@ -159,6 +159,7 @@ def build_frontier_preregistration(
     timeout_seconds: float,
     spend_policy: SpendPolicy,
     temperature: float | None,
+    reasoning_effort: str,
     price_source_url: str,
     price_checked_at: str,
     retention_terms_url: str,
@@ -204,6 +205,10 @@ def build_frontier_preregistration(
         or not 0 <= temperature <= temperature_max
     ):
         raise ValueError("preregistration_temperature_invalid")
+    if reasoning_effort != "high":
+        raise ValueError("preregistration_reasoning_effort_must_be_high")
+    if temperature is not None:
+        raise ValueError("preregistration_reasoning_temperature_must_use_default")
     publication_postures = {"unknown", "not_permitted", "derived_only_permitted"}
     if derived_publication_posture not in publication_postures:
         raise ValueError("preregistration_publication_posture_invalid")
@@ -221,6 +226,9 @@ def build_frontier_preregistration(
     missing = sorted(set(scenario_ids) - set(by_id))
     if missing:
         raise ValueError("preregistration_scenario_unknown:" + ",".join(missing))
+    complete_panel = [row.scenario_id for row in rows]
+    if scenario_ids != complete_panel:
+        raise ValueError("preregistration_requires_complete_frontier_panel")
     admission = frontier_admission_report(root / "fixtures")
     judge_validation = frontier_judge_validation_report(root / "fixtures")
     body = {
@@ -250,6 +258,8 @@ def build_frontier_preregistration(
             "temperature_posture": (
                 "explicit" if temperature is not None else "provider_default"
             ),
+            "reasoning_effort": reasoning_effort,
+            "reasoning_effort_posture": "explicit",
             "provider_seed": None,
             "model_identity_policy": "provider_resolved_must_equal_requested",
         },
@@ -359,6 +369,8 @@ def verify_frontier_preregistration(
             "adapter_version",
             "temperature",
             "temperature_posture",
+            "reasoning_effort",
+            "reasoning_effort_posture",
             "provider_seed",
             "model_identity_policy",
         },
@@ -455,6 +467,12 @@ def verify_frontier_preregistration(
     expected_temperature_posture = "explicit" if temperature is not None else "provider_default"
     if cell.get("temperature_posture") != expected_temperature_posture:
         raise ValueError("preregistration_temperature_posture_invalid")
+    if cell.get("reasoning_effort") != "high":
+        raise ValueError("preregistration_reasoning_effort_must_be_high")
+    if cell.get("reasoning_effort_posture") != "explicit":
+        raise ValueError("preregistration_reasoning_effort_posture_invalid")
+    if temperature is not None:
+        raise ValueError("preregistration_reasoning_temperature_must_use_default")
     if cell.get("provider_seed") is not None:
         raise ValueError("preregistration_provider_seed_invalid")
     if cell.get("model_identity_policy") != "provider_resolved_must_equal_requested":
@@ -504,6 +522,8 @@ def verify_frontier_preregistration(
         or frontier.get("scenario_sha256s") != expected_scenarios
     ):
         raise ValueError("preregistration_scenario_drift")
+    if scenario_ids != [row.scenario_id for row in rows]:
+        raise ValueError("preregistration_requires_complete_frontier_panel")
     if frontier.get("scaffold_version") != FRONTIER_SCAFFOLD_VERSION:
         raise ValueError("preregistration_scaffold_drift")
     if frontier.get("judge_version") != FRONTIER_JUDGE_VERSION:

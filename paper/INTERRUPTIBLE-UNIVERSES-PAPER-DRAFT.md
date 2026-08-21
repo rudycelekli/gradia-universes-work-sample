@@ -1,7 +1,7 @@
 ---
 title: "Interruptible Universes: Evolution Witnesses for Verifiable World Change in Agent Benchmarks"
 author: "Rudy M. Celekli, Gradia"
-date: "Pre-results public draft - 20 August 2026"
+date: "Pre-results public draft - 21 August 2026"
 ---
 
 **Artifact license:** Apache-2.0 for the code and synthetic fixtures; live-model outputs remain subject to provider terms and a separate rights review.
@@ -776,7 +776,7 @@ A reader can alter the policy-revision fixture without updating results and reru
 
 ### 14.4 Live-panel reproducibility
 
-Live runs require an immutable run id, exact requested model id, an exact matching provider-returned model identity, adapter and scaffold digest, repeated-attempt policy, sampling parameters, turn and action limits, token and request caps, operator-supplied contemporaneous prices, and explicit spend confirmation. The frontier panel uses exactly five independent provider requests per task and does not mislabel attempt ids as random seeds. A conservative pre-dispatch reservation is cumulative and is not refunded after a failed call; parsed token usage produces a separate operator-price estimate, not an invoice. Where available, `store: false` expresses a request-level storage or logging preference but does not prove zero data retention. The public manifest and Git ancestry prove repository ordering and changed-file scope, not the absence of an earlier private run or outcome inspection. The panel reports empirical successes/5, any-pass@5 as observed capability coverage, all-pass@5 as observed reliability, descriptive uncertainty, and failure-signature counts. Results first enter an ignored local edition. They move into a public edition only after rights, integrity, preregistration, human-review, and disclosure gates pass.
+Live runs require an immutable run id, exact requested model id, an exact matching provider-returned model identity, adapter and scaffold digest, repeated-attempt policy, sampling parameters, turn and action limits, token and request caps, operator-supplied contemporaneous prices, and explicit spend confirmation. One non-benchmark provider smoke verifies endpoint, identity and usage parsing without producing a task score. The frontier manifest then binds all five v1 tasks before any task-bearing paid outcome may be inspected; selective-task preregistration is refused. The common frontier cell fixes explicit `high` reasoning across all four adapters and a recorded provider-default temperature. It uses exactly five independent requests per task and does not mislabel attempt ids as random seeds. A conservative pre-dispatch reservation is cumulative and is not refunded after a failed call; parsed token usage produces a separate operator-price estimate, not an invoice. Where available, `store: false` expresses a request-level storage or logging preference but does not prove zero data retention. The public manifest and Git ancestry prove repository ordering and changed-file scope, not the absence of an earlier private run or outcome inspection. The panel reports empirical successes/5, any-pass@5 as observed capability coverage, all-pass@5 as observed reliability, descriptive uncertainty, and failure-signature counts. Results first enter an ignored local edition. They move into a public edition only after rights, integrity, preregistration, human-review, and disclosure gates pass.
 
 ## 15. Artifact checklist
 

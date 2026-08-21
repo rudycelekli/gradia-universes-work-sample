@@ -23,12 +23,13 @@ from .canonical import digest
 from .live_runner import BudgetStop, Completion, ProviderFailure
 
 ProviderName = Literal["openai", "anthropic", "xai", "gemini"]
+ReasoningEffort = Literal["high"]
 
 ADAPTER_VERSIONS: dict[ProviderName, str] = {
-    "openai": "openai-responses-rest.v2",
-    "anthropic": "anthropic-messages-rest.v2",
-    "xai": "xai-responses-rest.v2",
-    "gemini": "gemini-generate-content-rest.v2",
+    "openai": "openai-responses-rest.v3",
+    "anthropic": "anthropic-messages-rest.v3",
+    "xai": "xai-responses-rest.v3",
+    "gemini": "gemini-generate-content-rest.v3",
 }
 
 KEY_ENVIRONMENTS: dict[ProviderName, str] = {
@@ -141,6 +142,7 @@ class CappedProviderBackend:
         api_key: str | None = None,
         response_sink: ResponseSink | None = None,
         temperature: float | None = None,
+        reasoning_effort: ReasoningEffort | None = None,
     ) -> None:
         validate_model_pin(model)
         if (
@@ -161,6 +163,10 @@ class CappedProviderBackend:
             )
         ):
             raise ValueError("provider_temperature_invalid")
+        if reasoning_effort not in {None, "high"}:
+            raise ValueError("provider_reasoning_effort_invalid")
+        if reasoning_effort is not None and temperature is not None:
+            raise ValueError("provider_reasoning_temperature_conflict")
         key = api_key if api_key is not None else os.environ.get(KEY_ENVIRONMENTS[provider])
         if not key:
             raise ValueError(f"provider_key_missing:{KEY_ENVIRONMENTS[provider]}")
@@ -173,6 +179,7 @@ class CappedProviderBackend:
         self._timeout_seconds = timeout_seconds
         self._response_sink = response_sink
         self._temperature = temperature
+        self._reasoning_effort = reasoning_effort
         self._requests = 0
         self._output_tokens = 0
         self._reserved_output_tokens = 0
@@ -202,6 +209,10 @@ class CappedProviderBackend:
             "temperature": self._temperature,
             "temperature_posture": (
                 "explicit" if self._temperature is not None else "provider_default"
+            ),
+            "reasoning_effort": self._reasoning_effort,
+            "reasoning_effort_posture": (
+                "explicit" if self._reasoning_effort is not None else "provider_default"
             ),
             "provider_seed": None,
             "repeat_semantics": "independent_provider_request",
@@ -329,6 +340,8 @@ class CappedProviderBackend:
             }
             if self._temperature is not None:
                 payload["temperature"] = self._temperature
+            if self._reasoning_effort is not None:
+                payload["reasoning"] = {"effort": self._reasoning_effort}
             return (
                 f"{base}/v1/responses",
                 {**common_headers, "Authorization": f"Bearer {self._key}"},
@@ -342,6 +355,8 @@ class CappedProviderBackend:
             }
             if self._temperature is not None:
                 payload["temperature"] = self._temperature
+            if self._reasoning_effort is not None:
+                payload["output_config"] = {"effort": self._reasoning_effort}
             return (
                 "https://api.anthropic.com/v1/messages",
                 {
@@ -355,6 +370,10 @@ class CappedProviderBackend:
         generation_config: dict[str, Any] = {"maxOutputTokens": max_output}
         if self._temperature is not None:
             generation_config["temperature"] = self._temperature
+        if self._reasoning_effort is not None:
+            generation_config["thinkingConfig"] = {
+                "thinkingLevel": self._reasoning_effort,
+            }
         return (
             "https://generativelanguage.googleapis.com/v1beta/models/"
             f"{encoded_model}:generateContent",

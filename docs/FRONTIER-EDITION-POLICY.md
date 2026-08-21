@@ -23,6 +23,30 @@ Gradia therefore keeps three different objects:
 
 No edition overwrites another. Every report names the exact edition digest.
 
+## v1 pre-run admission ruling
+
+The current five-task v1 is admitted as a **calibration anchor**, not as a
+guarantee that frontier models will fail. It contains one static control and
+four dynamic tasks over four coupled cases, six versioned sources, global
+exception capacity, authoritative and unverified messages, exact cutoff
+boundaries, policy/capacity/document/condition changes, one restore and a
+five-event chained condition. A valid answer must resolve the whole queue,
+recompute case metrics, allocate a scarce exception globally, await the cutoff,
+re-read every changed source, cite actual source-read evidence and bind the
+terminal world root.
+
+The safe solver proves answerability and 44 isolated mutations prove the
+deterministic judge detects each represented defect. Those are necessary gates;
+they do not empirically establish difficulty. The static condition remains on
+purpose as a protocol/control denominator. No task is made harder with irrelevant
+text, hidden facts or an ambiguous rubric merely to force a failure.
+
+Before paid task execution, the protocol also refuses selective-task
+preregistration, fixes all five attempts per task, requires explicit `high`
+reasoning across providers, leaves temperature at the recorded provider
+default, and requires exact requested/returned model identity. The only allowed
+pre-task paid call is a separately receipted non-benchmark protocol smoke.
+
 ## The ceiling rule
 
 The unambiguous ceiling trigger is:

@@ -320,6 +320,7 @@ def command_live_panel(args: argparse.Namespace) -> int:
         timeout_seconds=args.timeout_seconds,
         response_sink=_private_response_sink(private_dir),
         temperature=args.temperature,
+        reasoning_effort=args.reasoning_effort,
     )
     receipts: list[dict[str, Any]] = []
     for scenario_id in selected_ids:
@@ -392,6 +393,82 @@ def command_live_panel(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_provider_smoke(args: argparse.Namespace) -> int:
+    """Verify one provider protocol/identity/usage cell without a benchmark task."""
+    if not args.confirm_live_spend:
+        raise ValueError("live_spend_confirmation_required")
+    if not args.confirm_private_response_retention:
+        raise ValueError("private_response_retention_confirmation_required")
+    if not args.confirm_provider_account_spend_limit:
+        raise ValueError("provider_account_spend_limit_confirmation_required")
+    run_id = args.run_id
+    if not isinstance(run_id, str) or not re.fullmatch(
+        r"[a-z0-9][a-z0-9-]{0,63}", run_id
+    ):
+        raise ValueError("provider_smoke_run_id_invalid")
+    root = args.root.resolve()
+    output = (root / "results" / "local" / run_id).resolve()
+    if output.parent != (root / "results" / "local").resolve():
+        raise ValueError("provider_smoke_output_boundary_invalid")
+    if output.exists():
+        raise ValueError("provider_smoke_result_edition_exists")
+    policy = SpendPolicy(
+        max_requests=1,
+        max_output_tokens_per_request=args.max_output_tokens,
+        max_total_output_tokens=args.max_output_tokens,
+        max_cost_usd=args.max_cost_usd,
+        input_usd_per_million_tokens=args.input_usd_per_million,
+        output_usd_per_million_tokens=args.output_usd_per_million,
+    )
+    private_dir = output / "private-provider-responses"
+    backend = CappedProviderBackend(
+        args.provider,
+        args.model,
+        policy,
+        timeout_seconds=args.timeout_seconds,
+        response_sink=_private_response_sink(private_dir),
+        temperature=None,
+        reasoning_effort="high",
+    )
+    prompt = (
+        "This is a provider-protocol smoke, not a benchmark task. Return exactly "
+        '{"status":"ok"} with no markdown or additional text.'
+    )
+    completion = backend.complete(prompt)
+    body = {
+        "schema": "gradia-provider-protocol-smoke.v1",
+        "claim_status": "private_protocol_only",
+        "run_id": run_id,
+        "provider": args.provider,
+        "requested_model": args.model,
+        "resolved_model": completion.resolved_model,
+        "adapter_version": backend.adapter_version,
+        "sampling_policy": backend.sampling_policy,
+        "sampling_policy_sha256": backend.sampling_policy_sha256,
+        "spend_policy": policy.as_dict(),
+        "spend_policy_sha256": backend.policy_sha256,
+        "response_id": completion.response_id,
+        "response_text_sha256": digest(completion.output_text),
+        "provider_response_sha256": completion.provider_response_sha256,
+        "input_tokens": completion.input_tokens,
+        "output_tokens": completion.output_tokens,
+        "estimated_cost_usd": completion.estimated_cost_usd,
+        "conservative_reserved_cost_usd": backend.reserved_cost_usd,
+        "operator_attests_private_raw_response_retention_permitted": True,
+        "operator_attests_provider_account_spend_limit_enabled": True,
+        "benchmark_task_or_score_present": False,
+    }
+    receipt = {**body, "receipt_sha256": digest(body)}
+    output.mkdir(parents=True, exist_ok=True)
+    write_canonical(output / "provider-smoke.json", receipt)
+    print(
+        f"provider protocol smoke passed for {args.provider}/{args.model}; "
+        f"estimated_cost_usd={backend.estimated_cost_usd:.6f}; "
+        f"receipt_sha256={receipt['receipt_sha256']}"
+    )
+    return 0
+
+
 def command_frontier_preregister(args: argparse.Namespace) -> int:
     """Freeze one exact paid frontier-model cell before model outcomes exist."""
     if not args.confirm_private_response_retention:
@@ -399,9 +476,7 @@ def command_frontier_preregister(args: argparse.Namespace) -> int:
     if not args.confirm_provider_account_spend_limit:
         raise ValueError("preregistration_account_limit_unconfirmed")
     root = args.root.resolve()
-    scenario_ids = args.scenario or [
-        row.scenario_id for row in load_frontier_scenarios(root / "fixtures")
-    ]
+    scenario_ids = [row.scenario_id for row in load_frontier_scenarios(root / "fixtures")]
     policy = SpendPolicy(
         max_requests=args.max_provider_requests,
         max_output_tokens_per_request=args.max_output_tokens,
@@ -422,7 +497,8 @@ def command_frontier_preregister(args: argparse.Namespace) -> int:
         max_acts=args.max_acts,
         timeout_seconds=args.timeout_seconds,
         spend_policy=policy,
-        temperature=args.temperature,
+        temperature=None,
+        reasoning_effort=args.reasoning_effort,
         price_source_url=args.price_source_url,
         price_checked_at=args.price_checked_at,
         retention_terms_url=args.retention_terms_url,
@@ -472,6 +548,7 @@ def command_frontier_live_panel(args: argparse.Namespace) -> int:
         timeout_seconds=execution["timeout_seconds"],
         response_sink=_private_response_sink(private_dir),
         temperature=cell["temperature"],
+        reasoning_effort=cell["reasoning_effort"],
     )
     receipts: list[dict[str, Any]] = []
     for scenario_id in selected_ids:
@@ -594,11 +671,30 @@ def parser() -> argparse.ArgumentParser:
     live.add_argument("--input-usd-per-million", type=float, required=True)
     live.add_argument("--output-usd-per-million", type=float, required=True)
     live.add_argument("--temperature", type=float)
+    live.add_argument("--reasoning-effort", choices=("high",))
     live.add_argument("--timeout-seconds", type=float, default=60.0)
     live.add_argument("--confirm-live-spend", action="store_true")
     live.add_argument("--confirm-private-response-retention", action="store_true")
     live.add_argument("--confirm-provider-account-spend-limit", action="store_true")
     live.set_defaults(func=command_live_panel)
+    smoke = sub.add_parser(
+        "provider-smoke",
+        help="make one capped non-benchmark request to verify a provider adapter",
+    )
+    smoke.add_argument("--run-id", required=True)
+    smoke.add_argument(
+        "--provider", choices=("openai", "anthropic", "xai", "gemini"), required=True
+    )
+    smoke.add_argument("--model", required=True)
+    smoke.add_argument("--max-output-tokens", type=int, default=512)
+    smoke.add_argument("--max-cost-usd", type=float, required=True)
+    smoke.add_argument("--input-usd-per-million", type=float, required=True)
+    smoke.add_argument("--output-usd-per-million", type=float, required=True)
+    smoke.add_argument("--timeout-seconds", type=float, default=60.0)
+    smoke.add_argument("--confirm-live-spend", action="store_true")
+    smoke.add_argument("--confirm-private-response-retention", action="store_true")
+    smoke.add_argument("--confirm-provider-account-spend-limit", action="store_true")
+    smoke.set_defaults(func=command_provider_smoke)
     preregister = sub.add_parser(
         "frontier-preregister",
         help="freeze one clean-tree, price-capped frontier-model cell",
@@ -609,7 +705,6 @@ def parser() -> argparse.ArgumentParser:
         "--provider", choices=("openai", "anthropic", "xai", "gemini"), required=True
     )
     preregister.add_argument("--model", required=True)
-    preregister.add_argument("--scenario", action="append")
     preregister.add_argument("--max-model-turns", type=int, default=32)
     preregister.add_argument("--max-acts", type=int, default=28)
     preregister.add_argument("--max-provider-requests", type=int, required=True)
@@ -618,7 +713,9 @@ def parser() -> argparse.ArgumentParser:
     preregister.add_argument("--max-cost-usd", type=float, required=True)
     preregister.add_argument("--input-usd-per-million", type=float, required=True)
     preregister.add_argument("--output-usd-per-million", type=float, required=True)
-    preregister.add_argument("--temperature", type=float)
+    preregister.add_argument(
+        "--reasoning-effort", choices=("high",), required=True
+    )
     preregister.add_argument("--timeout-seconds", type=float, default=60.0)
     preregister.add_argument("--price-source-url", required=True)
     preregister.add_argument("--price-checked-at", required=True)

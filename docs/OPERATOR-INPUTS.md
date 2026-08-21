@@ -56,20 +56,22 @@ not eligible for a reported model score.
 
 Also approve one total dollar ceiling. Recommended first pass:
 
-1. run one short control, one request and one model per provider under a
+1. run the non-benchmark `provider-smoke`, one request and one model per provider under a
    **$5 local reservation ceiling**, with a separate provider-account spend
    limit, to verify protocol and usage fields;
-2. run the chained frontier candidate exactly five times for each model under a
-   separately approved cap;
-3. inspect all five receipts, outcome signatures and grader evidence;
-4. freeze the complete five-task panel only after every smoke cell passes; and
-5. approve a separate full-panel cap from the runner's conservative reservation
-   preview. Do not infer that the smoke cap is enough for 25 long episodes.
+2. freeze all five v1 tasks, their judge, analysis, exact model, high reasoning,
+   provider-default temperature, rights posture and full-panel cap in one
+   manifest before inspecting any paid task outcome;
+3. commit and push that manifest alone and wait for green CI;
+4. run all 25 task attempts (five tasks × five attempts) from that manifest;
+5. inspect receipts, outcome signatures and grader evidence only after the
+   entire cell ends; and
+6. keep the panel private until blinded review and release governance pass.
 
 The command refuses a request that could cross its cell cap. Provider account-
 level budgets remain a second independent control.
 
-Before step 2, the non-secret cell manifest is generated from a clean tree,
+Before the first task-bearing request, the non-secret cell manifest is generated from a clean tree,
 reviewed, committed and pushed by itself. The live runner refuses if that
 public preregistration is missing, uncommitted, no longer the only change after
 the recorded code commit, or inconsistent with the current tasks, judge,
@@ -78,10 +80,11 @@ This Git check proves commit ordering and manifest-only changed-file scope. It
 does not prove that no earlier private run or outcome inspection occurred;
 following and attesting to that operating rule remains the operator's duty.
 
-For each model, also choose a frozen temperature or explicitly choose the
-provider default. The runner records the choice. Attempt ids 1–5 are repeated
-requests, not random seeds. Results distinguish any-pass@5 capability coverage
-from all-pass@5 reliability and preserve individual failure signatures.
+The v1 comparison fixes explicit `high` reasoning and provider-default
+temperature for every model. The runner records both. Attempt ids 1–5 are
+repeated requests, not random seeds. Results distinguish any-pass@5 capability
+coverage from all-pass@5 reliability and preserve individual failure
+signatures.
 
 ## 3. Inputs needed later, not for the first model smoke
 
