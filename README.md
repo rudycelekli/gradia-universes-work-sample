@@ -48,6 +48,25 @@ declared horizon target is not yet execution-enforced, no live-model panel has
 run, and the document makes no frontier-difficulty, customer-validity or novelty
 claim.
 
+Three additional measurement protocols are now documented in the manuscript as
+**PRE-RESULTS engineering directions**:
+
+- **gauge-invariant evaluator admission** asks whether a verdict survives
+  meaning-preserving changes to names, timestamp spelling, JSON member order and
+  the ordering of causally incomparable events;
+- **structural characterization** reports reachable branching, diameter and
+  lazy-walk statistics without relabeling those descriptors as empirical
+  difficulty; and
+- **proof-bound claim assessment** checks native atomic claims against the exact
+  facts visible at the claimed boundary, classifying each as supported,
+  contradicted, unobservable or indeterminate without calling the result
+  truthfulness or deception.
+
+The private engineering candidates for these protocols remain outside this
+standalone repository and have no live-model or human result. Their inclusion in
+the paper freezes the intended claim boundary before empirical results exist; it
+does not promote private implementation facts into public artifact evidence.
+
 ## Read the paper
 
 The publication-style pre-results manuscript is

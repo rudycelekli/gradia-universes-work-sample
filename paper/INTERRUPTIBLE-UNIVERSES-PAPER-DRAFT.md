@@ -6,7 +6,7 @@ date: "Pre-results public draft - 21 August 2026"
 
 **Artifact license:** Apache-2.0 for the code and synthetic fixtures; live-model outputs remain subject to provider terms and a separate rights review.
 
-> **Locked claim boundary.** This repository demonstrates deterministic harness semantics on five fully synthetic control conditions and 15 scripted-policy episodes. It also admits five synthetic frontier-candidate task editions for deterministic solvability and evaluator sensitivity only. Two additional PRE-RESULTS axes freeze five phase-response and five authority-ladder candidate/control pairs with exact witnesses and mutation probes; no model has run on them. The branch-consistency oversight program described below is a preregistered research direction, not a result: this standalone artifact does not yet contain a causally closed branch battery, structured account protocol, or live-model oversight study. The artifact does not establish language-model capability, empirical task difficulty, phase or authority effects, human agreement, real-world validity, training lift, causal attribution, deception detection, scalable oversight, provider parity, or research novelty. Scripted-policy and evaluator-probe results below are engineering checks only. Every unmeasured empirical result is marked **NOT YET MEASURED**.
+> **Locked claim boundary.** This repository demonstrates deterministic harness semantics on five fully synthetic control conditions and 15 scripted-policy episodes. It also admits five synthetic frontier-candidate task editions for deterministic solvability and evaluator sensitivity only. Two additional PRE-RESULTS axes freeze five phase-response and five authority-ladder candidate/control pairs with exact witnesses and mutation probes; no model has run on them. The branch-consistency, gauge-invariance, structural-characterization and proof-bound-claim protocols described below are preregistered research directions, not results: this standalone artifact does not yet contain a causally closed branch battery, a production-admitted gauge transform, a runtime state-graph extractor, a structured claim receipt path, or a live-model oversight study. The artifact does not establish language-model capability, empirical task difficulty, phase or authority effects, human agreement, real-world validity, training lift, causal attribution, deception detection, scalable oversight, provider parity, or research novelty. Scripted-policy and evaluator-probe results below are engineering checks only. Every unmeasured empirical result is marked **NOT YET MEASURED**.
 
 ## Abstract
 
@@ -50,6 +50,7 @@ The paper separates what is implemented, what is measured, and what remains hypo
 7. **Preregistered empirical claim.** A paired mutation study will test incremental invalid-episode detection against four weaker evidence policies. This result is **NOT YET MEASURED**.
 8. **Preregistered behavioral and human claims.** Identity-bound live-model and blinded-human panels will measure agent adaptation and reviewer utility. These results are **NOT YET MEASURED**.
 9. **Preregistered oversight program.** A staged branch-consistency study will first test whether witnessed closure evidence catches hidden world defects, then test whether structured agent accounts remain consistent across concealed counterfactual forks. It does not equate consistency with truthfulness or inconsistency with deception, and it is **NOT YET MEASURED**.
+10. **Preregistered measurement admissions.** Meaning-preserving gauge mutations, exact finite-graph descriptors and proof-bound atomic claim receipts define three additional evaluator and analysis gates. Their private engineering fixtures are not public evidence, and their model, human and construct-validity results are **NOT YET MEASURED**.
 
 ### 1.3 Non-contributions
 
@@ -142,6 +143,50 @@ seed only after the successor's process isolation and information boundary are
 proven. Until those gates close, branch-consistency oversight remains
 **PRE-RESULTS / NOT YET MEASURED**.
 
+### 2.6 Measurement admissions beyond terminal correctness
+
+The planned studies add three admissions that answer different questions and
+must not be collapsed into one score.
+
+**Gauge-invariant evaluator admission.** A benchmark verdict should not change
+when only a non-semantic rendering choice changes. The planned transform family
+renames synthetic entities bijectively, renders the same logical timestamp in an
+equivalent form, permutes JSON object members and reorders only events proven
+causally incomparable by the declared partial order. Each transformed episode
+must carry an equivalence receipt naming the exact transform and the invariant
+semantic projection. The evaluator is admitted only if its normalized world
+root, criterion vector and official verdict remain identical. This is a test for
+presentation dependence, not proof that the evaluator captures the intended
+construct or that every relevant re-projection has been enumerated.
+
+**Structural characterization without difficulty laundering.** Act count is a
+poor proxy for horizon and an even poorer proxy for difficulty. For a finite,
+exactly enumerable reachable graph, the planned report records reachable states
+and edges, branching statistics, directed diameter, a high-percentile distance
+and lazy-walk return probabilities. Node relabeling must preserve the metric
+vector, and unreachable components must not inflate it. These are properties of
+the admitted graph. They do not become empirical difficulty until a frozen model
+or human panel measures performance against them; implicit or unbounded worlds
+require a separately admitted approximation protocol.
+
+**Proof-bound structured claims.** An agent may optionally emit atomic claims in
+the exact action bytes it submits. A receipt can compare such a claim only with
+typed facts present in the agent-visible projection under a predeclared authority
+contract, preserving source version, validity window, retraction, restore
+generation and occurrence lineage. The output vocabulary is deliberately
+limited to `supported`, `contradicted`, `unobservable` and `indeterminate`.
+Absence is not falsity; a retracted fact is not evidence of its opposite; prose
+is not silently upgraded into a structured claim. Even a supported receipt shows
+projection consistency, not external truth, sincere belief or honesty. A future
+model-based extractor would require a pinned, independently reviewed human
+calibration edition before its output could enter this lane.
+
+The private Gradia engineering tree contains bounded candidates for all three
+protocols. Those candidates are outside this standalone artifact and therefore
+are not evidence for this paper. Public promotion requires exact-byte review,
+artifact inclusion, independent replay and the same empirical gates applied to
+the rest of the manuscript.
+
 ## 3. Artifact overview and claim ladder
 
 The standalone artifact is intentionally small. A reader can inspect every fixture, replay every episode, recompute every receipt, and compare generated bytes without access to a private service.
@@ -159,6 +204,7 @@ The standalone artifact is intentionally small. A reader can inspect every fixtu
 | Reference panel | 15 scripted-policy episodes | Harness sensitivity and replay | Model capability or empirical difficulty |
 | Frontier candidates | Five queue editions and seven-criterion judge | Solvability, answer changes and isolated criterion sensitivity | Frontier difficulty, human agreement or domain validity |
 | PRE-RESULTS axes | Five phase-response and five authority-ladder pairs | Deterministic generation, seed pairing, exact witness exposure and mutation isolation | Model behavior, factor effects, difficulty or novelty |
+| Measurement admissions | Gauge transforms, finite-graph descriptors and structured-claim protocol described here | A frozen pre-results analysis contract | Public implementation, construct validity, model behavior, human agreement, truthfulness or novelty |
 | Report | Deterministically generated Markdown and JSON | Reproducible counts and intervals | Generalizable findings |
 | Public bundle | Candidate projection with rights metadata | Deterministic release candidate | Authorization to publish as an approved result |
 | External client | Live API conformance checks | Contract-test capability when run | Provider parity in this committed release |
