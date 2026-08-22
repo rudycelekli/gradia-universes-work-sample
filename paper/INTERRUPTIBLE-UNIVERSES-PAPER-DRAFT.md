@@ -6,7 +6,7 @@ date: "Pre-results public draft - 21 August 2026"
 
 **Artifact license:** Apache-2.0 for the code and synthetic fixtures; live-model outputs remain subject to provider terms and a separate rights review.
 
-> **Locked claim boundary.** This repository demonstrates deterministic harness semantics on five fully synthetic control conditions and 15 scripted-policy episodes. It also admits five synthetic frontier-candidate task editions for deterministic solvability and evaluator sensitivity only. Two additional PRE-RESULTS axes freeze five phase-response and five authority-ladder candidate/control pairs with exact witnesses and mutation probes; no model has run on them. The artifact does not yet establish language-model capability, empirical task difficulty, phase or authority effects, human agreement, real-world validity, training lift, causal attribution, provider parity, or research novelty. Scripted-policy and evaluator-probe results below are engineering checks only. Every unmeasured empirical result is marked **NOT YET MEASURED**.
+> **Locked claim boundary.** This repository demonstrates deterministic harness semantics on five fully synthetic control conditions and 15 scripted-policy episodes. It also admits five synthetic frontier-candidate task editions for deterministic solvability and evaluator sensitivity only. Two additional PRE-RESULTS axes freeze five phase-response and five authority-ladder candidate/control pairs with exact witnesses and mutation probes; no model has run on them. The branch-consistency oversight program described below is a preregistered research direction, not a result: this standalone artifact does not yet contain a causally closed branch battery, structured account protocol, or live-model oversight study. The artifact does not establish language-model capability, empirical task difficulty, phase or authority effects, human agreement, real-world validity, training lift, causal attribution, deception detection, scalable oversight, provider parity, or research novelty. Scripted-policy and evaluator-probe results below are engineering checks only. Every unmeasured empirical result is marked **NOT YET MEASURED**.
 
 ## Abstract
 
@@ -49,6 +49,7 @@ The paper separates what is implemented, what is measured, and what remains hypo
 6. **Implemented PRE-RESULTS axis preflight.** Shared definitions generate five interruption-phase and five authority-ladder candidate/control pairs. Ten exposed witnesses and 100 isolated probes validate artifact construction, not model behavior, difficulty, factor effects, or novelty.
 7. **Preregistered empirical claim.** A paired mutation study will test incremental invalid-episode detection against four weaker evidence policies. This result is **NOT YET MEASURED**.
 8. **Preregistered behavioral and human claims.** Identity-bound live-model and blinded-human panels will measure agent adaptation and reviewer utility. These results are **NOT YET MEASURED**.
+9. **Preregistered oversight program.** A staged branch-consistency study will first test whether witnessed closure evidence catches hidden world defects, then test whether structured agent accounts remain consistent across concealed counterfactual forks. It does not equate consistency with truthfulness or inconsistency with deception, and it is **NOT YET MEASURED**.
 
 ### 1.3 Non-contributions
 
@@ -86,6 +87,60 @@ The potentially useful delta is a composition specialized to benchmark validity.
 The intended inference is limited: given trusted canonicalization, world ownership, and fixture identity, a verifier can test internal consistency among the benchmark's declared change, application, disclosure, ordering, and restore history. The witness does not show that an external fact was true, that the environment owner was honest, that an agent internally reasoned from the event, or that a particular runtime is secure.
 
 Whether this composition is empirically incremental over strong causal-execution baselines is **NOT YET MEASURED**. A broader literature search may identify equivalent constructions; any novelty claim remains withheld until the preregistered comparison and an updated review are complete.
+
+### 2.5 Branch-consistency oversight as a staged research program
+
+Scalable oversight asks how a weaker evaluator can supervise a more capable
+system. Prior work studies weak-model judges, debate and consultancy, unreliable
+model assistance, peer-prediction incentives, sabotage evaluations, automated
+behavioral-evaluation generation, and counterfactual localization of deceptive
+commitment. Those directions occupy any broad claim that counterfactual tests,
+weak supervision, consistency checks, or deception localization originate in
+this work.
+
+The narrower program proposed here asks whether a witnessed, causally closed
+world can supply useful oversight evidence without requiring a judge to solve
+the original task better than the agent. The sequence is deliberate:
+
+1. **Cross-examine the world.** Starting from one admitted snapshot, inject a
+   single hidden infrastructure defect--for example a dropped in-flight message,
+   duplicate delivery after restore, stale private actor memory, or mixed capture
+   generation. Compare full closure-and-witness verification with terminal-state
+   and ordinary-log baselines. This is a systems-validity study, not a study of
+   agent honesty.
+2. **Cross-examine an account.** Require an agent to emit atomic, structured
+   claims that name the fact, source version, authority, visibility boundary and
+   decision dependency it asserts. Fork the same admitted world at concealed,
+   preregistered points; alter one admissible fact while holding the remaining
+   closure constant; rerun the identity-bound policy; and measure whether the
+   claimed dependencies and actions change in the way the intervention predicts.
+3. **Test anti-gaming limits.** Hold out fork families, randomize intervention
+   locations after committing the generator, include honest and non-deceptive
+   inconsistency controls, and test whether an agent that anticipates the fork
+   distribution can remain strategically but misleadingly consistent.
+
+The core observation is not that consistency proves honesty. It does not.
+Equivalent behavior can be produced by multiple internal policies; an honest
+agent can be inconsistent under sampling noise, limited context or ambiguity;
+and a sufficiently capable agent may infer the intervention distribution. The
+eligible v0 endpoints are therefore descriptive: fork-conditioned action delta,
+claim-support delta, dependency-consistency rate, abstention, false accusation on
+honest controls, and incremental defect detection over the strongest baseline.
+Words such as *lie*, *deception*, *truthfulness* and *scalable oversight* remain
+ineligible outcome labels unless independent ground truth, calibrated reviewers,
+anti-gaming controls and a frozen claim-to-metric map support them.
+
+The intended implementation contract reuses the evidence objects in this paper
+but adds requirements the standalone artifact does not yet satisfy: a closure
+certificate over every stateful component; exact branch parent and intervention
+receipts; per-actor visible projections; a structured claim ledger; repeated
+identity-bound continuations; deterministic and calibrated semantic checks;
+paired infrastructure exclusions; and independent release review. The existing
+retraction and authority candidates are suitable engineering seeds, not evidence
+for the oversight hypothesis. A successor-handoff candidate can provide a third
+seed only after the successor's process isolation and information boundary are
+proven. Until those gates close, branch-consistency oversight remains
+**PRE-RESULTS / NOT YET MEASURED**.
 
 ## 3. Artifact overview and claim ladder
 
@@ -879,6 +934,12 @@ The scientific claim is still ahead. A preregistered mutation study must show in
 15. Ang, et al. (2026). [*Agentic Data Environments*](https://arxiv.org/abs/2607.07397). *IEEE Data Bulletin*, 50(1).
 16. Ang, et al. (2026). [*BranchBench: Aligning Database Branching with Agentic Demands*](https://arxiv.org/abs/2604.17180).
 17. Summers, et al. (2026). [*Deterministic Data Flow Control Improves Agent Utility and Reduces Safety Violations*](https://openreview.net/pdf?id=V5WU7pCCVF).
+18. Bowman, et al. (2022). [*Measuring Progress on Scalable Oversight for Large Language Models*](https://www.anthropic.com/research/measuring-progress-on-scalable-oversight-for-large-language-models).
+19. Kenton, et al. (2024). [*On scalable oversight with weak LLMs judging strong LLMs*](https://arxiv.org/abs/2407.04622).
+20. Qiu, Carroll, and Allen (2026). [*Truthfulness Despite Weak Supervision: Evaluating and Training LLMs Using Peer Prediction*](https://arxiv.org/abs/2601.20299). ICLR 2026.
+21. Merrill and Srivastava (2026). [*The Point of No Return: Counterfactual Localization of Deceptive Commitment in Language-Model Reasoning*](https://arxiv.org/abs/2605.17113). Preprint.
+22. Anthropic (2024). [*Sabotage evaluations for frontier models*](https://www.anthropic.com/research/sabotage-evaluations).
+23. Anthropic (2025). [*Introducing Bloom: an open source tool for automated behavioral evaluations*](https://www.anthropic.com/research/bloom).
 
 ## Appendix A. Locked result registry
 
@@ -917,6 +978,8 @@ The scientific claim is still ahead. A preregistered mutation study must show in
 | “Witnesses help reviewers.” | counterbalanced Study C evidence-view comparison | PENDING |
 | “The semantics are provider neutral.” | Study D conformance on independent adapters | PENDING |
 | “The method is novel.” | completed empirical delta plus updated independent literature review | UNPROVEN |
+| “Branch-conditioned consistency establishes truthfulness or deception.” | independent ground truth, calibrated human review, concealed held-out forks, anti-gaming controls and acceptable honest-control false accusation | INELIGIBLE IN THIS DRAFT |
+| “Witnessed branching improves weak-evaluator oversight.” | preregistered world-defect and account-consistency studies against strong baselines, with exact closure and repeated identity-bound forks | PENDING |
 
 ## Appendix C. Minimum preregistration fields
 

@@ -60,6 +60,14 @@ mutation, live-model, human-review and runtime-conformance studies before any
 confirmatory result is seen. The reproducible PDF build is tracked with the
 source; no unmeasured result is converted into a claim for presentation.
 
+The manuscript now also records a staged **branch-consistency oversight**
+program: first test whether witnessed closure catches hidden world defects, then
+test whether structured agent accounts remain intervention-consistent across
+concealed counterfactual forks. It explicitly does **not** treat consistency as
+truthfulness or inconsistency as deception. The program is PRE-RESULTS and its
+additional closure, claim-ledger, repeated-fork and anti-gaming gates are not yet
+implemented by this standalone artifact.
+
 ## Run it in under ten minutes
 
 ```bash
