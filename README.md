@@ -72,6 +72,12 @@ does not promote private implementation facts into public artifact evidence.
 The publication-style pre-results manuscript is
 [Interruptible Universes: Evolution Witnesses for Verifiable World Change in Agent Benchmarks](paper/INTERRUPTIBLE-UNIVERSES-PAPER-DRAFT.md).
 [Open the rendered PDF](output/pdf/INTERRUPTIBLE-UNIVERSES-PRE-RESULTS-DRAFT.pdf)
+
+For design feedback, read the
+[gold-parent Universe request for comments](docs/GOLD-PARENT-UNIVERSE-RFC.md),
+which freezes the five-task protocol, governed-counterpart boundary, grading
+commitments, branch-conditioned account study, and questions that could still
+change the design before live results become expensive.
 for the publication layout.
 It formalizes the evidence object, reports the exact scripted-control harness
 checks, compares the narrow hypothesis to the closest research, and locks the
