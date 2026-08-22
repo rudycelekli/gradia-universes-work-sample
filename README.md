@@ -32,6 +32,22 @@ This is **not** Gradia's internal product codebase and contains no external-orga
 material. It is a public work sample, synthetic benchmark fixture and external
 conformance client for Gradia's authenticated API.
 
+## Latest frontier-plus engineering checkpoint
+
+The private engineering tree now contains five synthetic frontier-plus task
+candidates, exact deterministic positive controls and a dependency-aware
+evaluator-mutation screen. The dated
+[PRE-RESULTS review checkpoint](docs/FRONTIER-PLUS-ENGINEERING-CHECKPOINT-2026-08-21.md)
+publishes the task designs, observed control-trace lengths, evidence identifiers,
+evaluator defects found during hardening and the gates still required before the
+implementation or any result is eligible for release.
+
+This checkpoint is deliberately **not** a benchmark release. The candidate
+implementation and its generated manifests are not yet in this repository, the
+declared horizon target is not yet execution-enforced, no live-model panel has
+run, and the document makes no frontier-difficulty, customer-validity or novelty
+claim.
+
 ## Read the paper
 
 The publication-style pre-results manuscript is
