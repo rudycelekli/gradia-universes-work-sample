@@ -12,6 +12,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from .axis_candidates import verify_axis_artifacts
 from .canonical import canonical_bytes, digest, write_canonical
 from .frontier import (
     FRONTIER_SCAFFOLD_VERSION,
@@ -246,6 +247,17 @@ def command_frontier_verify(args: argparse.Namespace) -> int:
         f"verified {report['scenario_count']} frontier-candidate admissions; "
         f"report_sha256={report['report_sha256']}; "
         f"judge_report_sha256={judge_report['report_sha256']}"
+    )
+    return 0
+
+
+def command_axes_verify(args: argparse.Namespace) -> int:
+    corpus, report = verify_axis_artifacts(args.root)
+    print(
+        f"verified {report['frozen_case_count']} PRE-RESULTS candidates and "
+        f"{report['mutation_probe_count']} isolated probes; "
+        f"corpus_sha256={corpus['corpus_sha256']}; "
+        f"report_sha256={report['report_sha256']}"
     )
     return 0
 
@@ -717,6 +729,10 @@ def parser() -> argparse.ArgumentParser:
         "frontier-verify", help="replay frontier-candidate solvability admissions"
     )
     frontier_verify.set_defaults(func=command_frontier_verify)
+    axes_verify = sub.add_parser(
+        "axes-verify", help="replay PRE-RESULTS phase and authority candidate axes"
+    )
+    axes_verify.set_defaults(func=command_axes_verify)
     contract = sub.add_parser("gradia-contract", help="check a live Gradia API safely")
     contract.add_argument("--base-url", required=True)
     contract.set_defaults(func=command_gradia_contract)

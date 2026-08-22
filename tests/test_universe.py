@@ -19,8 +19,10 @@ from gradia_universes.axis_candidates import (
 from gradia_universes.canonical import canonical_bytes, digest, load_json
 from gradia_universes.cli import (
     _verify_release_text_boundary,
+    command_axes_verify,
     command_frontier_diagnostic_run,
     command_provider_smoke,
+    parser,
 )
 from gradia_universes.contracts import Scenario
 from gradia_universes.frontier import (
@@ -615,6 +617,23 @@ def test_axis_candidates_and_validation_are_exact_replays() -> None:
     assert canonical_bytes(corpus) == canonical_bytes(stored_corpus)
     assert canonical_bytes(report) == canonical_bytes(stored_report)
     assert render_axis_validation(report) == stored_markdown
+
+
+def test_axes_verify_is_a_first_class_cli_command(capsys: pytest.CaptureFixture[str]) -> None:
+    args = parser().parse_args(["--root", str(ROOT), "axes-verify"])
+    assert args.command == "axes-verify"
+    assert args.func is command_axes_verify
+    assert args.func(args) == 0
+    output = capsys.readouterr().out
+    assert "verified 10 PRE-RESULTS candidates and 100 isolated probes" in output
+    assert (
+        "corpus_sha256=d9b259132ea34b0660e35dc9765fb5a6d1ff37edc8a400bb88c8dbe340743935"
+        in output
+    )
+    assert (
+        "report_sha256=6d0f7a730454db24bb6eafa0e6a4aeb04a4d4ee6bd5c02aa76aaf54ec792de45"
+        in output
+    )
 
 
 def _spend_policy(*, max_requests: int = 8) -> SpendPolicy:

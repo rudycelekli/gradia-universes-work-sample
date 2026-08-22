@@ -69,7 +69,7 @@ python3 -m venv .venv
 .venv/bin/pip install -e '.[dev]'
 .venv/bin/gradia-universe verify
 .venv/bin/gradia-universe frontier-verify
-.venv/bin/python -m gradia_universes.axis_candidates verify
+.venv/bin/gradia-universe axes-verify
 ```
 
 Expected terminal line:
@@ -114,7 +114,7 @@ per axis—plus ten seed-paired controls, ten exact witnesses and 100 isolated
 mutation probes:
 
 ```bash
-.venv/bin/python -m gradia_universes.axis_candidates verify
+.venv/bin/gradia-universe axes-verify
 ```
 
 The frozen [candidate corpus](fixtures/axes/frozen-candidates.json) includes the
@@ -330,7 +330,7 @@ ruff check src tests
 mypy --strict src tests
 gradia-universe verify
 gradia-universe frontier-verify
-python -m gradia_universes.axis_candidates verify
+gradia-universe axes-verify
 gradia-universe verify-public
 ```
 

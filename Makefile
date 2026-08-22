@@ -16,7 +16,7 @@ verify:
 	.venv/bin/gradia-universe verify
 	.venv/bin/gradia-universe study-a-verify
 	.venv/bin/gradia-universe frontier-verify
-	.venv/bin/python -m gradia_universes.axis_candidates verify
+	.venv/bin/gradia-universe axes-verify
 
 study-a:
 	.venv/bin/gradia-universe study-a-build
