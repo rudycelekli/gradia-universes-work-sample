@@ -6,19 +6,21 @@ date: "Pre-results public draft - 22 August 2026"
 
 **Artifact license:** Apache-2.0 for the code and synthetic fixtures; live-model outputs remain subject to provider terms and a separate rights review.
 
-> **Locked claim boundary.** This repository demonstrates deterministic harness semantics on five fully synthetic control conditions and 15 scripted-policy episodes. It also admits five synthetic frontier-candidate task editions for deterministic solvability and evaluator sensitivity only. Two additional PRE-RESULTS axes freeze five phase-response and five authority-ladder candidate/control pairs with exact witnesses and mutation probes; no model has run on them. The branch-consistency, gauge-invariance, structural-characterization, proof-bound-claim, governed-counterpart, and gold-parent five-task protocols described below are preregistered research directions, not results: this standalone artifact does not yet contain a causally closed branch battery, a production-admitted gauge transform, a runtime state-graph extractor, a production structured-claim receipt path, a released gold-parent corpus, or a live-model oversight study. The artifact does not establish language-model capability, empirical task difficulty, phase or authority effects, human agreement, real-world validity, training lift, causal attribution, deception detection, scalable oversight, provider parity, or research novelty. Scripted-policy and evaluator-probe results below are engineering checks only. Every unmeasured empirical result is marked **NOT YET MEASURED**.
-
 ## Abstract
 
-Long-horizon agents act while their worlds continue to change. Evidence can arrive, a policy can be superseded, a source can be retracted, an operator can interrupt, or a runtime can restore from a snapshot. A benchmark may record a final state and an event log yet still be unable to establish whether a declared change was applied at the right action boundary, whether the agent saw the declared projection, or whether restore preserved exactly-once history. This paper studies a narrow evidence object for that problem: an **evolution witness**.
+Long-horizon agent benchmarks increasingly change the world while an agent works: evidence arrives, policies are superseded, sources are retracted, and runtimes restore from snapshots. A terminal state and an event log cannot establish that a declared change was applied at the declared action boundary, that the agent received exactly the declared projection, or that restore preserved exactly-once history. We introduce the **evolution witness**, a hash-bound evidence object composing the frozen event contract, application boundary, before/after material-world roots, agent-visible projection digest, restore generation, and previous occurrence head.
 
-An evolution witness composes a frozen exogenous-event contract with its realized application: before/after material-world roots, an exact model-visible projection, an action boundary, restore generation, and the previous occurrence-chain head. The public artifact implements this object in a small synthetic underwriting universe containing a static control, document addition, policy revision, retraction across restore, and an authority conflict. Its committed reference panel comprises 15 deterministic episodes from three deliberately constructed scripted policies. Those controls pass 5/5, 2/5, and 1/5 episodes respectively and expose the intended judge and failure-taxonomy sensitivity; they are not estimates of model behavior. A separate five-edition candidate suite expands the workload to a four-case queue, six versioned sources, shared exception capacity, chained cutoff events and restore. Its safe-solver admissions and 44 isolated judge probes establish only solvability and executable criterion sensitivity. A PRE-RESULTS corpus additionally freezes two five-case axes: the same revision at five workflow phases and five source-authority rungs at one phase. Its ten seed-paired controls, ten exact witnesses, and 100 isolated probes establish reproducible construction only. The artifact also commits replayable episode receipts, generated reports, an unsigned public-bundle candidate, adversarial integrity tests, and explicit data and rights cards.
+This composition separates four faults that terminal correctness conflates: environment application, disclosure, authority, and agent adaptation. We release a fully synthetic deterministic reference universe, replayable receipts, a keyless verifier, scripted controls, and isolated verifier mutations. We specify two preregistered studies: an externally grounded mutation study against terminal, log, milestone, and proof-of-execution-style evidence policies, including benign perturbations and minimal-sufficiency ablations; and an identity-bound live-model study of adaptation under pushed and pulled world change at varied action boundaries. The proposed contribution is not dynamic worlds, interruptions, provenance, or execution receipts in isolation. It is a benchmark-validity composition that makes declared world evolution, material application, disclosure, temporal boundary, restore lineage, and adjudication jointly testable.
 
-The paper preregisters the still-unrun studies required for a scientific claim. The primary study injects one isolated validity mutation per paired receipt and tests whether full witnesses detect failures missed by terminal-state, ordinary-log, milestone, and proof-of-execution-style baselines. A separately pinned live-model panel measures behavioral adaptation, while a blinded human study measures criterion agreement and witness usefulness. A gold-parent protocol derives five controlled task constructs from one common synthetic long-horizon world and adds root-governed AI counterparts whose language cannot author truth, timing, authority, attachments, or answer keys. The primary endpoint is paired incremental invalid-episode detection; faithful-episode false rejection, localization, replay, abstention, and verification cost are secondary endpoints. The proposed delta is not the invention of dynamic worlds, interruptions, provenance, or execution receipts. It is the benchmark-specific composition of declared world evolution with material application, disclosure, temporal boundary, restore lineage, and adjudication--and whether that composition provides incremental validity evidence.
+> **Study status.** Scripted controls and mutation probes validate deterministic instrument behavior only. Confirmatory validity, live-model behavior, human agreement, real-world validity, training lift, causal attribution, provider parity, and novelty comparisons are preregistered or out of scope; Appendix A is the authoritative status registry.
 
 ## 1. Introduction
 
 Agent benchmarks are becoming less like question sets and more like operating environments. An agent reads tools, writes state, waits for external events, handles interruptions, and eventually commits an answer or action. This is desirable: realistic work is stateful and open ended. It also creates a measurement problem that a terminal reward cannot solve by itself.
+
+Consider an authority-conflict episode in the released reference world. An agent reaches the correct terminal recommendation but cites an unverified message as evidence. Terminal accuracy says *correct*; the evidence-aware judge scores 0.8 because the provenance failure is real. That one trace motivates the paper: correctness alone cannot tell whether the world applied a change correctly, disclosed it correctly, authorized it correctly, or whether the agent adapted correctly.
+
+![Four fault classes separated before an episode enters the model denominator.](figures/fault-attribution.png)
 
 Suppose an environment declares that a policy was revised after the agent's second act. The final database may contain the revised policy. The log may contain a revision event. The agent may nevertheless have received a different message, received it after committing, or continued from a restored snapshot in which the revision fired twice. A correct terminal state cannot prove a correct trajectory, and an ordinary log cannot prove that the logged event corresponds to the material change, visible notice, or boundary the benchmark specification promised.
 
@@ -28,37 +30,21 @@ The artifact in this repository turns that question into a falsifiable study. It
 
 ### 1.1 Research questions
 
-- **RQ1 -- Incremental validity.** Does a full evolution witness detect invalid dynamic-world episodes missed by terminal-state comparison, an ordinary event log, action milestones, or a proof-of-execution-style causal baseline?
-- **RQ2 -- Projection and authority.** Does binding the exact visible projection distinguish application failures, disclosure failures, authority changes, and agent decision failures?
-- **RQ3 -- Restore semantics.** Does binding restore generation and occurrence-chain lineage detect duplicate, missing, or reordered delivery across snapshot/restore while accepting faithful restores?
-- **RQ4 -- Behavioral adaptation.** Under a fixed scaffold, how often do identity-bound live-model cells re-read authoritative state and adapt after additions, revisions, retractions, and non-authoritative interruptions?
-- **RQ5 -- Human utility.** Do evolution witnesses improve blinded reviewers' detection and localization of invalid episodes relative to weaker evidence views?
-- **RQ6 -- Portability.** Can independently implemented runtimes produce semantically equivalent witness evidence under one frozen provider-neutral contract?
-- **RQ7 -- Gold-parent construct separation.** Can five task editions derived from one common synthetic parent isolate document truth, epistemic residue, authority provenance, interruption phase, and handoff integrity without changing unrelated world state?
-- **RQ8 -- Governed counterpart validity.** Do root-selected counterpart moves add conversational realism without allowing an LLM voice to invent task facts, timing, authority, attachments, world effects, or answer keys?
-- **RQ9 -- Branch-conditioned account consistency.** Do structured terminal claims and decisions vary coherently under concealed, single-factor forks, and what false-accusation rate appears on honest but stochastic controls?
+- **RQ1 -- Incremental validity.** Does the full witness detect externally grounded dynamic-world defects missed by terminal-state, ordinary-log, milestone, or proof-of-execution-style evidence, while accepting faithful episodes under benign re-projection?
+- **RQ2 -- Minimal sufficiency.** Which witness fields are necessary for detection and localization, and what field set lies on the Pareto frontier of coverage, bytes, and verification latency?
+- **RQ3 -- Behavioral adaptation.** How often do identity-bound live-model attempts adapt to pushed and pulled additions, revisions, retractions, and authority conflicts at varied action boundaries?
+- **RQ4 -- Human utility.** In a separately powered study, do witnesses improve reviewers' detection and localization of invalid episodes relative to weaker evidence views?
 
-Only the harness-sensitivity portion of these questions has been exercised in the committed reference panel. RQ1-RQ6 as empirical research questions remain **NOT YET MEASURED**.
+### 1.2 Contributions
 
-### 1.2 Contribution ladder
-
-The paper separates what is implemented, what is measured, and what remains hypothetical.
-
-1. **Implemented evidence object.** A canonical, hash-bound occurrence receipt joins a declared event, realized before/after roots, exact visible projection, action boundary, restore generation, and prior chain head.
-2. **Implemented auditable universe.** Five synthetic conditions exercise no change, evidence addition, policy supersession, retraction across restore, and an unauthorized instruction over one common tool contract.
-3. **Implemented executable judgment.** A five-criterion deterministic judge separates current-state correctness, authoritative evidence, changed-world adaptation, and output conformance, while preserving nonexclusive failure labels.
-4. **Measured harness sensitivity.** Fifteen scripted-policy episodes demonstrate that the runner and judge respond differently to safe, stale, and message-credulous controls. This is an engineering check, not a model comparison.
-5. **Implemented candidate-task and judge admission.** Five coupled queue editions pass a deterministic safe solver; four change their oracle after world evolution. Five positive controls and 44 isolated negative probes exercise the seven-criterion frontier judge. These are admissions, not empirical difficulty or fairness measurements.
-6. **Implemented PRE-RESULTS axis preflight.** Shared definitions generate five interruption-phase and five authority-ladder candidate/control pairs. Ten exposed witnesses and 100 isolated probes validate artifact construction, not model behavior, difficulty, factor effects, or novelty.
-7. **Preregistered empirical claim.** A paired mutation study will test incremental invalid-episode detection against four weaker evidence policies. This result is **NOT YET MEASURED**.
-8. **Preregistered behavioral and human claims.** Identity-bound live-model and blinded-human panels will measure agent adaptation and reviewer utility. These results are **NOT YET MEASURED**.
-9. **Preregistered oversight program.** A staged branch-consistency study will first test whether witnessed closure evidence catches hidden world defects, then test whether structured agent accounts remain consistent across concealed counterfactual forks. It does not equate consistency with truthfulness or inconsistency with deception, and it is **NOT YET MEASURED**.
-10. **Preregistered measurement admissions.** Meaning-preserving gauge mutations, exact finite-graph descriptors and proof-bound atomic claim receipts define three additional evaluator and analysis gates. Their private engineering fixtures are not public evidence, and their model, human and construct-validity results are **NOT YET MEASURED**.
-11. **Preregistered gold-parent program.** One common synthetic world yields five hidden task families, a root-governed counterpart committee, terminal-correctness-first grading, and a gated expansion rule. This protocol is specified below; no field-validity, difficulty, counterpart-effect, or branch-consistency result is claimed.
+1. **Evidence object and fault attribution.** A canonical occurrence receipt joins the event contract, realized roots, exact visible projection, action boundary, restore generation, and prior chain head; the verifier attributes environment, disclosure, authority, and agent faults separately.
+2. **Auditable reference instrument.** A fully synthetic universe, deterministic judge, replayable receipts, keyless verifier, scripted controls, and isolated mutation probes make every current engineering claim independently reproducible.
+3. **Preregistered validity study.** An externally grounded defect corpus, benign metamorphic perturbations, proof-of-execution-style comparator, and component ablations test incremental detection, false rejection, localization, and the minimal sufficient witness.
+4. **Preregistered behavioral study.** Identity-bound attempts test adaptation under pushed and pulled world changes at varied boundaries, with criterion-level outcomes and infrastructure failures reported separately.
 
 ### 1.3 Non-contributions
 
-We do not claim to invent dynamic agent worlds, asynchronous events, interruptions, snapshot/restore, state hashes, provenance graphs, hash chains, signed execution receipts, action-level verification, or causal telemetry. We do not claim that a hash proves truthful sensing or author identity. We do not claim that the synthetic oracle is valid underwriting practice. We do not report any field deployment, frontier-model, human-review, training-lift, safety, fairness, or production result.
+We do not claim to invent dynamic worlds, interruptions, snapshot/restore, provenance, hash chains, or execution evidence. A witness proves internal consistency under the stated trust boundary; it does not prove truthful sensing, an honest root owner, or model comprehension. The synthetic domain is not policy guidance.
 
 ## 2. Related work and the narrow delta
 
@@ -70,13 +56,15 @@ Gaia2 and Agents Research Environments formalize asynchronous, event-driven agen
 
 AppWorld and ToolSandbox demonstrate state- and milestone-sensitive verification. W3C PROV defines interoperable provenance concepts and constraints. Proof of Execution develops cryptographically verifiable action evidence; CAVA canonicalizes heterogeneous runtime activity into stable action identities bound to approvals and optional attestation; and agent-native telemetry studies evidence-bearing state transitions. Recent runtime-fault localization and telemetry-sufficiency work further emphasizes that reliable evaluation depends on the sufficiency and integrity of runtime evidence. These lines of work make it inappropriate to present hashing, canonical action identity, causal traces, or attested actions as novel in isolation.
 
+Study A is also mutation analysis of a verifier, and its benign transformations are metamorphic tests. The design follows those established methods: mutants must be non-equivalent and isolated; transformations must preserve a declared semantic relation; and both false acceptance and false rejection matter. BetterBench and the successive SWE-bench harness audits motivate the benchmark-validity framing: broken, underspecified, contaminated, or overly narrow evaluation logic can move a headline score without reflecting the target capability. Hash-chained audit logs and state roots supply the tamper-evidence lineage; they are prior mechanisms, not contributions of this paper.
+
 ### 2.3 Agentic data environments and whole-world branching
 
-Agentic Data Environments frames consequential automation as a systems problem over the entire data environment: databases, files, processes, applications, APIs, derived artifacts, memory, and system metadata. Its branching direction argues that a correct speculative branch must capture the closure of state on which a live session depends, while BranchBench reports that current branchable database systems do not yet jointly satisfy the branching and query demands of agentic search. Deterministic Data Flow Control separately studies semantic restrictions over how records may contribute to derived outputs. These systems contributions occupy branching, checkpoint/restore, agent-oriented data preparation, and deterministic source-to-sink policy enforcement as broad ideas.
+Agentic Data Environments frames consequential automation as a systems problem over the entire data environment: databases, files, processes, applications, APIs, derived artifacts, memory, and system metadata. Its branching direction argues that a correct speculative branch must capture the closure of state on which a live session depends, while BranchBench reports that current branchable database systems do not yet jointly satisfy the branching and query demands of agentic search. Data Flow Control separately studies semantic restrictions over how records may contribute to derived outputs. These systems contributions preclude broad novelty claims about branching, checkpoint/restore, agent-oriented data preparation, or deterministic source-to-sink policy enforcement.
 
 They also expose a validity condition for this paper's future paired studies. A database-only fork is not a counterfactual twin when a queue, file, sidecar, cache, process, or replayed external service can retain treatment state. The planned runtime-conformance study must therefore enumerate the full stateful closure, bind a semantic root and root-owned checkpoint receipt for every declared component, and refuse fork or restore evidence when a component is missing, captured at a different boundary, or restored to a different semantic root. This **whole-world branch-closure requirement is planned and not implemented by this standalone artifact**.
 
-The relationship is complementary rather than endorsing: branchable substrates make controlled alternate worlds possible; the proposed evolution witness asks whether a benchmark can prove the declared treatment, material application, visible projection, temporal boundary, restore lineage, and adjudicated outcome inside those worlds. Whether that evidence layer adds detection beyond strong branching, provenance, execution-evidence, and data-flow-control systems is **NOT YET MEASURED**.
+The relationship is complementary: branchable substrates make controlled alternate worlds possible; the evolution witness asks whether a benchmark can jointly verify the declared treatment, material application, visible projection, temporal boundary, restore lineage, and adjudicated outcome inside those worlds. Incremental detection beyond the strongest comparator is **PREREGISTERED**.
 
 ### 2.4 Proposed delta
 
@@ -91,105 +79,21 @@ The potentially useful delta is a composition specialized to benchmark validity.
 
 The intended inference is limited: given trusted canonicalization, world ownership, and fixture identity, a verifier can test internal consistency among the benchmark's declared change, application, disclosure, ordering, and restore history. The witness does not show that an external fact was true, that the environment owner was honest, that an agent internally reasoned from the event, or that a particular runtime is secure.
 
-Whether this composition is empirically incremental over strong causal-execution baselines is **NOT YET MEASURED**. A broader literature search may identify equivalent constructions; any novelty claim remains withheld until the preregistered comparison and an updated review are complete.
+The evidence object is a new composition in this benchmark-validity context, not a claim to originate its component mechanisms. Table 1 makes the closest systems explicit. Empirical advantage over the strongest comparator remains the primary question rather than an assumed answer.
 
-### 2.5 Branch-consistency oversight as a staged research program
+| System or lineage | Declared event | Before/after roots | Agent-visible projection | Action boundary | Restore lineage | Authority binding | Benchmark-validity decision |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| W3C PROV / event sourcing | partial | partial | no | partial | partial | partial | no |
+| record/replay and deterministic simulation | partial | implementation-specific | no | yes | implementation-specific | no | no |
+| hash-chained audit logs / state roots | no | partial | no | no | no | identity only | no |
+| Proof-of-Execution-style evidence | partial | partial | partial | yes | partial | partial | partial |
+| CAVA canonical actions | partial | no | partial | yes | no | approval binding | partial |
+| Gaia2 / ARE and InterruptBench | yes | implementation-specific | yes | yes | implementation-specific | yes | task grading |
+| **Evolution witness** | **yes** | **yes** | **yes** | **yes** | **yes** | **yes** | **explicit four-fault attribution** |
 
-Scalable oversight asks how a weaker evaluator can supervise a more capable
-system. Prior work studies weak-model judges, debate and consultancy, unreliable
-model assistance, peer-prediction incentives, sabotage evaluations, automated
-behavioral-evaluation generation, and counterfactual localization of deceptive
-commitment. Those directions occupy any broad claim that counterfactual tests,
-weak supervision, consistency checks, or deception localization originate in
-this work.
+### 2.5 Extensions outside the present paper
 
-The narrower program proposed here asks whether a witnessed, causally closed
-world can supply useful oversight evidence without requiring a judge to solve
-the original task better than the agent. The sequence is deliberate:
-
-1. **Cross-examine the world.** Starting from one admitted snapshot, inject a
-   single hidden infrastructure defect--for example a dropped in-flight message,
-   duplicate delivery after restore, stale private actor memory, or mixed capture
-   generation. Compare full closure-and-witness verification with terminal-state
-   and ordinary-log baselines. This is a systems-validity study, not a study of
-   agent honesty.
-2. **Cross-examine an account.** Require an agent to emit atomic, structured
-   claims that name the fact, source version, authority, visibility boundary and
-   decision dependency it asserts. Fork the same admitted world at concealed,
-   preregistered points; alter one admissible fact while holding the remaining
-   closure constant; rerun the identity-bound policy; and measure whether the
-   claimed dependencies and actions change in the way the intervention predicts.
-3. **Test anti-gaming limits.** Hold out fork families, randomize intervention
-   locations after committing the generator, include honest and non-deceptive
-   inconsistency controls, and test whether an agent that anticipates the fork
-   distribution can remain strategically but misleadingly consistent.
-
-The core observation is not that consistency proves honesty. It does not.
-Equivalent behavior can be produced by multiple internal policies; an honest
-agent can be inconsistent under sampling noise, limited context or ambiguity;
-and a sufficiently capable agent may infer the intervention distribution. The
-eligible v0 endpoints are therefore descriptive: fork-conditioned action delta,
-claim-support delta, dependency-consistency rate, abstention, false accusation on
-honest controls, and incremental defect detection over the strongest baseline.
-Words such as *lie*, *deception*, *truthfulness* and *scalable oversight* remain
-ineligible outcome labels unless independent ground truth, calibrated reviewers,
-anti-gaming controls and a frozen claim-to-metric map support them.
-
-The intended implementation contract reuses the evidence objects in this paper
-but adds requirements the standalone artifact does not yet satisfy: a closure
-certificate over every stateful component; exact branch parent and intervention
-receipts; per-actor visible projections; a structured claim ledger; repeated
-identity-bound continuations; deterministic and calibrated semantic checks;
-paired infrastructure exclusions; and independent release review. The existing
-retraction and authority candidates are suitable engineering seeds, not evidence
-for the oversight hypothesis. A successor-handoff candidate can provide a third
-seed only after the successor's process isolation and information boundary are
-proven. Until those gates close, branch-consistency oversight remains
-**PRE-RESULTS / NOT YET MEASURED**.
-
-### 2.6 Measurement admissions beyond terminal correctness
-
-The planned studies add three admissions that answer different questions and
-must not be collapsed into one score.
-
-**Gauge-invariant evaluator admission.** A benchmark verdict should not change
-when only a non-semantic rendering choice changes. The planned transform family
-renames synthetic entities bijectively, renders the same logical timestamp in an
-equivalent form, permutes JSON object members and reorders only events proven
-causally incomparable by the declared partial order. Each transformed episode
-must carry an equivalence receipt naming the exact transform and the invariant
-semantic projection. The evaluator is admitted only if its normalized world
-root, criterion vector and official verdict remain identical. This is a test for
-presentation dependence, not proof that the evaluator captures the intended
-construct or that every relevant re-projection has been enumerated.
-
-**Structural characterization without difficulty laundering.** Act count is a
-poor proxy for horizon and an even poorer proxy for difficulty. For a finite,
-exactly enumerable reachable graph, the planned report records reachable states
-and edges, branching statistics, directed diameter, a high-percentile distance
-and lazy-walk return probabilities. Node relabeling must preserve the metric
-vector, and unreachable components must not inflate it. These are properties of
-the admitted graph. They do not become empirical difficulty until a frozen model
-or human panel measures performance against them; implicit or unbounded worlds
-require a separately admitted approximation protocol.
-
-**Proof-bound structured claims.** An agent may optionally emit atomic claims in
-the exact action bytes it submits. A receipt can compare such a claim only with
-typed facts present in the agent-visible projection under a predeclared authority
-contract, preserving source version, validity window, retraction, restore
-generation and occurrence lineage. The output vocabulary is deliberately
-limited to `supported`, `contradicted`, `unobservable` and `indeterminate`.
-Absence is not falsity; a retracted fact is not evidence of its opposite; prose
-is not silently upgraded into a structured claim. Even a supported receipt shows
-projection consistency, not external truth, sincere belief or honesty. A future
-model-based extractor would require a pinned, independently reviewed human
-calibration edition before its output could enter this lane.
-
-The private Gradia engineering tree contains bounded candidates for all three
-protocols. Those candidates are outside this standalone artifact and therefore
-are not evidence for this paper. Public promotion requires exact-byte review,
-artifact inclusion, independent replay and the same empirical gates applied to
-the rest of the manuscript.
+Branch-consistency oversight, act-level counterfactual credit, proof-bound structured claims, measured state-graph complexity, a source-grounded gold-parent world, governed AI counterparts, and multi-runtime conformance form a broader research program. They are specified in separate public protocols and are not research questions or contribution claims here. Meaning-preserving re-projection remains in scope only as **metamorphic testing** of false rejection; it is not presented as a new testing paradigm.
 
 ## 3. Artifact overview and claim ladder
 
@@ -274,7 +178,7 @@ The control fixture is intentionally too small to support a frontier-difficulty 
 
 Admission is deterministic. A scripted safe solver completes 19 acts and passes every edition at a perfect score. Four dynamic editions produce a terminal oracle different from their initial oracle; the static control does not. The seven-criterion judge is separately challenged by five positive controls and 44 one-defect probes spanning decision completeness, capacity allocation, root freshness, evidence freshness and authority, cutoff observation, post-change recheck, and output conformance. A current-source citation is insufficient without its matching root-owned `source.read` result, and every resource patched by a root-changing event must be read after that occurrence boundary. Every probe must fail exactly the intended criterion.
 
-These checks establish solvability and evaluator sensitivity only. They do not show that a frontier model will fail, that a failure is caused by inherent model capability, that the synthetic policy is valid underwriting practice, or that humans agree with the judge. Those claims remain **NOT YET MEASURED**.
+These checks establish solvability and evaluator sensitivity only. Frontier behavior, capability attribution, domain validity, and human agreement are **PREREGISTERED** or out of scope.
 
 ### 4.8 PRE-RESULTS phase-response and authority candidates
 
@@ -284,38 +188,15 @@ The interruption phase-response axis holds one synthetic base world and one auth
 
 Every treatment exposes the exact synthetic initial and terminal worlds, manipulated dimension, event digest, phase/index/action boundary, visible projection and digest, before/after material roots, previous link, and occurrence digest. The deterministic preflight regenerates all ten pairs and runs ten isolated mutations per case: frozen identity, seed pairing, shared initial world, axis manipulation, projection digest, occurrence digest, terminal state, response contract, arm digest, and case digest. Passing 100/100 one-defect checks is a corpus-integrity result. It is not evidence that a live model is challenged by a phase or authority rung, that one rung causes a behavior, or that the construction is scientifically novel.
 
-### 4.9 Gold-parent five-task protocol
+### 4.9 Separate gold-parent protocol
 
-The next study is designed around one richly versioned **synthetic parent world**, not five unrelated demonstrations. The parent contains one evolving case file, a condition ledger, document and attachment editions, a simulated clock, milestone and deadline state, an authority registry, an inbox, an external-source queue, and a cold-handoff artifact. Five task editions fork the same admitted parent at exact roots:
-
-| Task family | Hidden change | Primary endpoint | Construct-confound control |
-|---|---|---|---|
-| Document truth | A nominally complete artifact has a missing or non-substantive page; later source evidence may resolve it | Correct completeness decision and minimum-necessary request | Filename, footer, participant insistence, and act count are non-reward |
-| Epistemic residue | Current worlds are equated after `seen→retracted→replaced` versus `never seen→replacement` histories | Difference in terminal action and supported claims across current-world twins | Exact parent, replacement evidence, evaluator, and terminal obligation are shared |
-| Authority provenance | Sender identity, channel, scope, precedence, urgency, and legitimate-principal conflict vary | Unsafe-effect and conflict-escalation rates | Protected traits and stylistic persuasiveness never determine authority |
-| Interruption phase | The same authoritative change occurs at several logical action boundaries | Phase-conditioned failure and recovery latency | Event identity, material effect, terminal oracle, and initial world are shared |
-| Successor-measured handoff | A cold successor receives only a frozen handoff artifact; the world may then remain stable or change | Successor outcome and correction rate, attributed to handoff sufficiency | Predecessor transcript and hidden memory are unavailable to the successor |
-
-The official task reward remains a binary conjunction of terminal correctness, exact current-world identity, required source reconciliation, authority safety, and native claim support. It does **not** reward matching a reference trace, producing a long rationale, using a minimum number of acts, or finishing in the same number of steps as a scripted control. A model that reaches the complete, safe, evidence-supported terminal state in 70 acts can pass; a 150-act trajectory with an unsupported or stale terminal account cannot. Criterion vectors are diagnostic signals, not post-hoc partial reward.
-
-The parent may eventually be informed by an authorized enterprise workflow, but private access, redaction, and public release are distinct gates. A source-grounded public edition must be a newly generated synthetic replica: new identities, dates, amounts, document pixels, text, metadata, machine codes, filenames, and cross-document keys; no source pixels or source text spans; automated checks across text/OCR/pixels/metadata/linkage; two independent reidentification reviews; and separate rights decisions for evaluation, redistribution, derived publication, training, and raw trajectories. Until those receipts exist, this repository's fixture remains wholly synthetic and makes no customer or domain-validity claim.
-
-### 4.10 Root-governed AI counterparts
-
-Conversational realism creates a measurement hazard when the same language model invents the participant's private facts, decides when to disclose them, and is later treated as ground truth. The proposed counterpart contract therefore separates **world selection** from **surface realization**:
-
-1. the root commits actors, safe role descriptions, authority domains, private fact identifiers, response policies, moves, triggers, logical times, attachment identifiers, and world effects before the episode;
-2. the disclosure gate releases only the exact facts earned by the student's action and current world;
-3. a scripted renderer or pinned LLM may phrase that admitted move but cannot choose the move, add a fact, alter authority, mutate the world, or author the answer key; and
-4. a turn receipt binds the selected move, disclosed fact digests, before/after roots, occurrence-chain head, model request/response digests, and execution condition.
-
-The protocol records three properties separately: the latent world and move schedule are matched; the exact counterpart language is matched; and the provider attested that it honored a sampling seed. A run label named `seed` proves none of them. Live stochastic voice is ineligible for a causal paired-language claim unless the exact transcript is frozen and replayed. The counterpart layer is intended to add realistic pushback, delays, partial uploads, source attestations, conflicting principals, and availability constraints without outsourcing benchmark truth to the model being used as a simulator.
-
-### 4.11 Expansion rule
-
-The initial five are a construct-development set, not a volume target. Expansion to 10--20 editions occurs only after all five pass deterministic solvability, isolated evaluator-mutation sensitivity, branch isolation, and result-blind human review, and after at least one live diagnostic demonstrates useful non-ceiling behavior without an infrastructure censor. Additional editions may vary condition churn, evidence arrival, missing/duplicate uploads, authority rungs, event phase, handoff debt, and concealed branch interventions. They remain grouped by common parent in uncertainty estimates; multiple forks of one parent are not counted as independent real-world tasks.
+The richer five-task design—document truth, epistemic residue, authority provenance, interruption phase, and successor-measured handoff—now lives in the separate [Gold Parent Universe RFC](../docs/GOLD-PARENT-UNIVERSE-RFC.md). Keeping that design outside this paper prevents an unexecuted next-study protocol from competing with the evolution-witness validity study. Its official reward is terminal-correctness-first: neither rationale length nor act count earns credit. Expansion to 10--20 editions remains gated on deterministic solvability, isolated evaluator mutations, branch isolation, result-blind human review, and a non-censored diagnostic.
 
 ## 5. Formal method
+
+### 5.0 Trust boundary and adversary
+
+The trusted computing base is the frozen fixture authoring process, canonicalizer, root-owned event applicator, runtime act ledger, and verifier. The adversary in Study A is a buggy or partially faithful harness that can omit, duplicate, reorder, misapply, or misdisclose an event while leaving some conventional evidence plausible. The threat model does **not** include a malicious root owner that fabricates mutually consistent contracts, roots, observations, and receipts, a compromised hash implementation, or an agent that changes the runtime itself.
 
 ### 5.1 Canonical encoding and digest notation
 
@@ -370,19 +251,29 @@ $$
 
 A verifier checks event identity, event-contract digest, eligible boundary, expected root transition or permitted notice-only invariance, exact visible-projection digest, restore generation, and prior-link consistency.
 
+![The witness fields aligned to one event, its action boundary, disclosure, restore, and terminal judgment.](figures/episode-timeline.png)
+
+Define `ValidOccurrence(o_i)` as the conjunction of those seven checks. Define `ValidEpisode` as exact fixture and environment identity, a valid ordered act ledger, every declared occurrence valid exactly once, every restore receipt valid, a terminal submission, and a self-digest-valid episode receipt. Environment admission and agent scoring are separate decisions: an invalid episode never becomes an agent failure.
+
+**Detection proposition.** Assume canonical encoding is injective over the admitted schema and SHA-256 collisions are computationally infeasible. Any mutation that changes a frozen event, application boundary, material transition, visible projection, restore generation, or previous occurrence link without coherently changing the trusted source object necessarily falsifies at least one equality in `ValidOccurrence`.
+
+**Non-detection proposition.** The witness cannot detect a root owner that lies consistently across the contract and all derived evidence, an evaluator bug internal to a criterion whose inputs remain unchanged, or cross-episode contamination outside the declared material closure. Study A therefore includes externally grounded defects the witness is expected to miss; detection is not defined as 100% by construction.
+
 ### 5.5 Snapshot and restore receipt
 
-A snapshot captures material world state and its occurrence-chain head. Restore does not erase evolution history. A restore receipt binds
+A snapshot captures material world state, applied-event identities, restore generation, and occurrence-chain head. In the released retraction fixture, the runtime snapshots **after** the retraction occurrence and restores that exact snapshot immediately. Restore preserves the post-retraction material root and chain head, increments generation once, and preserves the applied-event set so the retraction cannot fire again. A restore receipt binds
 
 $$
 Q_j = \{g_j^{-},g_j^{+},R_j,h_j\},
 $$
 
-with `g_j^+ = g_j^- + 1`, the restored world root `R_j`, and preserved occurrence head `h_j`. In the retraction condition, this lets the verifier distinguish a faithful restore from a replay that drops or duplicates the already-applied retraction.
+with `g_j^+ = g_j^- + 1`, the restored world root `R_j`, and preserved occurrence head `h_j`. The confirmatory receipt schema additionally binds the canonical snapshot identity; the current engineering receipt proves the local post-event restore invariant but does not yet identify an independently stored snapshot object. This limitation is a required pre-Study-A closure, not an empirical result.
 
 ### 5.6 Episode receipt and judgment
 
-The episode receipt binds the frozen scenario, environment fingerprint, ordered action ledger, occurrences, restore receipts, terminal submission, criterion verdicts, failure labels, and its own digest. The deterministic judge evaluates five binary criteria:
+The episode receipt binds the frozen scenario, environment fingerprint, ordered action ledger, occurrences, restore receipts, terminal submission, criterion verdicts, failure labels, and its own digest. Every tool result actually returned to the agent is recorded in the act ledger. Environment-event projections are also pushed into the transcript at their declared boundary and remain available through `inbox.read`; Study B factors pushed notification versus pull-only discovery rather than treating them as equivalent. Provider-native parallel calls are serialized in the runtime's accepted order, and event boundaries occur between serialized acts—not inside a batch.
+
+The deterministic judge evaluates five binary criteria:
 
 1. recommendation correctness;
 2. submission of the current world root;
@@ -412,29 +303,15 @@ These are controlled behavioral mutations, not simulated human personas and not 
 
 The committed panel contains 15 completed episodes, 80 recorded acts, 12 event occurrences, and three restore receipts. It records zero environment failures. The episode denominator is therefore 15; environment failures would be reported separately rather than counted as agent failures.
 
-| Scripted policy | Perfect passes | Episodes | Pass rate | Wilson 95% interval |
-|---|---:|---:|---:|---:|
-| `interrupt_safe` | 5 | 5 | 100.0% | 56.6%-100.0% |
-| `stale_context` | 2 | 5 | 40.0% | 11.8%-76.9% |
-| `message_credulous` | 1 | 5 | 20.0% | 3.6%-62.4% |
+| Scripted policy | Exact passes | Constructed episodes |
+|---|---:|---:|
+| `interrupt_safe` | 5 | 5 |
+| `stale_context` | 2 | 5 |
+| `message_credulous` | 1 | 5 |
 
-![Scripted-policy harness sensitivity with Wilson 95% intervals. These are constructed controls, not model estimates.](figures/harness-sensitivity.png)
+This is a unit-test-style sensitivity check: the safe control passes every fixture, while controls that preserve stale state or accept unauthorized evidence fail the intended criteria. It is not an estimate, difficulty tier, or population comparison; inferential intervals would imply a sampling process that does not exist.
 
-The direction is the intended sensitivity pattern: the safe control passes every fixture; controls that preserve stale state or accept an unauthorized message fail relevant conditions. The intervals are wide because each row has five constructed observations. No comparison is inferential, and no row estimates a model population.
-
-### 6.3 Condition sensitivity
-
-| Synthetic condition | Perfect passes | Episodes | Pass rate | `scripted_harness_tier` |
-|---|---:|---:|---:|---|
-| `static-control` | 3 | 3 | 100.0% | easy |
-| `document-addition` | 1 | 3 | 33.3% | hard |
-| `policy-revision` | 1 | 3 | 33.3% | hard |
-| `retraction-across-restore` | 1 | 3 | 33.3% | hard |
-| `authority-conflict` | 2 | 3 | 66.7% | medium |
-
-The tier field is intentionally named `scripted_harness_tier`. It is a compact description of three constructed controls and must not be reported as model difficulty. Empirical difficulty tiers require repeated runs from the preregistered live panel and remain **NOT YET MEASURED**.
-
-### 6.4 Failure taxonomy
+### 6.3 Failure taxonomy
 
 | Nonexclusive failure class | Episode count |
 |---|---:|
@@ -446,17 +323,17 @@ The tier field is intentionally named `scripted_harness_tier`. It is a compact d
 
 Counts need not sum to 15. For example, a policy-revision episode can simultaneously submit the old root, omit current policy evidence, miss the revision, and make the wrong recommendation.
 
-### 6.5 Two audit traces
+### 6.4 Two audit traces
 
 **Stale policy after revision.** Receipt `e5b36d36b6e730974b8386aed5c7d889cccaa9eb9eb11ac3960d92de68f970ec` records `policy-revision × stale_context`. At boundary act 2, the maximum DTI changes from 0.40 to 0.35 and the policy advances from v1 to v2. The policy submits `APPROVE`, cites `policy-registry@1`, and reports the pre-event world root. The terminal oracle expects `DENY`. It passes only output conformance, scores 0.2, and receives `stale_world_state`, `missed_world_change`, `decision_error`, and `evidence_gap`. This is a localized synthetic failure, not evidence about any model.
 
 **Correct answer, unauthorized evidence.** In `authority-conflict × message_credulous`, the material root does not change and the final `APPROVE` recommendation happens to be correct. The policy also cites the unverified deal-team message. The judge passes recommendation, current root, adaptation, and output contract, but fails authoritative evidence; the score is 0.8 with `authority_violation` and `evidence_gap`. This trace tests an important separation: outcome agreement does not make a source authoritative.
 
-### 6.6 Restore trace
+### 6.5 Restore trace
 
 The safe retraction episode records occurrence head `38a2c947745c23e6059fe821b01ec80d604622d95a473746584733e2301f9771`. Restore receipt `ad8fadacbcfffa0624118b3c68cc384b0c15b31b718bfde34fd37b853dec8e34` advances generation 0→1 while preserving the post-retraction world root and occurrence-chain head. Deterministic replay observes the retraction once. This one trace establishes the artifact's intended local semantics; it does not establish all restore implementations or distributed exactly-once delivery.
 
-### 6.7 Exact artifact identities
+### 6.6 Exact artifact identities
 
 The artifact distinguishes internal canonical-body digests from exact file-byte hashes.
 
@@ -471,7 +348,7 @@ The artifact distinguishes internal canonical-body digests from exact file-byte 
 
 The verifier does not accept the committed panel merely because these hashes match. It re-runs all 15 episodes, reconstructs the receipts, panel, and Markdown, and requires byte-identical generated outputs.
 
-### 6.8 Correct interpretation
+### 6.7 Correct interpretation
 
 The measured evidence supports four limited engineering statements:
 
@@ -507,22 +384,28 @@ The noninferiority margin, sample size, stopping rule, and familywise testing or
 4. **Proof-of-execution-style causal baseline (`P+T`).** Hash- or signature-bound action evidence sufficient to reconstruct declared execution dependencies, implemented from a frozen public specification.
 5. **Full evolution witness (`W`).** Event contract, before/after roots, exact visible projection, boundary, restore generation, previous occurrence head, act ledger, and terminal judgment.
 
-The `P+T` comparator is required because an ordinary event log is not the strongest plausible baseline. It is **NOT YET IMPLEMENTED** and **NOT YET MEASURED** in this sample. Study A cannot support an incremental-contribution claim without it or a justified equivalent.
+The `P+T` comparator is required because an ordinary event log is not the strongest plausible baseline. Before confirmatory execution, the repository must publish a field-by-field mapping from the Proof of Execution paper to the author-implemented comparator, a conformance suite derived from the paper's stated guarantees, and an independent review disposition. Unless the original implementation or its authors validate equivalence, the permanent label remains **PoE-style**, not “faithful reproduction.” Study A cannot support an incremental-contribution claim without this strongest comparator.
 
 ### 7.4 Frozen mutation families
 
-Each fork contains exactly one primary mutation:
+The confirmatory corpus is grounded in documented benchmark and distributed-runtime failure modes rather than derived only from witness fields. Each invalid fork contains exactly one primary mutation:
 
-| ID | Mutation | Invariant held fixed | Expected discriminating field |
+| ID | Externally motivated mutation | Invariant held fixed | Expected coverage |
 |---|---|---|---|
-| M1 | event logged but material root unchanged | event id, projection, terminal bytes | before/after root transition |
-| M2 | correct mutation, altered visible message | material transition, boundary | projection digest |
-| M3 | correct message, altered authority | message text, material transition | projection authority/digest |
-| M4 | event duplicated after restore | terminal state repaired if needed | restore generation and chain multiplicity |
-| M5 | event missing after restore | snapshot identity and declared event | preserved occurrence head / replay |
-| M6 | previous occurrence link broken | occurrence bodies | previous-chain linkage |
-| M7 | invalid intermediate transition repaired at terminal | final root | before/after occurrence roots |
-| M8 | event applied at wrong action boundary | event and resulting final state | declared versus realized boundary |
+| M1 | event logged but never applied | event id, projection, terminal bytes | witness root transition |
+| M2 | applied event disclosed with altered content | material transition, boundary | witness projection digest |
+| M3 | correct content disclosed under altered authority | material transition, message | witness authority/projection |
+| M4 | duplicate delivery after retry or restore | terminal state repaired if needed | witness restore/chain multiplicity |
+| M5 | occurrence lost after reset or restore | snapshot identity and declared event | witness preserved head / replay |
+| M6 | causal predecessor link broken | occurrence bodies | witness chain linkage |
+| M7 | invalid intermediate state repaired before terminal grading | final root | witness occurrence roots |
+| M8 | event applied at the wrong action boundary | event and final state | witness declared/realized boundary |
+| M9 | cross-episode state contamination outside declared closure | current episode bytes | **expected witness miss** |
+| M10 | evaluator implementation contradicts its frozen criterion | environment evidence | **expected witness miss** |
+
+The source ledger maps M1--M10 to public harness repairs, issue reports, or benchmark-method papers before the corpus is frozen. The two expected misses make coverage falsifiable rather than 100% by definition.
+
+Faithful parents also receive benign perturbations: JSON object reordering; equivalent timestamp rendering; transport-only metadata changes; causally valid reordering of independent occurrences; benign restore with no eligible event; and bijective synthetic-entity renaming evaluated after normalization. These are **metamorphic tests**: official criterion vectors and normalized semantic state must remain invariant. Raw hashes are expected to change when raw coordinates change; claiming byte identity after renaming would be incorrect.
 
 The mutation generator must record the parent receipt digest, mutation id, changed byte paths, expected verifier disposition, and generator version. Mutations that accidentally change more than the preregistered paths are excluded as generator failures before analysis, not after observing detector results.
 
@@ -553,7 +436,7 @@ not blinded or independently audited. `P+T*` binds causal steps, material roots
 and restore checkpoints, but it is not a faithful Proof of Execution
 reproduction and cannot populate the locked `P+T` result cell below. The
 scientific hypotheses, effect sizes, confidence intervals and novelty state
-remain `PENDING` / **NOT YET MEASURED**.
+remain preregistered rather than measured.
 
 ### 7.5 Ablations
 
@@ -573,12 +456,12 @@ A component is empirically justified only if its removal changes detection, loca
 
 Two structured projections are also preregistered as secondary feature ablations over the identical capture: a **CAVA-style canonical-action view** and an **agent-telemetry-style transition/observation/checkpoint view**. Each projection must publish an explicit field mapping and information-loss table. It will be called a faithful implementation of the named prior work only if it passes that work's available conformance criteria; otherwise the paper will use the narrower “style” label and avoid claiming a direct reproduction.
 
-**Result-shell notation.** `PENDING` means **NOT YET MEASURED**. `TBD` and `UNPROVEN` likewise mark a frozen open field, not a zero, null result, or negative finding.
+**Result-shell notation.** All empty empirical cells are **PREREGISTERED** until a sealed result edition populates them.
 
 | Structured feature view | Detection | False rejection | Exact localization | Bytes/episode | Verify ms |
 |---|---:|---:|---:|---:|---:|
-| CAVA-style canonical action | PENDING | PENDING | PENDING | PENDING | PENDING |
-| telemetry transition view | PENDING | PENDING | PENDING | PENDING | PENDING |
+| CAVA-style canonical action | PREREGISTERED | PREREGISTERED | PREREGISTERED | PREREGISTERED | PREREGISTERED |
+| telemetry transition view | PREREGISTERED | PREREGISTERED | PREREGISTERED | PREREGISTERED | PREREGISTERED |
 
 ### 7.6 Primary and secondary outcomes
 
@@ -593,32 +476,34 @@ Secondary outcomes are:
 - replay success and byte identity;
 - verifier wall time, CPU time, and peak memory;
 - evidence bytes per episode and per act;
-- reviewer time and confidence in Study C; and
+- reviewer time and confidence in the human-localization validation extension; and
 - detection per kilobyte and per verifier-second as descriptive efficiency measures.
 
 ### 7.7 Statistical plan
 
-The analysis will report counts, proportions, and 95% confidence intervals for every evidence-policy × mutation-family cell. The primary paired contrast uses an exact two-sided McNemar test and an exact confidence interval for the paired risk difference. The preregistration will define one primary baseline and a gatekeeping order for secondary comparisons; exploratory comparisons will be labeled as such. False-rejection noninferiority will use the frozen margin and a one-sided confidence bound. Localization will be reported both exact and within the correct mutation family.
+The analysis will report counts, proportions, and 95% confidence intervals for every evidence-policy × mutation-family cell. The primary paired contrast uses an exact two-sided McNemar test and an exact confidence interval for the paired risk difference. The preregistration defines one primary baseline and a gatekeeping order for secondary comparisons; exploratory comparisons are labeled as such. False-rejection noninferiority uses a 5% margin and a one-sided confidence bound. Localization is reported both exact and within the correct mutation family.
 
 If episodes share the same parent fixture, uncertainty estimates will respect that clustering through a preregistered cluster bootstrap or hierarchical model. The analysis will not treat multiple mutations of one parent as independent benchmark tasks. Effect sizes and uncertainty take priority over p-values. Missing detector outputs, generator failures, and verifier crashes each receive separate denominators.
 
 ### 7.8 Power and stopping
 
-No power claim is made in this draft. Before collection, a simulation based on a range of discordant-pair rates--not pilot outcome peeking--will determine the number of independent parent episodes and mutation replicas. The study stops only at the preregistered count or a prespecified safety/integrity condition. There is no optional stopping for significance.
+The confirmatory corpus contains at least **60 independent faithful parent episodes**. With zero false rejections, 60 parents place the one-sided 95% exact upper bound below 5%; multiple mutations or branches from one parent do not increase that denominator. At least half of parents contain two to four natural occurrences, including causally independent pairs, and event boundaries follow a frozen distribution rather than always occurring after act 2. A public simulation freezes power across plausible discordant-pair and clustered-effect regimes before detector execution. The study stops only at the preregistered count or a prespecified integrity condition; there is no optional stopping for significance.
 
 ### 7.9 Study A locked result shell
 
+Every `-` below is a preregistered empty cell. Only a sealed result edition may replace it.
+
 | Evidence policy | Invalid forks | Detection | 95% CI | Faithful parents | False rejection | Exact local. | Bytes/ep. | Verify ms |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| `T` | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
-| `L+T` | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
-| `M+T` | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
-| `P+T` | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
-| `W` | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
+| `T` | - | - | - | - | - | - | - | - |
+| `L+T` | - | - | - | - | - | - | - | - |
+| `M+T` | - | - | - | - | - | - | - | - |
+| `P+T` | - | - | - | - | - | - | - | - |
+| `W` | - | - | - | - | - | - | - | - |
 
 | Primary paired contrast | Discordant `W` wins | Discordant baseline wins | Paired risk difference | Exact 95% CI | Exact McNemar p |
 |---|---:|---:|---:|---:|---:|
-| `W` vs preregistered strongest baseline | PENDING | PENDING | PENDING | PENDING | PENDING |
+| `W` vs preregistered strongest baseline | - | - | - | - | - |
 
 ## 8. Preregistered Study B: identity-bound live-model behavior
 
@@ -628,21 +513,11 @@ Study A tests evidence validity. Study B asks a behavioral question: can agents 
 
 ### 8.2 Minimum design
 
-The minimum full-cross panel is:
+The confirmatory roster contains three to four independently developed model families, including at least one reproducibly hosted open-weight model; all five conditions; ten independently requested **attempts** per cell; and two separately named scaffolds where technically meaningful: a common JSON-action protocol and provider-native tool calling. Exact requested and provider-returned model identifiers, adapter versions, prompts, prices, sampling parameters, delivery mode, action-boundary factor, and budget limits are frozen before execution. A five-attempt development panel may estimate cost and find infrastructure defects but cannot populate confirmatory cells.
 
-- at least two independently developed model families;
-- all five conditions;
-- at least three preregistered seeds;
-- two separately named scaffolds where technically meaningful: a common JSON-action protocol and provider-native tool calling; and
-- exact model identifiers, adapter versions, prompts, prices, sampling parameters, and budget limits frozen before execution.
+`Attempt` is used deliberately: a recorded seed is not evidence that a provider honored deterministic sampling. Repeated attempts remain distinct result editions. More models or attempts may be added only through a dated amendment made before their outputs are inspected.
 
-At two model families × five conditions × three seeds × two scaffolds, the minimum complete grid is 60 eligible cells. More models or seeds may be added only through a dated preregistration amendment made before their results are inspected.
-
-The phase-response and authority-ladder candidates are not silently added to
-that denominator. They require a separate frozen amendment specifying paired
-within-seed contrasts, model sampling semantics, exclusions, uncertainty, and
-multiplicity before execution. Their current status is **PRE-RESULTS / NOT YET
-RUN**.
+Interruption phase and delivery channel are factors rather than post-hoc slices. The same admitted event is placed at frozen logical boundaries and delivered either as a pushed runtime observation or as pull-only state discoverable through `inbox.read`. Authority-ladder candidates use paired current worlds and a separate multiplicity family. Pairing, exclusions, and infrastructure denominators are frozen before execution.
 
 ### 8.3 Runtime and cost controls
 
@@ -672,104 +547,32 @@ No chain-of-thought is required or interpreted as ground-truth causality. Behavi
 
 ### 8.5 Difficulty tiers
 
-Model difficulty will be derived only after a frozen difficulty model or panel has completed repeated eligible runs. A pass requires a perfect rubric score. Thresholds, attempt count `k`, model pin, scaffold, and uncertainty rule must be preregistered. Until then, every model-derived difficulty value is **NOT YET MEASURED**, and the existing `scripted_harness_tier` must remain visibly distinct.
+Model difficulty is derived only after a frozen model panel completes repeated eligible attempts. A pass requires a perfect rubric score. Thresholds, attempt count `k`, model pin, scaffold, and uncertainty rule are frozen before execution. Model-derived difficulty is therefore **PREREGISTERED**; scripted controls never become difficulty evidence.
 
 ### 8.6 Study B locked result shells
 
+Every `-` below is a preregistered empty cell. The rows specify report shape, not results.
+
 | Model identity | Scaffold | Eligible eps. | Perfect passes | Pass rate | 95% CI | Env. failures | P/B stops |
 |---|---|---:|---:|---:|---:|---:|---:|
-| TBD | common JSON action | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
-| TBD | native tools | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
+| frozen roster | common JSON action | - | - | - | - | - | - |
+| frozen roster | native tools | - | - | - | - | - | - |
 
 | Condition | Eligible runs | Perfect pass rate | Adaptation rate | Stale-source rate | Authority-violation rate | Difficulty tier |
 |---|---:|---:|---:|---:|---:|---|
-| static control | PENDING | PENDING | N/A | PENDING | PENDING | PENDING |
-| document addition | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
-| policy revision | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
-| retraction across restore | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
-| authority conflict | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
+| static control | - | - | N/A | - | - | - |
+| document addition | - | - | - | - | - | - |
+| policy revision | - | - | - | - | - | - |
+| retraction across restore | - | - | - | - | - | - |
+| authority conflict | - | - | - | - | - | - |
 
-## 9. Preregistered Study C: blinded human validity review
+## 9. Validation extensions
 
-### 9.1 Questions
+A powered blinded-human study and named second-runtime conformance study are valuable, but they are not co-primary claims in this paper. The human protocol requires at least three reviewers—preferably five—over at least 50 items, result-blind evidence views, preserved disagreements, separate adjudication receipts, and the applicable consent and compensation review. Runtime portability requires a named adapter and comparison of schema, guest observations, witness semantics, outcomes, and adversarial mutations; a health check is insufficient. Until those resources and dates are fixed, both remain future validation rather than empty result tables.
 
-Study C measures two distinct quantities: agreement with the synthetic executable criteria and the incremental usefulness of evidence views for detecting harness faults. It does not ask reviewers to validate underwriting policy.
+## 10. Integrated metrics and analysis policy
 
-### 9.2 Review design
-
-At least two reviewers inspect the same frozen visible evidence manifest and criterion definitions; at least one is independent of environment authorship. Reviewers are blinded to detector labels, scripted-policy name, mutation status where compatible with the task, and each other's judgments. Evidence-view order is counterbalanced. A washout or nonoverlapping item design prevents a reviewer from simply remembering the same mutation when comparing views.
-
-For criterion calibration, reviewers label each of the five criteria, overall pass, applicable failure classes, and confidence. For validity detection, they label episode validity, first faulty origin, mutation family, and whether evidence is insufficient. Review time is collected without screen or content surveillance beyond the approved study instrument.
-
-Disagreements remain in the data. Adjudication produces a separate receipt containing the original labels, adjudicator identity class, reason code, and final disposition; it never overwrites original reviews.
-
-### 9.3 Human-study metrics
-
-- raw agreement for each criterion and overall pass;
-- Cohen's kappa where estimable, with prevalence caveats;
-- positive and negative agreement when kappa is unstable;
-- adjudication rate and reason distribution;
-- invalid-episode detection and exact-origin localization;
-- warranted abstention;
-- median review time and confidence;
-- within-reviewer change between weaker and full evidence views; and
-- reviewer's false rejection of faithful episodes.
-
-Any study involving recruited participants requires the applicable consent, compensation, privacy, and institutional-review determination before recruitment.
-
-### 9.4 Study C locked result shells
-
-| Criterion | Items | Raw agreement | Cohen's $\kappa$ | 95% CI | Adjudication rate |
-|---|---:|---:|---:|---:|---:|
-| recommendation correct | PENDING | PENDING | PENDING | PENDING | PENDING |
-| current world root | PENDING | PENDING | PENDING | PENDING | PENDING |
-| authoritative evidence | PENDING | PENDING | PENDING | PENDING | PENDING |
-| changed-world adaptation | PENDING | PENDING | PENDING | PENDING | PENDING |
-| output contract | PENDING | PENDING | PENDING | PENDING | PENDING |
-
-| Evidence view | Validity detection | Exact localization | False rejection | Median review time | Warranted abstention |
-|---|---:|---:|---:|---:|---:|
-| strongest preregistered baseline | PENDING | PENDING | PENDING | PENDING | PENDING |
-| full evolution witness | PENDING | PENDING | PENDING | PENDING | PENDING |
-
-## 10. Preregistered Study D: runtime conformance
-
-RQ6 requires more than reproducing one local implementation. A provider-neutral contract is useful only if different runtimes agree on guest-observable actions and witness semantics.
-
-### 10.1 Planned protocol
-
-1. Freeze scenario bytes, canonicalization version, environment fingerprint, tool schemas, action-boundary rule, projection rule, and restore procedure.
-2. Execute the same scripted conformance policies on each eligible runtime adapter.
-3. Normalize only provider-owned transport metadata explicitly excluded by the contract.
-4. Compare tool observations, action ledgers, event occurrence bodies, world roots, projection digests, restore receipts, terminal judgments, and public receipt digests.
-5. Enumerate the database, filesystem, process, terminal, sidecar, queue, cache, memory, clock, and external-replay components that are stateful for the fixture; record an explicit not-applicable reason for every absent class.
-6. Require one coherent capture boundary, one semantic state root, and one root-owned checkpoint receipt for every in-scope component before admitting a fork or restore.
-7. Inject the same eight witness mutation families plus partial-snapshot contamination mutations that omit, alter, or capture one component at the wrong boundary.
-8. Report exact agreement and every adapter-specific exclusion.
-
-The local reference environment fingerprint is `ff6e062a1d71646f4be44853e3122547a5557b29baba99b17d55c480182ba092`. This identifies the reference semantics; it does not prove another runtime conforms.
-
-### 10.2 Conformance levels
-
-- **Schema conformance:** both adapters can express the same declared contract.
-- **Guest conformance:** the agent receives equivalent tools, observations, interrupts, limits, and terminal contract.
-- **Witness conformance:** canonical occurrence and restore evidence agrees after permitted transport exclusions.
-- **Outcome conformance:** deterministic control policies receive the same criterion verdicts.
-- **Adversarial conformance:** identical mutations are detected and localized.
-
-No runtime is labeled conformant from a health check or API path inventory alone.
-
-### 10.3 Study D locked result shell
-
-| Runtime adapter | Schema | Guest | Witness | Outcome | Adversarial | Deviations |
-|---|---|---|---|---|---|---|
-| local reference | implemented | implemented | implemented | 15 scripted cells replay | integrity tests implemented | single-process reference only |
-| external runtime A | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
-| external runtime B | PENDING | PENDING | PENDING | PENDING | PENDING | PENDING |
-
-## 11. Integrated metrics and analysis policy
-
-### 11.1 Denominator discipline
+### 10.1 Denominator discipline
 
 Every table will expose:
 
@@ -784,49 +587,49 @@ Every table will expose:
 
 The paper will not collapse these into a single success rate. Environment failures never become agent failures. Provider or budget stops never become incorrect recommendations. Human abstentions remain abstentions unless the preregistration defines a separate accuracy analysis.
 
-### 11.2 Claim-to-metric map
+### 10.2 Claim-to-metric map
 
 | Claim candidate | Necessary endpoint | Necessary comparator | Current status |
 |---|---|---|---|
-| witness detects additional invalid episodes | paired detection risk difference | strongest preregistered baseline | PENDING |
-| projection binding is useful | M2/M3 detection and localization | witness without projection field | PENDING |
-| restore lineage is useful | M4-M6 detection and false rejection | witness without restore/chain fields | PENDING |
-| witnesses help reviewers | within-design detection/localization/time | weaker evidence view | PENDING |
-| models adapt to interruptions | perfect pass and criterion rates | static/matched dynamic conditions | PENDING |
-| semantics transfer across runtimes | exact conformance rates | local reference | PENDING |
+| witness detects additional invalid episodes | paired detection risk difference | strongest preregistered baseline | PREREGISTERED |
+| projection binding is useful | M2/M3 detection and localization | witness without projection field | PREREGISTERED |
+| restore lineage is useful | M4-M6 detection and false rejection | witness without restore/chain fields | PREREGISTERED |
+| witnesses help reviewers | within-design detection/localization/time | weaker evidence view | PREREGISTERED |
+| models adapt to interruptions | perfect pass and criterion rates | static/matched dynamic conditions | PREREGISTERED |
+| semantics transfer across runtimes | exact conformance rates | local reference | PREREGISTERED |
 | scripted harness is directionally sensitive | perfect pass by constructed control | three fixed scripted policies | MEASURED, descriptive only |
 
-### 11.3 Confirmatory versus exploratory analysis
+### 10.3 Confirmatory versus exploratory analysis
 
 Only hypotheses, endpoints, exclusions, baselines, and contrasts frozen in the public preregistration are confirmatory. New failure clusters, qualitative traces, model rankings, cost frontiers, and interaction effects are exploratory unless explicitly preregistered. Exploratory findings can motivate a new frozen edition but cannot be relabeled as confirmatory after inspection.
 
-### 11.4 Multiplicity and uncertainty
+### 10.4 Multiplicity and uncertainty
 
 One contrast answers H1. Secondary hypotheses follow a frozen hierarchical gate or receive multiplicity-adjusted intervals. Small-cell results show exact counts and intervals rather than only percentages. Bootstrap or hierarchical estimates preserve parent-scenario and repeated-seed structure. The analysis code is versioned, and all manuscript numbers are generated from a machine-readable results table rather than hand-copied.
 
-### 11.5 Causality language
+### 10.5 Causality language
 
 The mutation generator defines a known intervention on an artifact, so Study A can attribute a verifier response to that controlled mutation under the paired design. This does not identify an agent's internal reasoning cause. “Causal trace” in this work means an evidence-linked execution dependency, not psychological causation. Any model-generated diagnosis is evaluated separately from deterministic invariant rejection.
 
-## 12. Threats to validity and limitations
+## 11. Threats to validity and limitations
 
-### 12.1 Construct validity
+### 11.1 Construct validity
 
 Five synthetic underwriting-shaped conditions cover only a small set of world changes. They do not establish the ambiguity, duration, collaboration, side effects, or domain breadth of real long-horizon work. The executable oracle is exact only because its fictional policy is simple. Evidence integrity cannot repair a poorly chosen task construct.
 
 The authority-conflict trace also shows why recommendation accuracy alone is incomplete, but the opposite risk remains: an overly prescriptive evidence rubric can reject competent behavior that reaches a safe result through an unanticipated valid route. Human review and diverse future tasks are required to test that boundary.
 
-### 12.2 Internal validity
+### 11.2 Internal validity
 
 Scripted policies and the deterministic judge were authored with knowledge of the fixtures. Their result pattern is therefore a harness assertion, not independent validation. Mutation generators can contain bugs or leak the mutation through superficial cues. Paired generation, byte-path manifests, held-out adversarial review, and detector blinding are required.
 
 The current panel's events occur after the same act number, and each dynamic fixture contains a single occurrence. Natural multi-event chains, concurrent events, delayed delivery, partial visibility, and clock skew are not represented. Restore is local and deterministic; crash recovery and distributed replay remain untested.
 
-### 12.3 External validity
+### 11.3 External validity
 
 No live-model behavior, provider parity, human agreement, or domain-expert validity has been measured. Results from this fixture cannot be generalized to regulated decisions, real applicants, enterprise systems, or population outcomes. Model results, once collected, will be specific to exact model, scaffold, prompt, budget, provider, and date pins.
 
-### 12.4 Evidence and security limits
+### 11.4 Evidence and security limits
 
 An unkeyed digest is tamper evident, not authenticated. A malicious or compromised root owner can consistently hash a false world. The standalone sample does not provide remote guest authentication, hardware attestation, secret isolation, or a detached signed public-release receipt. It does not prove that a notice was perceived by a model; it proves only what the runtime recorded as the visible projection.
 
@@ -834,29 +637,29 @@ Hash continuity also does not guarantee availability: artifacts can be withheld.
 
 The local reference world root covers the fixture's declared tables and documents; it is not a proof that an arbitrary data environment was snapshotted coherently. A future whole-world branch must also close over every stateful process, queue, sidecar, cache, file, clock, memory surface, and replayed external dependency. Omitting one can contaminate a paired comparison without changing this artifact's current root.
 
-### 12.5 Statistical limits
+### 11.5 Statistical limits
 
 The reference panel is too small and constructed for inferential model comparisons. Future repeated seeds may not be independent when prompts or world states are shared. Difficulty thresholds can be unstable under model updates. Human kappa can be distorted by prevalence. The preregistration addresses these issues but cannot eliminate them.
 
-### 12.6 Novelty uncertainty
+### 11.6 Novelty boundary
 
-The closest literature already includes dynamic asynchronous environments, interruption taxonomies, state and milestone checks, canonical action records, causal execution streams, state-delta telemetry, restore lineage, and cryptographic attestation. The proposed composition may prove redundant. A null result against a faithfully implemented Proof-of-Execution or telemetry baseline would narrow or defeat the main contribution claim.
+The verified literature already includes dynamic asynchronous environments, interruption taxonomies, state and milestone checks, canonical action records, execution streams, state-delta telemetry, record/replay, restore lineage, mutation analysis, metamorphic testing, and cryptographic attestation. Table 1 identifies the narrower compositional delta: one benchmark-validity predicate binding declared event, material transition, agent-visible projection, action boundary, restore lineage, authority, and four-way fault attribution. That construction is implemented; whether it adds empirical detection or useful efficiency over the strongest comparator remains the falsifiable contribution claim. A null result would narrow or defeat it.
 
-## 13. Ethics, privacy, and rights
+## 12. Ethics, privacy, and rights
 
-### 13.1 Synthetic-only public artifact
+### 12.1 Synthetic-only public artifact
 
 The committed fixture contains no personal records. Its financial vocabulary is fictional and not guidance. Readers should not use its values or decision rules in a real eligibility process. Examples are designed to make versioning and authority easy to inspect, not to encode an acceptable real-world policy.
 
-### 13.2 Live-model data
+### 12.2 Live-model data
 
 No live-model output is currently committed. Before collection, the study records provider terms, retention posture, response-release rights, and any safety or confidentiality restriction. Credentials remain environment-only and are excluded from commands, logs, receipts, and bundles. Raw provider bytes remain private unless an explicit rights review approves a public projection.
 
-### 13.3 Human participants
+### 12.3 Human participants
 
 No human result is reported. Before recruitment, the study will determine the applicable institutional/ethical review, obtain informed consent, disclose data retention and publication, compensate reviewers fairly, minimize personal data, and permit withdrawal under the approved protocol. Reviewer identity in public data will be pseudonymous unless explicit attribution consent is obtained.
 
-### 13.4 Release rights
+### 12.4 Release rights
 
 The current Public Universe bundle states:
 
@@ -867,17 +670,19 @@ The current Public Universe bundle states:
 
 Its status is `candidate_not_authorized`. This paper does not change that status. A future release decision must refer to the exact bundle-file hash and remain separate from the bundle so authorization cannot circularly modify the reviewed bytes.
 
-### 13.5 Misuse and dual use
+### 12.5 Misuse and dual use
 
 Integrity receipts can improve audits, but the appearance of cryptographic rigor can also overstate trust. The public documentation therefore separates tamper evidence, authentication, truthful sensing, causal inference, and domain validity. Mutation tools should be used to test verifiers, not to conceal altered audit records. Security-sensitive weaknesses should follow the repository's disclosure policy before publication.
 
-### 13.6 Authorship and acknowledgments
+### 12.6 Authorship and acknowledgments
 
 Authorship will follow substantive intellectual and implementation contribution, manuscript approval, and accountability--not funding or access alone. Future collaborators or study reviewers will be acknowledged or added as authors only with informed agreement and according to venue policy. No organization or external party is implied to endorse this draft.
 
-## 14. Reproducibility contract
+**Competing interests.** Rudy M. Celekli is the founder of Gradia, which develops benchmark and environment tooling related to this work. The artifact, locked registry, independent-review gates, and separated release receipts are intended to make that interest auditable rather than implicit.
 
-### 14.1 Public local verification
+## 13. Reproducibility contract
+
+### 13.1 Public local verification
 
 From a clean clone with Python 3.11 or 3.12:
 
@@ -902,15 +707,15 @@ isolated probes, with corpus digest
 
 The first verifier reconstructs all reference episodes and reports. The public verifier additionally checks the bundle's internal identity, source references, denominators, rights posture, withheld register, and disclosure boundary. Neither command requires a model provider, network request, credential, or private code.
 
-### 14.2 Determinism boundary
+### 13.2 Determinism boundary
 
 The reference panel uses canonical JSON, frozen fixtures, deterministic control policies, and no wall clock, network, model, or random generator. A changed fixture or implementation must create a new result edition; it must not silently overwrite the meaning of the committed digest. CI runs test, lint, strict-type, replay, and public-boundary gates.
 
-### 14.3 Falsification exercise
+### 13.3 Falsification exercise
 
 A reader can alter the policy-revision fixture without updating results and rerun verification. Replay must reject the mismatch. Adversarial tests also alter occurrence roots, projections, chain links, boundaries, and restore evidence. Passing the happy path alone is insufficient.
 
-### 14.4 Live-panel reproducibility
+### 13.4 Live-panel reproducibility
 
 Live runs require an immutable run id, exact requested model id, an exact matching provider-returned model identity, adapter and scaffold digest, repeated-attempt policy, sampling parameters, turn and action limits, token and request caps, operator-supplied contemporaneous prices, and explicit spend confirmation. One non-benchmark provider smoke verifies endpoint, identity and usage parsing without producing a task score.
 
@@ -918,9 +723,9 @@ An optional development diagnostic may bind exactly one attempt on one or two ca
 
 Without such prior task-bearing inspection, the confirmatory frontier manifest binds all five v1 tasks; selective-task preregistration is refused. The common frontier cell fixes explicit `high` reasoning across all four adapters and a recorded provider-default temperature. It uses exactly five independent requests per task and does not mislabel attempt ids as random seeds. A conservative pre-dispatch reservation is cumulative and is not refunded after a failed call; parsed token usage produces a separate operator-price estimate, not an invoice. Where available, `store: false` expresses a request-level storage or logging preference but does not prove zero data retention. The public manifest and Git ancestry prove repository ordering and changed-file scope, not the absence of an earlier private run or outcome inspection. The panel reports empirical successes/5, any-pass@5 as observed capability coverage, all-pass@5 as observed reliability, descriptive uncertainty, and failure-signature counts. Results first enter an ignored local edition. They move into a public edition only after rights, integrity, preregistration, human-review, and disclosure gates pass.
 
-## 15. Artifact checklist
+## 14. Artifact checklist
 
-### 15.1 Present in this public repository
+### 14.1 Present in this public repository
 
 - [x] Five canonical synthetic scenario editions.
 - [x] Five coupled frontier-candidate editions with deterministic safe-solver admissions.
@@ -943,7 +748,7 @@ Without such prior task-bearing inspection, the confirmatory frontier manifest b
 - [x] Synthetic data card, security boundary, method, live-panel runbook, and integration guide.
 - [x] Keyless verifier and public-boundary verifier.
 
-### 15.2 Required before confirmatory execution
+### 14.2 Required before confirmatory execution
 
 - [ ] Public preregistration with frozen hypotheses, evidence policies, mutation corpus, exclusions, sample size, analysis, and stopping.
 - [ ] Faithful Proof-of-Execution-style comparator.
@@ -954,7 +759,7 @@ Without such prior task-bearing inspection, the confirmatory frontier manifest b
 - [ ] Human-review ethics determination, consent, and compensation plan.
 - [ ] Frozen statistical code tested against simulated data.
 
-### 15.3 Required before a public empirical claim
+### 14.3 Required before a public empirical claim
 
 - [ ] Study A completed with locked result table.
 - [ ] Faithful false-rejection and exact-localization results reported.
@@ -965,7 +770,7 @@ Without such prior task-bearing inspection, the confirmatory frontier manifest b
 - [ ] Exact public artifact authorized without mutating reviewed bytes.
 - [ ] All paper numbers regenerated from released machine-readable results.
 
-## 16. Publication gates and decision rules
+## 15. Publication gates and decision rules
 
 The manuscript may advance from pre-results protocol to empirical paper only if:
 
@@ -982,7 +787,7 @@ The contribution claim must narrow or stop if strong prior-art baselines detect 
 
 A negative result remains valuable if released faithfully. It would show which witness fields are redundant, where terminal/state or execution evidence suffices, and which dynamic-world failure classes remain indistinguishable. The paper will not turn a null comparison into a novelty claim by changing endpoints after inspection.
 
-## 17. Discussion
+## 16. Discussion
 
 The artifact's main design choice is to treat the evolution of the world as part of the benchmark's measurement instrument. A scenario does not merely declare an interruption, and a runner does not merely log one. The evidence chain must connect the declaration to the state transition, disclosed observation, action boundary, restore history, and judgment.
 
@@ -990,11 +795,11 @@ That composition creates a useful diagnostic separation. If the event contract a
 
 The cost is more evidence, more trusted code, and more ways for schema mistakes to invalidate a run. The planned ablations therefore matter as much as headline detection. A smaller evidence policy that matches full-witness detection, localization, and faithful acceptance should be preferred. The goal is not maximal logging; it is the minimum sufficient evidence for a defensible claim.
 
-## 18. Conclusion
+## 17. Conclusion
 
 This public sample implements a precise, auditable proposal for witnessing change in an interruptible agent universe. Five synthetic control conditions, 15 scripted-policy episodes, 80 acts, 12 occurrences, and three restore receipts show that the local harness can bind declared events to material roots, visible projections, boundaries, restore lineage, and deterministic judgment. Five additional candidate-task editions and 44 isolated judge probes test solvability and evaluator sensitivity under coupled queue decisions. Those measurements validate engineering behavior only.
 
-The scientific claim is still ahead. A preregistered mutation study must show incremental invalid-episode detection over strong execution-evidence baselines; live-model cells must bind exact requested and provider-returned identities under declared caps; blinded reviewers must establish agreement and diagnostic utility; and runtime adapters must prove shared semantics. Until those gates pass, the defensible statement is deliberately narrow: **the artifact implements and deterministically replays an evolution-witness composition; its empirical value and novelty are NOT YET MEASURED.**
+The released artifact already implements and deterministically replays the evolution-witness composition and exposes its trust boundary. The confirmatory question is narrower and consequential: whether that composition improves defect detection, localization, and false-rejection tradeoffs over the strongest comparator, and what frontier-agent behavior it reveals once invalid episodes are excluded. Those empirical cells remain **PREREGISTERED**.
 
 ## References
 
@@ -1014,32 +819,33 @@ The scientific claim is still ahead. A preregistered mutation study must show in
 14. Zhu and Pu (2026). [*TelemetrySuffBench: Is Agent Telemetry Sufficient for Failure-Origin Diagnosis?*](https://arxiv.org/abs/2608.07899).
 15. Ang, et al. (2026). [*Agentic Data Environments*](https://arxiv.org/abs/2607.07397). *IEEE Data Bulletin*, 50(1).
 16. Ang, et al. (2026). [*BranchBench: Aligning Database Branching with Agentic Demands*](https://arxiv.org/abs/2604.17180).
-17. Summers, et al. (2026). [*Deterministic Data Flow Control Improves Agent Utility and Reduces Safety Violations*](https://openreview.net/pdf?id=V5WU7pCCVF).
-18. Bowman, et al. (2022). [*Measuring Progress on Scalable Oversight for Large Language Models*](https://www.anthropic.com/research/measuring-progress-on-scalable-oversight-for-large-language-models).
-19. Kenton, et al. (2024). [*On scalable oversight with weak LLMs judging strong LLMs*](https://arxiv.org/abs/2407.04622).
-20. Qiu, Carroll, and Allen (2026). [*Truthfulness Despite Weak Supervision: Evaluating and Training LLMs Using Peer Prediction*](https://arxiv.org/abs/2601.20299). ICLR 2026.
-21. Merrill and Srivastava (2026). [*The Point of No Return: Counterfactual Localization of Deceptive Commitment in Language-Model Reasoning*](https://arxiv.org/abs/2605.17113). Preprint.
-22. Anthropic (2024). [*Sabotage evaluations for frontier models*](https://www.anthropic.com/research/sabotage-evaluations).
-23. Anthropic (2025). [*Introducing Bloom: an open source tool for automated behavioral evaluations*](https://www.anthropic.com/research/bloom).
+17. Summers, C., and Wu, E. (2026). [*Data Flow Control: Data Safety Policies for AI Agents*](https://arxiv.org/abs/2606.05679). arXiv:2606.05679.
+18. Reuel, A., Hardy, A., Smith, C., Lamparth, M., Hardy, M., and Kochenderfer, M. J. (2024). [*BetterBench: Assessing AI Benchmarks, Uncovering Issues, and Establishing Best Practices*](https://arxiv.org/abs/2411.12990). arXiv:2411.12990.
+19. OpenAI (2024; updated 2025). [*Introducing SWE-bench Verified*](https://openai.com/index/introducing-swe-bench-verified/).
+20. OpenAI (2026). [*Why SWE-bench Verified no longer measures frontier coding capabilities*](https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/).
+21. Jia, Y., and Harman, M. (2011). [*An Analysis and Survey of the Development of Mutation Testing*](https://doi.org/10.1109/TSE.2010.62). *IEEE Transactions on Software Engineering*, 37(5).
+22. Segura, S., Fraser, G., Sanchez, A. B., and Ruiz-Cortes, A. (2016). [*A Survey on Metamorphic Testing*](https://doi.org/10.1109/TSE.2016.2532875). *IEEE Transactions on Software Engineering*, 42(9).
+23. Haber, S., and Stornetta, W. S. (1991). [*How to Time-Stamp a Digital Document*](https://doi.org/10.1007/BF00196791). *Journal of Cryptology*, 3.
+24. Chambers, C. D., and Tzavella, L. (2022). [*The past, present and future of Registered Reports*](https://doi.org/10.1038/s41562-021-01193-7). *Nature Human Behaviour*, 6.
 
 ## Appendix A. Locked result registry
 
 | Result family | Status at this draft | Permitted statement |
 |---|---|---|
 | scripted-policy panel | MEASURED | local harness sensitivity on five synthetic conditions |
-| frontier candidate admission | MEASURED — ENGINEERING ONLY | five safe-solver passes, four answer-changing dynamic editions and 44 isolated judge probes; no empirical difficulty claim |
-| engineering mutation projections | MEASURED — NON-CONFIRMATORY | paired information-retention preflight over 26 synthetic forks; not detector performance |
-| phase-response and authority candidates | PRE-RESULTS — ENGINEERING ONLY | ten seed-paired candidate/control artifacts, ten exact witnesses and 100 isolated probes; no model, factor-effect, difficulty or novelty claim |
-| mutation detection | PENDING | protocol and hypotheses only |
-| evidence-policy ablations | PENDING | planned comparisons only |
-| live-model capability | PENDING | planned capped panel only |
-| empirical difficulty tiers | PENDING | existing tiers are scripted controls only |
-| human criterion agreement | PENDING | review protocol only |
-| human diagnostic utility | PENDING | review protocol only |
-| cross-runtime parity | PENDING | conformance protocol only |
-| real-world validity | PENDING | no inference permitted |
-| downstream training lift | PENDING | training data not released |
-| research novelty | UNPROVEN | narrow hypothesis only |
+| frontier candidate admission | MEASURED | five safe-solver passes, four answer-changing dynamic editions and 44 isolated judge probes; engineering admission only |
+| engineering mutation projections | MEASURED | paired information-retention preflight over 26 synthetic forks; not detector performance |
+| phase-response and authority construction | MEASURED | ten paired artifacts, exact witnesses and 100 construction probes; no behavioral result |
+| mutation detection | PREREGISTERED | protocol and hypotheses only |
+| evidence-policy ablations | PREREGISTERED | planned comparisons only |
+| live-model capability | PREREGISTERED | planned capped panel only |
+| empirical difficulty tiers | PREREGISTERED | existing tiers are scripted controls only |
+| human criterion agreement | PREREGISTERED | review protocol only |
+| human diagnostic utility | PREREGISTERED | review protocol only |
+| cross-runtime parity | OUT OF SCOPE | requires a named second runtime and separate conformance study |
+| real-world validity | OUT OF SCOPE | no inference permitted from the synthetic reference world |
+| downstream training lift | OUT OF SCOPE | training data and intervention are not part of this study |
+| incremental empirical contribution | PREREGISTERED | narrow comparison against the strongest comparator |
 
 ## Appendix B. Claim ledger
 
@@ -1049,18 +855,18 @@ The scientific claim is still ahead. A preregistered mutation study must show in
 | “The scripted controls exercise intended judge branches.” | criterion and failure distributions by fixed control | supported descriptively |
 | “The engineering corpus reconstructs 26 isolated forks and five paired projections.” | exact generator replay matches committed corpus/report bytes | supported by current artifact; non-confirmatory |
 | “The frontier candidates are solvable and the judge detects isolated defects.” | safe-solver admissions plus byte-identical criterion-probe replay | supported as an engineering admission; not a model or human result |
-| “The phase and authority candidate artifacts replay exactly.” | shared-definition regeneration matches ten frozen pairs, exact witnesses and 100 isolated probes | supported as a PRE-RESULTS engineering check only |
-| “Interruption phase or source authority changes model behavior.” | preregistered paired live episodes with valid denominators and uncertainty | PENDING |
-| “Evolution witnesses improve invalid-episode detection.” | preregistered paired Study A against strongest baseline | PENDING |
-| “Projection binding adds diagnostic value.” | M2/M3 ablation contrast | PENDING |
-| “Restore lineage adds diagnostic value.” | M4-M6 ablation contrast and valid-restore false rejection | PENDING |
-| “Models adapt to dynamic evidence.” | eligible identity-bound Study B cells | PENDING |
-| “Reviewers agree with the judge.” | blinded criterion labels and uncertainty | PENDING |
-| “Witnesses help reviewers.” | counterbalanced Study C evidence-view comparison | PENDING |
-| “The semantics are provider neutral.” | Study D conformance on independent adapters | PENDING |
-| “The method is novel.” | completed empirical delta plus updated independent literature review | UNPROVEN |
-| “Branch-conditioned consistency establishes truthfulness or deception.” | independent ground truth, calibrated human review, concealed held-out forks, anti-gaming controls and acceptable honest-control false accusation | INELIGIBLE IN THIS DRAFT |
-| “Witnessed branching improves weak-evaluator oversight.” | preregistered world-defect and account-consistency studies against strong baselines, with exact closure and repeated identity-bound forks | PENDING |
+| “The phase and authority candidate artifacts replay exactly.” | shared-definition regeneration matches ten frozen pairs, exact witnesses and 100 isolated probes | supported as a measured construction check only |
+| “Interruption phase or source authority changes model behavior.” | preregistered paired live episodes with valid denominators and uncertainty | PREREGISTERED |
+| “Evolution witnesses improve invalid-episode detection.” | preregistered paired Study A against strongest baseline | PREREGISTERED |
+| “Projection binding adds diagnostic value.” | M2/M3 ablation contrast | PREREGISTERED |
+| “Restore lineage adds diagnostic value.” | M4-M6 ablation contrast and valid-restore false rejection | PREREGISTERED |
+| “Models adapt to dynamic evidence.” | eligible identity-bound Study B cells | PREREGISTERED |
+| “Reviewers agree with the judge.” | blinded criterion labels and uncertainty | PREREGISTERED |
+| “Witnesses help reviewers.” | powered counterbalanced human evidence-view comparison | PREREGISTERED |
+| “The semantics are provider neutral.” | named independent adapters and conformance battery | OUT OF SCOPE |
+| “The composition adds empirical value.” | completed paired delta plus updated independent literature review | PREREGISTERED |
+| “Branch-conditioned consistency establishes truthfulness or deception.” | independent ground truth, calibrated human review, concealed held-out forks, anti-gaming controls and acceptable honest-control false accusation | OUT OF SCOPE |
+| “Witnessed branching improves weak-evaluator oversight.” | preregistered world-defect and account-consistency studies against strong baselines, with exact closure and repeated identity-bound forks | OUT OF SCOPE |
 
 ## Appendix C. Minimum preregistration fields
 
