@@ -63,7 +63,7 @@ Gaia2 and Agents Research Environments formalize asynchronous, event-driven agen
 
 ### 2.2 State, milestones, provenance, and execution evidence
 
-AppWorld and ToolSandbox demonstrate state- and milestone-sensitive verification. W3C PROV defines interoperable provenance concepts and constraints. Proof of Execution develops cryptographically verifiable action evidence, while CAVA and agent-native telemetry study causal and evidence-bearing traces for agents. Recent runtime-fault localization and telemetry-sufficiency work further emphasizes that reliable evaluation depends on the sufficiency and integrity of runtime evidence. These lines of work make it inappropriate to present hashing, causal traces, or attested actions as novel in isolation.
+AppWorld and ToolSandbox demonstrate state- and milestone-sensitive verification. W3C PROV defines interoperable provenance concepts and constraints. Proof of Execution develops cryptographically verifiable action evidence; CAVA canonicalizes heterogeneous runtime activity into stable action identities bound to approvals and optional attestation; and agent-native telemetry studies evidence-bearing state transitions. Recent runtime-fault localization and telemetry-sufficiency work further emphasizes that reliable evaluation depends on the sufficiency and integrity of runtime evidence. These lines of work make it inappropriate to present hashing, canonical action identity, causal traces, or attested actions as novel in isolation.
 
 ### 2.3 Agentic data environments and whole-world branching
 
