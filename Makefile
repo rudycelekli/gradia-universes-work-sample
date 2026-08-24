@@ -1,4 +1,4 @@
-.PHONY: setup test reproduce verify study-a frontier axes public-boundary all
+.PHONY: setup test reproduce verify study-a frontier axes cost-capped public-boundary all
 
 setup:
 	python3 -m venv .venv
@@ -27,7 +27,10 @@ frontier:
 axes:
 	.venv/bin/python -m gradia_universes.axis_candidates build
 
+cost-capped:
+	.venv/bin/gradia-universe cost-capped-verify
+
 public-boundary:
 	.venv/bin/gradia-universe verify-public
 
-all: test verify public-boundary
+all: test verify cost-capped public-boundary

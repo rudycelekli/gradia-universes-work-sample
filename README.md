@@ -44,8 +44,8 @@ implementation or any result is eligible for release.
 
 This checkpoint is deliberately **not** a benchmark release. The private v4
 implementation and full trajectories are not in this repository, and the
-declared horizon target is not itself a reward criterion. The cost-capped panel
-finished at its prospective 55-attempt ceiling: 37 attempts were gradable, 18
+declared horizon target is not itself a reward criterion. The post-observation
+operational cost amendment stopped the panel at its 55-attempt ceiling: 37 attempts were gradable, 18
 were infrastructure exclusions, and none of the 37 satisfied the exact
 perfect-rubric conjunction. Because only 6/20 cells contain an eligible
 same-runtime pair, five cells are unobserved, execution crossed three runtime
@@ -53,6 +53,14 @@ cohorts, and blinded adjudication is pending, these are **machine-derived
 PRE-RESULTS** rather than a capability, difficulty, provider-ranking or novelty
 claim. The exact public summary is in
 [results/pre-results/CONDITIONALLY-APPROVED-COST-CAPPED-RESULTS.md](results/pre-results/CONDITIONALLY-APPROVED-COST-CAPPED-RESULTS.md).
+The committed 55-row
+[redacted evidence index](results/pre-results/conditionally-approved-cost-capped-index.json)
+makes the inventory, usage, criterion-vector and non-reward engagement aggregates
+recomputable without releasing raw model text; run
+`.venv/bin/gradia-universe cost-capped-verify`. Thirteen gradable traces, including
+seven selected primary attempts, carry a deterministic low-engagement annotation.
+They remain official zeros and remain in their denominators; the annotation prevents
+protocol non-engagement from being described as comparable long-horizon behavior.
 The deterministic blinded-review packet is also frozen: 37 attempts, 889 red
 criterion assignments per reviewer, zero human decisions, packet digest
 `0d0fa2c7b02d554a9e906dac9fca4ddbfd33324c6d28703ea70937e8c8b2b18c`.
@@ -79,11 +87,13 @@ does not promote private implementation facts into public artifact evidence.
 ## Read the paper
 
 The empirical benchmark manuscript is
-[Conditionally Approved: A Proof-Bound Mortgage Benchmark for Long-Horizon AI Agents Under Changing Evidence, Authority, and Time](paper/CONDITIONALLY-APPROVED-PAPER-DRAFT.md).
+[Conditionally Approved: Proof-Bound Branchable Universes for Long-Horizon AI Agents Under Changing Evidence, Authority, and Time](paper/CONDITIONALLY-APPROVED-PAPER-DRAFT.md).
 [Open its rendered cost-capped PRE-RESULTS PDF](output/pdf/CONDITIONALLY-APPROVED-PRE-RESULTS-DRAFT.pdf).
 It reports the sealed 55-attempt execution inventory, exact-cell pass@2/pass²
 semantics, infrastructure exclusions, runtime-cohort refusal, cost and
-trajectory shape while reserving behavioral attribution for blinded humans.
+trajectory shape, engagement annotation, and machine diagnostic surfaces while
+reserving behavioral attribution for blinded humans. Mortgage is the synthetic
+testbed; proof-bound evolving and branchable worlds are the research focus.
 
 The companion method manuscript is
 [Interruptible Universes: Evolution Witnesses for Verifiable World Change in Agent Benchmarks](paper/INTERRUPTIBLE-UNIVERSES-PAPER-DRAFT.md).
@@ -379,6 +389,7 @@ mypy --strict src tests
 gradia-universe verify
 gradia-universe frontier-verify
 gradia-universe axes-verify
+gradia-universe cost-capped-verify
 gradia-universe verify-public
 ```
 

@@ -4,6 +4,7 @@ import csv
 import json
 import subprocess
 from argparse import Namespace
+from collections import Counter
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, ClassVar
@@ -25,6 +26,11 @@ from gradia_universes.cli import (
     parser,
 )
 from gradia_universes.contracts import Scenario
+from gradia_universes.cost_capped_results import (
+    engagement_annotation,
+    recompute_cost_capped_summary,
+    verify_cost_capped_public_index,
+)
 from gradia_universes.frontier import (
     FrontierEngine,
     FrontierScenario,
@@ -175,6 +181,66 @@ def test_committed_panel_is_exactly_recomputable() -> None:
     claimed = committed["report_sha256"]
     body = {key: value for key, value in committed.items() if key != "report_sha256"}
     assert claimed == digest(body)
+
+
+def test_cost_capped_public_index_recomputes_without_raw_transcripts() -> None:
+    index = verify_cost_capped_public_index(ROOT)
+    summary = recompute_cost_capped_summary(index)
+    assert summary["physical_attempt_count"] == 55
+    assert summary["gradable_attempt_count"] == 37
+    assert summary["infrastructure_exclusion_count"] == 18
+    assert summary["perfect_rubric_pass_count"] == 0
+    assert summary["machine_red_assignment_count"] == 889
+    assert summary["usage"]["recorded_spend_usd"] == "705.882412"
+    assert summary["usage"]["excluded_recorded_spend_usd"] == "173.348382"
+    assert summary["usage"]["tool_action_count"] == 2_609
+    assert summary["usage"]["transcript_turn_count"] == 5_325
+    assert summary["machine_diagnostic_assignment_count"] == 1_375
+    assert summary["machine_green_assignment_count"] == 486
+
+
+def test_cost_capped_engagement_descriptor_is_non_reward_and_deterministic() -> None:
+    index = verify_cost_capped_public_index(ROOT)
+    low = [
+        row
+        for row in index["attempts"]
+        if engagement_annotation(row) == "low_engagement_no_sources_attachments_or_events"
+    ]
+    assert low
+    assert all(row["disposition"] == "gradable" for row in low)
+    assert all(not row["engagement"]["affects_reward_or_disposition"] for row in low)
+    assert all(row["official_binary_reward"] == 0 for row in low)
+    assert len(low) == 13
+    assert sum(row["analysis_role"] == "selected_primary" for row in low) == 7
+    document_primary = [
+        row
+        for row in low
+        if row["analysis_role"] == "selected_primary"
+        and row["task_id"] == "pilot.document-truth-under-pushback.v4-dev"
+    ]
+    assert {(row["provider"], row["ordinal"]) for row in document_primary} == {
+        ("gemini", 1),
+        ("gemini", 2),
+        ("xai", 3),
+    }
+
+
+def test_cost_capped_infrastructure_exclusions_remain_non_model_outcomes() -> None:
+    index = verify_cost_capped_public_index(ROOT)
+    excluded = [
+        row for row in index["attempts"] if row["disposition"] == "infrastructure_exclusion"
+    ]
+    assert len(excluded) == 18
+    assert all(row["official_binary_reward"] is None for row in excluded)
+    assert all(row["machine_diagnostics"] is None for row in excluded)
+    assert all(row["infrastructure"]["not_a_model_failure"] for row in excluded)
+    assert Counter(row["infrastructure"]["category"] for row in excluded) == {
+        "provider_authentication_refusal_before_admitted_response": 7,
+        "provider_read_error": 1,
+        "provider_read_timeout": 6,
+        "provider_response_without_admitted_text": 2,
+        "provider_retryable_overload_refusal": 2,
+    }
 
 
 def test_human_packet_is_blinded_to_policy_and_machine_verdict() -> None:

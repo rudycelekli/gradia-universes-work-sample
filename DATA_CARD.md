@@ -15,12 +15,14 @@ candidate/control pairs. Every pair shares a fixture seed and exact initial
 synthetic world. The treatment exposes its full occurrence witness. These are
 generated candidate artifacts, not live-model outputs.
 
-The repository publishes a redacted aggregate from a separate cost-capped live
-execution: 55 physical attempts, 37 gradable outcomes, 18 infrastructure
-exclusions and zero machine-scored perfect-rubric completions. Raw provider
-responses and full trajectories are not released. The aggregate therefore has
-a disclosed reconstruction gap and remains PRE-RESULTS pending blinded human
-adjudication and exact release approval.
+The repository publishes a redacted 55-row evidence index from a separate
+cost-capped live execution: 55 physical attempts, 37 gradable outcomes, 18
+infrastructure exclusions and zero machine-scored perfect-rubric completions.
+Attempt identities, dispositions, cohorts, usage, cost, diagnostic vectors and
+non-reward engagement annotations are sufficient to recompute the released
+aggregate. Raw provider responses and full trajectories are not released, so
+semantic reinspection remains a governed private gate. The result remains
+PRE-RESULTS pending blinded human adjudication and exact release approval.
 
 ## Intended use
 

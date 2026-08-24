@@ -14,6 +14,7 @@ from typing import Any
 
 from .axis_candidates import verify_axis_artifacts
 from .canonical import canonical_bytes, digest, write_canonical
+from .cost_capped_results import verify_cost_capped_public_index
 from .frontier import (
     FRONTIER_SCAFFOLD_VERSION,
     analyze_five_attempt_panel,
@@ -258,6 +259,18 @@ def command_axes_verify(args: argparse.Namespace) -> int:
         f"{report['mutation_probe_count']} isolated probes; "
         f"corpus_sha256={corpus['corpus_sha256']}; "
         f"report_sha256={report['report_sha256']}"
+    )
+    return 0
+
+
+def command_cost_capped_verify(args: argparse.Namespace) -> int:
+    index = verify_cost_capped_public_index(args.root)
+    summary = index["recomputed_summary"]
+    print(
+        "verified redacted cost-capped evidence index; "
+        f"attempts={summary['physical_attempt_count']}; "
+        f"gradable={summary['gradable_attempt_count']}; "
+        f"index_sha256={index['index_sha256']}"
     )
     return 0
 
@@ -733,6 +746,11 @@ def parser() -> argparse.ArgumentParser:
         "axes-verify", help="replay PRE-RESULTS phase and authority candidate axes"
     )
     axes_verify.set_defaults(func=command_axes_verify)
+    cost_capped_verify = sub.add_parser(
+        "cost-capped-verify",
+        help="recompute the public cost-capped panel aggregate from its redacted index",
+    )
+    cost_capped_verify.set_defaults(func=command_cost_capped_verify)
     contract = sub.add_parser("gradia-contract", help="check a live Gradia API safely")
     contract.add_argument("--base-url", required=True)
     contract.set_defaults(func=command_gradia_contract)

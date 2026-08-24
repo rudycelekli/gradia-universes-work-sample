@@ -7,7 +7,12 @@ collision without changing the registered identity).
 
 ## Claim boundary
 
-This is an exact execution inventory from a prospectively cost-capped panel. It
+This is an exact execution inventory from a post-observation operationally
+cost-capped panel. The amendment froze after attempt artifacts and zero outcomes
+already existed and had been inspected. Its within-cell rule remained mechanical—
+select the lowest two gradable ordinals—and the uniform zero rewards prevent
+success cherry-picking, but the result is exploratory rather than untouched
+preregistration. It
 does not establish broad capability, frontier difficulty, provider superiority,
 tail reliability, mortgage-domain validity, causal effects, training utility or
 novelty. Deterministic red criteria remain behaviorally unattributed until
@@ -24,11 +29,15 @@ six exact cells have `pass@2 = false` and `pass^2 = false`.
 | Provider/model | Task | Outcomes | pass@2 | pass^2 |
 |---|---|---|---|---|
 | `anthropic/claude-opus-5` | Document truth | `[0, 0]` | false | false |
-| `gemini/gemini-3.1-pro-preview` | Document truth | `[0, 0]` | false | false |
+| `gemini/gemini-3.1-pro-preview` | Document truth | `[0†, 0†]` | false | false |
 | `openai/gpt-5.6-sol` | Document truth | `[0, 0]` | false | false |
-| `xai/grok-4.6` | Document truth | `[0, 0]` | false | false |
-| `gemini/gemini-3.1-pro-preview` | Epistemic residue | `[0, 0]` | false | false |
+| `xai/grok-4.6` | Document truth | `[0, 0†]` | false | false |
+| `gemini/gemini-3.1-pro-preview` | Epistemic residue | `[0†, 0†]` | false | false |
 | `openai/gpt-5.6-sol` | Epistemic residue | `[0, 0]` | false | false |
+
+`†` is a deterministic post-hoc low-engagement annotation: under ten percent of
+the scripted control's actions and no source, attachment, or world event observed.
+It never changes reward, disposition, selection, or denominator eligibility.
 
 Document Truth Under Pushback is the cleanest cross-provider slice: all four
 providers completed two selected attempts on the same task and runtime, and none
@@ -62,8 +71,10 @@ better, or identify a behavioral mechanism before adjudication.
 - The execution crossed three runtime cohorts, so a balanced pooled result was
   refused.
 - Recorded execution totaled 3,617 provider calls, 99,382,990 input tokens,
-  6,080,548 output tokens, 2,609 tool actions, 5,325 transcript turns and
-  $705.88 in provider spend.
+  6,080,548 output tokens and $705.88 in provider spend across all 55 physical
+  attempts. The 37 gradable episode records contained 2,609 official tool actions
+  and 5,325 official transcript turns; excluded partial traces are not promoted
+  into those official counts.
 
 | Provider/model | Physical | Gradable | Infrastructure | Perfect passes | Spend |
 |---|---:|---:|---:|---:|---:|
@@ -85,20 +96,52 @@ completed transport without an admitted text payload. Excluded attempts
 accounted for $173.35 of physical spend. Their partial traces remain immutable;
 they are neither passes nor model failures.
 
+## Engagement and machine-diagnostic evidence
+
+The non-reward engagement rule flags 13/37 gradable attempts, including 7/21
+selected primary attempts. That set includes both selected Gemini Document attempts,
+both selected Gemini Residue attempts, one selected Gemini Handoff attempt, one
+selected xAI Document attempt, and one selected xAI Residue attempt. These remain
+official zeros; the annotation prevents a short protocol trace from being described
+as comparable long-horizon behavior before review.
+
+The mechanism is visible in the private governed traces and summarized here without
+releasing their text. All five Gemini Document attempts and all five Gemini Residue
+attempts called `branch.inspect` and then attempted terminal submission after two
+tool actions, with zero portfolio sources, zero attachments, and zero applied world
+events observed. The scaffold routed its generic `submit` action to the base
+terminal while the model supplied branch-account fields. The result is a genuine
+frozen zero, but it cannot distinguish model protocol failure from scaffold
+affordance ambiguity. Repeating the same edition is not the remedy. A replacement
+edition must explicitly separate the two terminal actions and reject branch
+submission until the base contract is complete, then rerun behind a newly frozen
+manifest.
+
+Across the 37 gradable attempts, 1,375 applicable machine-diagnostic assignments
+contained 486 green and 889 red states. This 35.3% coverage is not partial credit.
+The largest red families were document truth (163), temporal control (159),
+derived-state freshness (119), belief revision (85), authority (82), evidence
+provenance (81), and terminal integrity (77). These are observed surfaces, not
+model-attributed mechanisms; blinded review may label a red assignment as a model
+failure, measurement defect, or unresolved.
+
 ## Evidence identities
 
 | Object | Digest |
 |---|---|
 | Original plan | `3818860f9719a7b0f8258535546f481ededb2b72e16f6998a5c1e79989c51849` |
 | Cost-cap amendment | `5f5bf7aa8c74cc0307bc86a90f8dadb26c120a74636d1c3db509b22e744953ba` |
-| Cost-capped index | `e3dec5dc9ddf8718dcaa786b4e999d77c34f6752bc31694edbda99752c781003` |
+| Private source index | `e3dec5dc9ddf8718dcaa786b4e999d77c34f6752bc31694edbda99752c781003` |
+| Public redacted index | `3a99191719861d914616be689000c16fd0195e35499c3dbc31aef1f5f53eefa8` |
 | Verification report | `b8e013fc05b5f9868a892f89a2a0986d67978c68153b47d9b1756fbbec3b5777` |
 | Evaluator contract | `668383df2589330fac87fc2e2f8e8e786c5896fb5f8b4b2b74c5639fb2ccbb88` |
 
-Raw provider responses and full trajectories remain private pending
-per-artifact rights, redaction, human adjudication and release review. A public
-reader therefore cannot yet recompute this aggregate from raw bytes; that
-reconstruction gap is explicit.
+The committed redacted index contains all 55 attempt identities, dispositions,
+cohorts, usage, cost, machine criterion vectors, and engagement annotations. Run
+`gradia-universe cost-capped-verify` to recompute the aggregate without raw provider
+text. Raw responses and full trajectories remain private pending per-artifact
+rights, redaction, human adjudication, and release review; semantic reinspection of
+the text therefore remains a governed private gate.
 
 ## Frozen human-review input
 
