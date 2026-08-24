@@ -224,7 +224,7 @@ resource, plus blinded human review and appeal/adjudication evidence. The 44
 isolated probes have canonical report digest
 `fdeea4ae15c00a0f225f48a4bde7c42e261be648dd7d7cea2ec100c64935653e`.
 
-No result should move from `results/local` into a public release until all of
+No raw result should move from `results/local` into a public release until all of
 the following are true:
 
 1. the requested and returned model ids match, and pricing inputs were checked
@@ -239,4 +239,13 @@ the following are true:
 7. a disclosure projection removes anything outside the approved public
    evidence contract without changing a reported number.
 
-Until then, the deterministic reference panel is the only committed result.
+The 55-attempt cost-capped execution completed on 24 August 2026. A redacted
+machine-derived aggregate is committed at
+[`results/pre-results/CONDITIONALLY-APPROVED-COST-CAPPED-RESULTS.md`](../results/pre-results/CONDITIONALLY-APPROVED-COST-CAPPED-RESULTS.md).
+It reports 37 gradable outcomes, 18 infrastructure exclusions, six exact
+same-runtime pass@2 cells, zero perfect-rubric completions, exact cost and
+trajectory inventory, runtime-cohort refusal, and evidence digests. It is
+explicitly **PRE-RESULTS**, not a raw-artifact release, provider ranking,
+difficulty estimate, or human-attributed failure analysis. The raw responses
+and trajectories remain private, and the next gate for this edition is the
+frozen blinded review packet plus independent adjudication.

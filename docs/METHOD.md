@@ -13,8 +13,11 @@ witness**. Each occurrence binds a frozen event, root-owned application receipt,
 before/after materialized world roots, exact visible projection, action
 boundary, restore generation and previous hash-chain head. Five synthetic
 underwriting episodes and three deterministic reference policies test the
-object's semantics. The current results validate the harness; a later
-preregistered model/human study must establish incremental empirical value.
+object's semantics. Those reference results validate the harness. A separate
+cost-capped live execution now contributes 37 gradable, machine-scored episodes
+and 18 infrastructure exclusions, but its criterion-level behavioral findings
+remain pending blinded human adjudication. Neither result alone establishes
+incremental empirical value, broad capability, or domain validity.
 
 The repository also contains a deterministic **engineering preflight** for the
 eight planned mutation families. It creates 26 isolated forks from five valid

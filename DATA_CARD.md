@@ -15,6 +15,13 @@ candidate/control pairs. Every pair shares a fixture seed and exact initial
 synthetic world. The treatment exposes its full occurrence witness. These are
 generated candidate artifacts, not live-model outputs.
 
+The repository publishes a redacted aggregate from a separate cost-capped live
+execution: 55 physical attempts, 37 gradable outcomes, 18 infrastructure
+exclusions and zero machine-scored perfect-rubric completions. Raw provider
+responses and full trajectories are not released. The aggregate therefore has
+a disclosed reconstruction gap and remains PRE-RESULTS pending blinded human
+adjudication and exact release approval.
+
 ## Intended use
 
 - reproduce event application, visibility, restore and judging semantics;
@@ -31,8 +38,9 @@ generated candidate artifacts, not live-model outputs.
 The synthetic policy is not legal, lending, underwriting or compliance advice.
 Scripted-control pass rates validate this fixture and harness; they do not
 estimate model performance in a real institution or population. Frontier
-difficulty remains unmeasured until frozen live panels and human calibration
-pass. No fairness, safety or production-readiness conclusion may be drawn from
+difficulty remains unmeasured because the cost-capped execution was unbalanced,
+crossed runtime cohorts and has not completed human adjudication. No fairness,
+safety, provider-ranking or production-readiness conclusion may be drawn from
 these synthetic tasks.
 
 The axis corpus proves only construction, seed pairing, exact witness exposure,
