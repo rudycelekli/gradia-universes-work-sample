@@ -621,6 +621,8 @@ therefore these rows must not support a provider capability comparison. The resu
 instead shows that a terminal scalar collapses materially different execution
 shapes and that the action/evidence ledger exposes a reviewable distinction.
 
+### 7.4 Finding: a repeatable branch-surface short-circuit
+
 The Gemini records make the mechanism inspectable rather than speculative. In all
 five Document Truth attempts and all five Epistemic Residue attempts, the policy
 queried `branch.inspect` and then attempted a terminal submission after only two
@@ -643,7 +645,7 @@ can reveal expensive context accumulation, repeated reconciliation, or provider
 fragility; only an admitted outcome can establish exact task completion, and only a
 balanced reviewed panel can support a broader behavioral comparison.
 
-### 7.4 Criterion-level observations
+### 7.5 Criterion-level observations
 
 The 37 gradable episodes carried **1,375 applicable machine-diagnostic criterion
 assignments**. Of these, 486 were green and 889 were red. This 35.3% diagnostic
@@ -695,7 +697,7 @@ with evidence citation and rationale. A measurement defect cannot be repaired by
 relabeling the historical attempt; it creates a new evaluator or task edition and a
 separately identified replacement run.
 
-### 7.5 Analytics+ findings
+### 7.6 Analytics+ findings
 
 Analytics+ can already localize task, criterion, phase, source, authority, event,
 engagement, and provider-failure surfaces. Its pre-review conclusions are limited to
@@ -707,7 +709,7 @@ generated only after reviewer dispositions are sealed, and every interpretation
 must preserve contrary evidence, missingness, runtime cohort, engagement posture,
 and denominator eligibility.
 
-### 7.6 What the cost-capped panel established
+### 7.7 What the cost-capped panel established
 
 The run established seven facts.
 
@@ -781,7 +783,7 @@ amendment bindings, verification digests, a rendered PDF, and a redacted 55-row
 evidence index. The index exposes per-attempt artifact identity, disposition,
 analysis cohort, runtime cohort, usage, cost, machine criterion vector, and
 non-reward engagement descriptor. A public reader can recompute every aggregate in
-Sections 7.1--7.4 with `gradia-universe cost-capped-verify`; the verifier refuses
+Sections 7.1--7.5 with `gradia-universe cost-capped-verify`; the verifier refuses
 index, chain, count, diagnostic, and engagement drift. Raw provider responses and
 full trajectories remain private pending per-artifact rights, redaction, and release
 review, so semantic reinspection of quoted behavior remains a human-controlled
@@ -796,6 +798,13 @@ This paper is the complete research report: Universe method, engineering validat
 live mortgage testbed, empirical inventory, limitations and research program are one
 claim-bounded artifact. The sections below distinguish what the public verifier
 already demonstrates from the comparative studies that remain open.
+
+The scope boundary with the separately tracked *Interruptible Universes* manuscript
+is deliberate. This paper owns the benchmark contract, the integrated method needed
+to audit it, and the live cost-capped findings. *Interruptible Universes* owns the
+future Study A comparison of evolution-witness evidence against admitted baselines
+on mutant runtimes. Shared definitions are repeated only where this report must be
+self-contained; no result in one manuscript is evidence for the other's open study.
 
 ### 11.1 Trust boundary and adversary
 
@@ -1053,6 +1062,17 @@ requires relationship and compensation disclosure. Two independent reviewers mus
 cover every red criterion; disagreements require a separately identified
 adjudicator. No human decision has been fabricated or inferred from the machine
 score, and no historical outcome will be rewritten.
+
+Review order is risk-based but does not alter coverage. The first tranche is the six
+near-universal criteria: deadline control, rate-lock risk, authoritative market-state
+freshness, outage-interval safety, unverified-pressure handling, and material-document
+inspection. A nearly universal red surface is where a systematic task, disclosure,
+or evaluator defect can create the largest correlated error, so both reviewers examine
+those assignments first and record evidence spans, rationale, confidence, or
+abstention. That prioritization may reveal a shared measurement defect early, but it
+does not let one decision silently disposition every repeated assignment. Any reduced
+or stratified review design would be a new, prospectively frozen amendment issued
+before recruitment; it cannot be inferred after seeing reviewer decisions.
 
 | Review object | Identity |
 |---|---|

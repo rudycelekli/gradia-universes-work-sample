@@ -95,14 +95,14 @@ trajectory shape, engagement annotation, and machine diagnostic surfaces while
 reserving behavioral attribution for blinded humans. Mortgage is the synthetic
 testbed; proof-bound evolving and branchable worlds are the research focus.
 
-The companion method manuscript is
+The separate Study A manuscript is
 [Interruptible Universes: Evolution Witnesses for Verifiable World Change in Agent Benchmarks](paper/INTERRUPTIBLE-UNIVERSES-PAPER-DRAFT.md).
 [Open the rendered method PDF](output/pdf/INTERRUPTIBLE-UNIVERSES-PRE-RESULTS-DRAFT.pdf).
-It formalizes the evidence object, reports the exact scripted-control harness
-checks, compares the narrow hypothesis to the closest research, and locks the
-mutation, live-model, human-review and runtime-conformance studies before any
-confirmatory result is seen. The reproducible PDF build is tracked with the
-source; no unmeasured result is converted into a claim for presentation.
+It owns the future mutant-runtime comparison of evolution-witness evidence against
+admitted baselines. The Conditionally Approved report above already contains the
+complete method needed to understand and audit its benchmark and live findings; it
+does not depend on this second manuscript. The reproducible PDF builds are tracked
+with source, and no open Study A result is converted into a claim for presentation.
 
 For design feedback, read the
 [gold-parent Universe request for comments](docs/GOLD-PARENT-UNIVERSE-RFC.md),
