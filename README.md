@@ -49,8 +49,8 @@ operational cost amendment stopped the panel at its 55-attempt ceiling: 37 attem
 were infrastructure exclusions, and none of the 37 satisfied the exact
 perfect-rubric conjunction. Because only 6/20 cells contain an eligible
 same-runtime pair, five cells are unobserved, execution crossed three runtime
-cohorts, and blinded adjudication is pending, these are **machine-derived
-PRE-RESULTS** rather than a capability, difficulty, provider-ranking or novelty
+cohorts, and blinded adjudication is pending, these are **preliminary machine
+results** rather than a capability, difficulty, provider-ranking or novelty
 claim. The exact public summary is in
 [results/pre-results/CONDITIONALLY-APPROVED-COST-CAPPED-RESULTS.md](results/pre-results/CONDITIONALLY-APPROVED-COST-CAPPED-RESULTS.md).
 The committed 55-row
@@ -88,7 +88,7 @@ does not promote private implementation facts into public artifact evidence.
 
 The empirical benchmark manuscript is
 [Conditionally Approved: Proof-Bound Branchable Universes for Long-Horizon AI Agents Under Changing Evidence, Authority, and Time](paper/CONDITIONALLY-APPROVED-PAPER-DRAFT.md).
-[Open its rendered cost-capped PRE-RESULTS PDF](output/pdf/CONDITIONALLY-APPROVED-PRE-RESULTS-DRAFT.pdf).
+[Open its rendered preliminary-results PDF](output/pdf/CONDITIONALLY-APPROVED-PRELIMINARY-RESULTS-DRAFT.pdf).
 It reports the sealed 55-attempt execution inventory, exact-cell pass@2/pass²
 semantics, infrastructure exclusions, runtime-cohort refusal, cost and
 trajectory shape, engagement annotation, and machine diagnostic surfaces while

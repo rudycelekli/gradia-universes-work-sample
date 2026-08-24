@@ -21,8 +21,8 @@ infrastructure exclusions and zero machine-scored perfect-rubric completions.
 Attempt identities, dispositions, cohorts, usage, cost, diagnostic vectors and
 non-reward engagement annotations are sufficient to recompute the released
 aggregate. Raw provider responses and full trajectories are not released, so
-semantic reinspection remains a governed private gate. The result remains
-PRE-RESULTS pending blinded human adjudication and exact release approval.
+semantic reinspection remains a governed private gate. These are preliminary
+machine results pending blinded human adjudication and exact release approval.
 
 ## Intended use
 

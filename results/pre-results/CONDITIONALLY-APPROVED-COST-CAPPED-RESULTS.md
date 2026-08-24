@@ -1,6 +1,6 @@
 # Conditionally Approved cost-capped panel
 
-**Status:** machine-derived PRE-RESULTS, 24 August 2026  
+**Status:** preliminary machine results; human adjudication pending, 24 August 2026
 **Panel:** concatenate `frontier-v4-five-task` and
 `-pass5-pre-results-20260823-04` (the split avoids a secret-shaped scanner
 collision without changing the registered identity).

@@ -1,10 +1,10 @@
 ---
 title: "Conditionally Approved: Proof-Bound Branchable Universes for Long-Horizon AI Agents Under Changing Evidence, Authority, and Time"
 author: "Rudy M. Celekli, Gradia Research"
-date: "Cost-capped pre-results - 24 August 2026"
+date: "Preliminary machine results - human adjudication pending - 24 August 2026"
 ---
 
-> **Pre-results boundary.** The cost-capped execution is complete and its aggregate
+> **Preliminary-results boundary.** The cost-capped execution is complete and its aggregate
 > was independently recomputed from 55 immutable attempt artifacts. This manuscript
 > reports physical execution, exact machine-scored outcomes, infrastructure
 > exclusions, runtime cohorts, cost, and trajectory shape. It does **not** claim a
@@ -387,7 +387,8 @@ The research claim is intentionally componentwise:
   the present paper makes no truthfulness or deception claim.
 - **Long-horizon tasks and empirical pass rates are established.** This protocol
   separates difficulty from solvability, engagement and infrastructure missingness.
-  The current panel is incomplete pre-results and supports no calibrated tier.
+  The current panel is incomplete, preliminary machine evidence and supports no
+  calibrated tier.
 
 The candidate contribution is therefore not “we invented dynamic environments” or
 “hashes make agents honest.” It is a testable evidence composition: bind world
@@ -501,7 +502,7 @@ model, evaluator, Git commit, or runtime-implementation digest.
 
 ## 7. Results
 
-> **Machine-derived pre-results.** This section is generated from verification
+> **Preliminary machine results.** This section is generated from verification
 > artifact `b8e013fc05b5f9868a892f89a2a0986d67978c68153b47d9b1756fbbec3b5777`.
 > It reports exact execution and scoring facts, not human-attributed failure modes.
 
@@ -957,7 +958,7 @@ The present evidence licenses only the lower rungs:
    cost-capped index execute as described.
 2. **Engineering-sensitive:** authored safe/unsafe controls and isolated mutations
    produce the intended deterministic distinctions.
-3. **Observed live pre-results:** 55 physical attempts and 37 gradable outcomes are
+3. **Observed preliminary machine results:** 55 physical attempts and 37 gradable outcomes are
    frozen with exact denominators and machine diagnostics.
 4. **Pending human validity:** two blinded reviewers have not yet completed the 889
    applicable red assignments each.

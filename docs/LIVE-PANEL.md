@@ -244,8 +244,8 @@ machine-derived aggregate is committed at
 [`results/pre-results/CONDITIONALLY-APPROVED-COST-CAPPED-RESULTS.md`](../results/pre-results/CONDITIONALLY-APPROVED-COST-CAPPED-RESULTS.md).
 It reports 37 gradable outcomes, 18 infrastructure exclusions, six exact
 same-runtime pass@2 cells, zero perfect-rubric completions, exact cost and
-trajectory inventory, runtime-cohort refusal, and evidence digests. It is
-explicitly **PRE-RESULTS**, not a raw-artifact release, provider ranking,
-difficulty estimate, or human-attributed failure analysis. The raw responses
+trajectory inventory, runtime-cohort refusal, and evidence digests. These are
+explicitly **preliminary machine results**, not a raw-artifact release, provider
+ranking, difficulty estimate, or human-attributed failure analysis. The raw responses
 and trajectories remain private, and the next gate for this edition is the
 frozen blinded review packet plus independent adjudication.
