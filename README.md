@@ -42,11 +42,12 @@ publishes the task designs, observed control-trace lengths, evidence identifiers
 evaluator defects found during hardening and the gates still required before the
 implementation or any result is eligible for release.
 
-This checkpoint is deliberately **not** a benchmark release. The candidate
+This checkpoint is deliberately **not** a benchmark release. The private v4
 implementation and its generated manifests are not yet in this repository, the
-declared horizon target is not yet execution-enforced, no live-model panel has
-run, and the document makes no frontier-difficulty, customer-validity or novelty
-claim.
+declared horizon target is not yet execution-enforced, and no sealed live-model
+result has been published. A cost-capped panel is in progress under a separate
+runtime-stratified protocol; execution alone makes no frontier-difficulty,
+customer-validity, comparative or novelty claim.
 
 Three additional measurement protocols are now documented in the manuscript as
 **PRE-RESULTS engineering directions**:
@@ -69,21 +70,28 @@ does not promote private implementation facts into public artifact evidence.
 
 ## Read the paper
 
-The publication-style pre-results manuscript is
+The empirical benchmark manuscript is
+[Conditionally Approved: A Proof-Bound Mortgage Benchmark for Long-Horizon AI Agents Under Changing Evidence, Authority, and Time](paper/CONDITIONALLY-APPROVED-PAPER-DRAFT.md).
+[Open its rendered seven-page PRE-RESULTS PDF](output/pdf/CONDITIONALLY-APPROVED-PRE-RESULTS-DRAFT.pdf).
+It freezes the five-task panel, evaluator contract, prospective 55-attempt cost
+stop, exact-cell pass@2/pass² semantics, runtime-cohort refusal, human-review
+gate, and the counterfactual research program before any sealed result is
+inserted.
+
+The companion method manuscript is
 [Interruptible Universes: Evolution Witnesses for Verifiable World Change in Agent Benchmarks](paper/INTERRUPTIBLE-UNIVERSES-PAPER-DRAFT.md).
-[Open the rendered PDF](output/pdf/INTERRUPTIBLE-UNIVERSES-PRE-RESULTS-DRAFT.pdf)
+[Open the rendered method PDF](output/pdf/INTERRUPTIBLE-UNIVERSES-PRE-RESULTS-DRAFT.pdf).
+It formalizes the evidence object, reports the exact scripted-control harness
+checks, compares the narrow hypothesis to the closest research, and locks the
+mutation, live-model, human-review and runtime-conformance studies before any
+confirmatory result is seen. The reproducible PDF build is tracked with the
+source; no unmeasured result is converted into a claim for presentation.
 
 For design feedback, read the
 [gold-parent Universe request for comments](docs/GOLD-PARENT-UNIVERSE-RFC.md),
 which freezes the five-task protocol, governed-counterpart boundary, grading
 commitments, branch-conditioned account study, and questions that could still
 change the design before live results become expensive.
-for the publication layout.
-It formalizes the evidence object, reports the exact scripted-control harness
-checks, compares the narrow hypothesis to the closest research, and locks the
-mutation, live-model, human-review and runtime-conformance studies before any
-confirmatory result is seen. The reproducible PDF build is tracked with the
-source; no unmeasured result is converted into a claim for presentation.
 
 The manuscript now also records a staged **branch-consistency oversight**
 program: first test whether witnessed closure catches hidden world defects, then
