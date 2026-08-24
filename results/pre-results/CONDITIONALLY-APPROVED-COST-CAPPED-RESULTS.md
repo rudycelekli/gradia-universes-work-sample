@@ -117,6 +117,15 @@ edition must explicitly separate the two terminal actions and reject branch
 submission until the base contract is complete, then rerun behind a newly frozen
 manifest.
 
+A subsequent private, digest-distinct `v4r1` engineering edition implements that
+repair at Gradia commit `c5e0f72`; it does not alter this frozen result. Its 10/10
+merged-tree tests include the historical shortcut reproduction, premature and
+malformed terminal refusals, five complete scripted-world positives of 117–153 acts,
+identity/manifest drift refusal, and key-free write-once preflight. Act count remains
+non-reward. No live Gemini replacement result exists, and this private implementation
+is not public-repository reproduction evidence. A new cohort still requires edition
+review, exact-model smoke, a prospectively latched manifest, and separate identity.
+
 Across the 37 gradable attempts, 1,375 applicable machine-diagnostic assignments
 contained 486 green and 889 red states. This 35.3% coverage is not partial credit.
 The largest red families were document truth (163), temporal control (159),

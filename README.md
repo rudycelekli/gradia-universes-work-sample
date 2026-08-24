@@ -94,6 +94,8 @@ semantics, infrastructure exclusions, runtime-cohort refusal, cost and
 trajectory shape, engagement annotation, and machine diagnostic surfaces while
 reserving behavioral attribution for blinded humans. Mortgage is the synthetic
 testbed; proof-bound evolving and branchable worlds are the research focus.
+It also records the subsequent private `v4r1` engineering remediation as scripted
+control evidence only—never as a new Gemini result or public-code reproduction.
 
 The separate Study A manuscript is
 [Interruptible Universes: Evolution Witnesses for Verifiable World Change in Agent Benchmarks](paper/INTERRUPTIBLE-UNIVERSES-PAPER-DRAFT.md).

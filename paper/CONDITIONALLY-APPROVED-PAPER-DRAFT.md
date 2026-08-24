@@ -640,6 +640,23 @@ terminal distinction explicit, (ii) refuses branch submission until the base
 terminal contract is complete, and (iii) preregisters the comparison before any
 new outcome is observed. The frozen attempts remain unchanged.
 
+**Subsequent engineering remediation—not a live-model result.** A digest-distinct
+private `v4r1` edition now implements those three requirements at Gradia commit
+`c5e0f72`. The base terminal accepts only the exact root-owned `draft_sha256`; the
+branch terminal refuses until that base receipt exists; and generic submit routes to
+the branch terminal. Its merged-tree control suite passed 10/10 tests: one exact
+historical-shortcut reproduction, two malformed-or-premature terminal refusals,
+five complete scripted-world positives, one provider/model identity and manifest
+drift check, and one key-free write-once preflight check. The five positive scripts
+contain 138, 150, 153, 153, and 117 acts respectively, and act count is not a reward
+input. This establishes solvability of the corrected protocol and sensitivity to
+the observed interface defect. It does **not** establish that Gemini, or any live
+model, would engage successfully with `v4r1`; no paid replacement attempt exists.
+The private correction is named for auditability but is not public-repository
+reproduction evidence. A fresh result still requires independent edition review,
+an exact-model smoke receipt, a prospectively latched manifest, and a separately
+labeled cohort.
+
 The scale matters operationally but is not itself a difficulty metric. A long trace
 can reveal expensive context accumulation, repeated reconciliation, or provider
 fragility; only an admitted outcome can establish exact task completion, and only a
@@ -700,14 +717,24 @@ separately identified replacement run.
 ### 7.6 Analytics+ findings
 
 Analytics+ can already localize task, criterion, phase, source, authority, event,
-engagement, and provider-failure surfaces. Its pre-review conclusions are limited to
-observable facts: low-engagement traces concentrate in 13 gradable attempts; temporal
-and document-truth obligations account for 322/889 red assignments; and identical
-terminal zeros hide radically different interaction paths. It is not yet allowed to
-infer behavioral mechanisms. Evidence-cited model-failure interpretations will be
-generated only after reviewer dispositions are sealed, and every interpretation
-must preserve contrary evidence, missingness, runtime cohort, engagement posture,
-and denominator eligibility.
+engagement, and provider-failure surfaces. The current pre-adjudication register is:
+
+| Observed surface | Evidence | Permitted interpretation now |
+|---|---|---|
+| Infrastructure censor | 18/55 physical attempts | Operational reliability and cost evidence; never model failure |
+| Low engagement | 13/37 gradable, including 7/21 primary | Protocol-engagement annotation; not efficiency or incapability |
+| Gemini branch short-circuit | 10 attempts across two tasks followed the same two-action shape | Repeatable model/scaffold interaction; causal share unresolved |
+| Near-universal red criteria | Six exact criteria red on 34–37/37 attempts | Highest-priority measurement audit; not mass model attribution |
+| Substantive but non-passing traces | Complete cells range from 145 to 303 tool actions per pair while all strict outcomes are zero | Genuine terminal non-completion with mechanism pending human review |
+| Runtime drift and missing cells | Six exact pairs, nine singletons, five unobserved cells | Cohort comparability defect; no pooled provider ranking |
+
+These entries are failure **surfaces**, not yet human-validated failure modes.
+Temporal and document-truth obligations account for 322/889 red assignments, and
+identical terminal zeros hide radically different interaction paths. Analytics+ is
+not allowed to infer a behavioral mechanism from those facts. Evidence-cited
+model-failure interpretations will be generated only after reviewer dispositions
+are sealed, and every interpretation must preserve contrary evidence, missingness,
+runtime cohort, engagement posture, and denominator eligibility.
 
 ### 7.7 What the cost-capped panel established
 
