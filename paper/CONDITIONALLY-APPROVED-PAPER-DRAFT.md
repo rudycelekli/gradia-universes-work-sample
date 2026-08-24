@@ -254,6 +254,151 @@ its refusal behavior. A comparative detection study and blinded human agreement 
 still required before that incremental-value hypothesis—or any novelty claim—is
 accepted.
 
+### 4.6 Universe execution and proof pipeline
+
+A benchmark task is only one frozen measurement inside a Universe. The Universe
+also binds the material state that can change, the actor-specific view of that
+state, executable tools, authority, events, logical time, evaluator identity,
+rights, and release posture. The distinction matters because the same task text can
+measure different behavior if any of those surrounding objects drift.
+
+The execution pipeline has five ordered stages:
+
+1. **Freeze:** approve the construct and bind task, material world,
+   actor projection, tools and authority.
+2. **Latch:** bind requested/resolved model, scaffold, runtime, sampling and code
+   before dispatch.
+3. **Execute:** append acts while root-authored events evolve material state.
+4. **Witness:** bind each event to its roots, visible projection, boundary and
+   restore lineage; finish with a terminal state and evidence-cited account.
+5. **Disposition:** reverify the admitted evaluator and classify the physical
+   attempt before any claim-gated analysis.
+
+Five invariants govern the path:
+
+1. **Identity closure.** Task, world, scenario, evaluator, model, scaffold,
+   runtime, sampling and code identities are immutable before the relevant act.
+2. **World closure.** Every scored side effect must be represented in the declared
+   material world or named as uncovered; a terminal value cannot conceal an
+   unsupported external mutation.
+3. **Projection closure.** Evidence used to judge an agent claim must have been in
+   that actor's exact visible projection at an eligible act boundary.
+4. **Lineage closure.** Snapshot, restore and fork operations preserve the parent,
+   generation, occurrence prefix and before/after roots.
+5. **Disposition closure.** Infrastructure, measurement and pending-human states
+   are decided before behavioral aggregation. A retry is a new physical attempt,
+   never an overwrite.
+
+These invariants turn “the agent was interrupted” into a set of falsifiable
+statements: the event was frozen, it was applied exactly once, material state
+changed as declared, the agent could observe the permitted projection, the action
+occurred after that projection, and the evaluator read the same edition.
+
+### 4.7 Evolution-witness formalism
+
+Let $W_k$ be the material world before occurrence $k$, $A_b$ the eligible act
+boundary, $P_{a,k}$ the projection visible to actor $a$, $G_k$ the restore
+generation, and $H_{k-1}$ the previous occurrence-chain head. An evolution witness
+is the self-bound object
+
+$$
+\omega_k = \mathcal{H}(e_k, A_b, \mathcal{H}(W_k), \mathcal{H}(W_{k+1}),
+                         \mathcal{H}(P_{a,k}), q_k, G_k, H_{k-1}),
+$$
+
+where $e_k$ is the frozen event and $q_k$ is its authenticated authority and
+visibility rule. Admission requires all of the following:
+
+$$
+\begin{aligned}
+&\operatorname{eligible}(e_k,A_b)=1,\\
+&\operatorname{apply}(W_k,e_k)=W_{k+1},\\
+&\operatorname{project}_a(W_{k+1},q_k)=P_{a,k},\\
+&\operatorname{previous}(\omega_k)=H_{k-1},\\
+&\operatorname{generation}(\omega_k)=G_k.
+\end{aligned}
+$$
+
+This does not prove that the agent attended to or believed the projection. It proves
+the narrower prerequisite that the declared world change occurred and identifies
+the exact information the agent could have used. That separation is what permits a
+later behavioral claim to be contradicted, supported, unobservable, or
+indeterminate without guessing private cognition.
+
+In a multi-actor Universe, each $P_{a,k}$ is an actor-specific causal view rather
+than a copy of the root log. Hidden events are absent, not merely redacted after
+delivery. A future noninterference study can therefore ask whether an actor's action
+changes when only facts outside its admitted causal past change. The present panel
+implements single-agent projection evidence; it does not report that future result.
+
+### 4.8 Branch comparability and counterfactual discipline
+
+A branch is scientifically useful only if siblings descend from one admitted
+parent. Let $C$ be a closure manifest over material tables, documents, scenario
+state, queues, clocks, actor memory and every other declared mutable component. Two
+child worlds $W^0$ and $W^1$ are an eligible pair only when:
+
+$$
+\operatorname{parent}(W^0)=\operatorname{parent}(W^1), \quad
+\operatorname{closure}(W^0)=\operatorname{closure}(W^1)=C,
+$$
+
+and their intervention manifest declares one changed factor while all protected
+identities remain equal. The evidence must bind the branch operation, child roots,
+actor projections, runtime identity, evaluator, and terminal utility. Missing
+process, sidecar, queue, clock, cache, credential or external replay state is not
+silently assumed equal; it is a named closure blocker.
+
+This contract supports three different questions that must not be collapsed:
+
+- **Descriptive sensitivity:** did behavior differ between witnessed siblings?
+- **Recoverability:** could an admitted reference continuation recover from a
+  recorded point?
+- **Causal credit:** did substituting one act, while the policy rejoined under a
+  valid paired design, change terminal utility?
+
+Only the first can be reported from an ordinary paired fork. Recoverability needs a
+pinned reference policy; act-level blame or training-grade advantage needs repeated
+isolated substitutions, stable deltas, parity, human/evaluator calibration,
+independent review, holdout and appropriate training rights. This paper reports no
+causal credit or training label.
+
+### 4.9 What is established, composed, and still only hypothesized
+
+The research claim is intentionally componentwise:
+
+- **Stateful agent environments are established.** This composition freezes world,
+  task, runtime and evaluator identity together. That binding is implemented;
+  superiority over existing environments is untested.
+- **Asynchronous change, interruption and retraction are established.** The added
+  measurement object binds occurrence, material application, actor projection and
+  act boundary. Scripted sensitivity passes; incremental detection is untested.
+- **Logs, telemetry and provenance are established.** The composition keeps the
+  actor-visible chain distinct from the root/auditor chain. Its engineering evidence
+  is recomputable; comparative value is not yet measured.
+- **Snapshot, restore and branching substrates are established.** Gradia admits a
+  branch only with parent, generation, occurrence and declared-closure lineage.
+  Local controls pass; provider-wide whole-world closure remains unproved.
+- **Rubric evaluation, judge calibration and mutation testing are established.**
+  This evaluator adds isolated one-defect probes plus current-source and post-change
+  reread gates. Deterministic probes pass; human agreement is pending.
+- **Counterfactual oversight has extensive prior work.** Concealed witnessed forks
+  are a candidate way to test account consistency. This is a research program only;
+  the present paper makes no truthfulness or deception claim.
+- **Long-horizon tasks and empirical pass rates are established.** This protocol
+  separates difficulty from solvability, engagement and infrastructure missingness.
+  The current panel is incomplete pre-results and supports no calibrated tier.
+
+The candidate contribution is therefore not “we invented dynamic environments” or
+“hashes make agents honest.” It is a testable evidence composition: bind world
+evolution, actor visibility, action boundaries, restore/branch lineage and admitted
+judgment tightly enough to detect defects that terminal state and ordinary logs
+miss. The falsifier is straightforward. If a strong baseline catches the same
+planted defects with comparable false-positive rate, overhead and reconstructability,
+or if blinded humans cannot reliably validate the additional distinctions, the
+incremental-value claim fails. That comparative study remains the central next
+methodological experiment.
+
 ## 5. Evaluation contract
 
 ### 5.1 Official reward
@@ -645,14 +790,146 @@ verification commands, reference receipts, preregistrations, and current manuscr
 are available at
 [github.com/rudycelekli/gradia-universes-work-sample](https://github.com/rudycelekli/gradia-universes-work-sample).
 
-## 11. Relationship to the method paper
+## 11. Integrated method validation
 
-The companion manuscript, *Interruptible Universes: Evolution Witnesses for
-Verifiable World Change in Agent Benchmarks*, defines and tests the general evidence
-composition. **Conditionally Approved** is the benchmark and empirical study built
-on that apparatus. The separation is intentional: the method should be judged by its
-validity evidence, and the benchmark should be judged by task quality, measurement
-quality, and results.
+This paper is the complete research report: Universe method, engineering validation,
+live mortgage testbed, empirical inventory, limitations and research program are one
+claim-bounded artifact. The sections below distinguish what the public verifier
+already demonstrates from the comparative studies that remain open.
+
+### 11.1 Trust boundary and adversary
+
+The verifier trusts the released reference implementation, canonical encoder and
+the bytes it is asked to verify. It treats agent output, tool arguments, model
+rationales, reported roots, occurrence claims and aggregate prose as untrusted. It
+recomputes identities and refuses a mismatch rather than repairing it. Under that
+boundary, a valid witness supports the statement that the declared event, recorded
+state transition, visible projection, action boundary, restore lineage and judgment
+are mutually consistent with deterministic replay.
+
+It does **not** prove that an external source was truthful, the model read or
+understood a notice, a host was uncompromised, a caller-declared identity was
+authenticated by hardware, or a hash was signed by a known principal. Those require
+separate source authentication, isolation, workload identity, external sensing and
+signature evidence. A party with authority to rewrite both the implementation and
+all unsigned evidence could construct a new internally consistent history; exact
+release authorization and remote anchoring address different threats.
+
+### 11.2 Scripted floor, unsafe controls, and replay
+
+Before paying for model behavior, the public harness runs three deterministic
+policies over five reference fixtures. `interrupt_safe` re-reads authoritative state
+after change; `stale_context` commits from cached state; `message_credulous` promotes
+recommendation-shaped content without sufficient authority. These are planted
+program behaviors, not simulated people or language models.
+
+| Scripted policy | Exact passes | Constructed episodes |
+|---|---:|---:|
+| `interrupt_safe` | 5 | 5 |
+| `stale_context` | 2 | 5 |
+| `message_credulous` | 1 | 5 |
+
+The 15 episodes contain 80 recorded acts, 12 event occurrences, three restore
+receipts and zero environment failures. Replay regenerates the panel digest
+`8fe207d2394c15f8db07e01d33f350997b1915aab147eb1c7ab1992804b620ff`.
+The safe floor passing and planted unsafe controls failing establish local harness
+sensitivity and solvability. They are not samples from a population, a difficulty
+tier or an effect estimate.
+
+Two controlled traces explain why process evidence matters. In a stale-policy
+trace, the root policy changes at a witnessed boundary, but the unsafe policy cites
+the old source and submits the pre-event root; recommendation, current-root,
+adaptation and evidence criteria localize the failure. In an authority-conflict
+trace, the final recommendation happens to be correct but relies on an unverified
+message; outcome correctness passes while authoritative-evidence fails. A terminal
+answer alone cannot make that distinction.
+
+### 11.3 Mutation battery and evidence-policy baselines
+
+The current engineering preflight reconstructs 26 isolated forks from five valid
+parents. Each fork records its parent digest, mutation family, changed JSON paths,
+unchanged-leaf manifest and expected representation. The public verifier compares
+five evidence projections:
+
+1. terminal state only (`T`);
+2. ordinary event log plus terminal (`L+T`);
+3. selected action milestones plus terminal (`M+T`);
+4. an engineering proof-of-execution-style causal projection (`P+T*`); and
+5. the full evolution witness (`W`).
+
+| Projection | Forks | Planted change represented | Planted change absent | Faithful-parent change |
+|---|---:|---:|---:|---:|
+| `T` | 26 | 0 | 26 | 0 |
+| `L+T` | 26 | 12 | 14 | 0 |
+| `M+T` | 26 | 7 | 19 | 0 |
+| `P+T*` | 26 | 15 | 11 | 0 |
+| `W` | 26 | 26 | 0 | 0 |
+
+The report digest is
+`f891ac53e2212051fc8287194f9a380adb214f6ed52113e3e7d1f04ee80ceb34`.
+These counts measure whether the generator-authored changed field remains present in
+each representation—an information-availability ceiling. They are **not** blinded
+detector outcomes and do not prove incremental validity. `P+T*` is deliberately
+called “style”: it is not claimed as a faithful reproduction of Proof of Execution.
+
+The mutation families cover logged-but-unapplied events, altered visible content,
+altered authority, duplicate or lost delivery after restore, broken predecessor
+links, repaired terminal states that conceal invalid intermediate state, and wrong
+action boundaries. Expected-miss controls include contamination outside declared
+closure and an evaluator implementation that contradicts its own frozen criterion.
+Benign metamorphic controls include JSON reordering, equivalent timestamp rendering,
+causally valid reordering of independent occurrences and bijective entity renaming.
+A method that rejects those harmless re-projections is presentation-sensitive rather
+than semantically invariant.
+
+The frontier evaluator adds five positive admissions and 44 isolated one-defect
+probes. The phase/authority construction layer adds ten exposed PRE-RESULTS
+candidates and 100 isolated construction probes. These tests show that exact planted
+defects are caught under the authored fixtures. They do not establish judge–human
+agreement, live behavioral effects or scientific novelty.
+
+### 11.4 Confirmatory ablations and falsification plan
+
+The primary future method study applies the same isolated invalid fork to every
+evidence policy and asks whether the policy rejects it and localizes the first faulty
+origin. A strong comparator is required; ordinary logs alone are intentionally not
+the straw-man baseline. Starting from `W`, the study removes the event digest,
+before root, after root, projection digest, action boundary, restore generation,
+predecessor link, act ledger and terminal judgment one at a time. A component is
+empirically justified only if its removal changes detection, localization, false
+rejection, replay behavior or cost on a preregistered mutation family.
+
+The primary comparison is paired invalid-episode detection between `W` and the
+strongest admitted baseline, with exact-origin localization and faithful-parent
+false rejection as essential counterweights. Evidence bytes, verifier time and
+reviewer time must be reported so a larger receipt cannot win merely by retaining
+everything. Multiple mutations from one parent remain clustered rather than being
+misreported as independent tasks.
+
+The method claim fails or narrows if a strong baseline catches the same defects with
+comparable false-positive rate, localization, cost and reconstructability; if valid
+runtime adapters cannot preserve the required semantics; or if blinded humans
+cannot reliably validate the distinctions. A null comparison is useful: it would
+identify which witness fields are redundant and where simpler state or execution
+evidence is sufficient.
+
+### 11.5 Claim ladder
+
+The present evidence licenses only the lower rungs:
+
+1. **Implemented:** canonical objects, replay, mutation probes and the public
+   cost-capped index execute as described.
+2. **Engineering-sensitive:** authored safe/unsafe controls and isolated mutations
+   produce the intended deterministic distinctions.
+3. **Observed live pre-results:** 55 physical attempts and 37 gradable outcomes are
+   frozen with exact denominators and machine diagnostics.
+4. **Pending human validity:** two blinded reviewers have not yet completed the 889
+   applicable red assignments each.
+5. **Unestablished:** calibrated difficulty, provider ranking, real-domain validity,
+   incremental witness value, causal attribution, training lift, deception
+   detection and research novelty.
+
+No rhetorical section, including this one, may promote a result to a higher rung.
 
 ## 12. Counterfactual research program beyond this panel
 
