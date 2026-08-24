@@ -1,5 +1,7 @@
 # Gradia Universes: an interruption-capable work sample
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22087021.svg)](https://doi.org/10.5281/zenodo.22087021)
+
 This repository is one small, deep, fully synthetic agent universe. It asks a
 simple question with surprisingly hard systems consequences:
 
@@ -88,7 +90,7 @@ does not promote private implementation facts into public artifact evidence.
 
 The empirical benchmark manuscript is
 [Conditionally Approved: Proof-Bound Branchable Universes for Long-Horizon AI Agents Under Changing Evidence, Authority, and Time](paper/CONDITIONALLY-APPROVED-PAPER-DRAFT.md).
-[Open its rendered preliminary-results PDF](output/pdf/CONDITIONALLY-APPROVED-PRELIMINARY-RESULTS-DRAFT.pdf).
+[Open its rendered preliminary-results PDF](output/pdf/CONDITIONALLY-APPROVED-PRELIMINARY-RESULTS.pdf).
 It reports the sealed 55-attempt execution inventory, exact-cell pass@2/pass²
 semantics, infrastructure exclusions, runtime-cohort refusal, cost and
 trajectory shape, engagement annotation, and machine diagnostic surfaces while
@@ -397,3 +399,22 @@ gradia-universe verify-public
 
 CI uses the committed `uv.lock`, SHA-pinned GitHub actions and Python 3.11/3.12.
 It fails if rerunning the universe changes a committed result.
+
+## Citation
+
+The archived preprint is version 1.0.0 on Zenodo. Its results remain
+preliminary until the blinded-human adjudication gate described in the paper is
+complete.
+
+```bibtex
+@misc{celekli2026conditionallyapproved,
+  author    = {Celekli, Rudy},
+  title     = {Conditionally Approved: Proof-Bound Branchable Universes for
+               Long-Horizon AI Agents Under Changing Evidence, Authority, and Time},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.22087021},
+  url       = {https://doi.org/10.5281/zenodo.22087021},
+  note      = {Preliminary results; human adjudication pending}
+}
+```

@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this benchmark or apparatus, please cite the preprint below."
+title: "Gradia Universes work sample"
+authors:
+  - family-names: "Celekli"
+    given-names: "Rudy"
+    orcid: "https://orcid.org/0009-0000-7043-3766"
+date-released: "2026-08-24"
+license: "Apache-2.0"
+repository-code: "https://github.com/rudycelekli/gradia-universes-work-sample"
+identifiers:
+  - type: "doi"
+    value: "10.5281/zenodo.22087021"
+    description: "Conditionally Approved preprint (Zenodo)"
+preferred-citation:
+  type: "report"
+  title: "Conditionally Approved: Proof-Bound Branchable Universes for Long-Horizon AI Agents Under Changing Evidence, Authority, and Time"
+  authors:
+    - family-names: "Celekli"
+      given-names: "Rudy"
+      orcid: "https://orcid.org/0009-0000-7043-3766"
+  year: 2026
+  doi: "10.5281/zenodo.22087021"
+  url: "https://doi.org/10.5281/zenodo.22087021"
