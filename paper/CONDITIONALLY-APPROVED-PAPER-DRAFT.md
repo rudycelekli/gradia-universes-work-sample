@@ -877,7 +877,7 @@ This analysis tests three bounded value hypotheses:
 The machine panel is therefore an **accelerator, not an adjudicator**. It can rank
 review urgency, surface disagreements, and hand experts evidence-cited alternatives.
 It cannot turn plurality into truth or replace the separately sealed two-human study.
-The [public alignment summary](../results/pre-results/conditionally-approved-four-judge-alignment.json)
+The [public alignment summary](https://github.com/rudycelekli/gradia-universes-work-sample/blob/main/results/pre-results/conditionally-approved-four-judge-alignment.json)
 preserves the exact aggregates, model pins, pairwise metrics, and source digests
 without releasing private traces.
 
@@ -1193,23 +1193,23 @@ be checked by another model or a human—while refusing to let opinion rewrite r
 
 ## References
 
-1. Froger, L., et al. (2026). [*Gaia2: Benchmarking LLM Agents on Dynamic and Asynchronous Environments*](https://arxiv.org/abs/2602.11964).
+1. Froger, R., et al. (2026). [*Gaia2: Benchmarking LLM Agents on Dynamic and Asynchronous Environments*](https://arxiv.org/abs/2602.11964).
 2. Zou, et al. (2026). [*When Users Change Their Mind: Evaluating Interruptible Agents in Long-Horizon Web Navigation*](https://arxiv.org/abs/2604.00892).
 3. Yao, et al. (2024). [*$\tau$-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains*](https://arxiv.org/abs/2406.12045).
 4. Barres, et al. (2025). [*$\tau^2$-bench*](https://arxiv.org/abs/2506.07982).
 5. Trivedi, et al. (2024). [*AppWorld*](https://arxiv.org/abs/2407.18901).
 6. Lu, et al. (2024). [*ToolSandbox*](https://arxiv.org/abs/2408.04682).
 7. Xie, et al. (2024). [*OSWorld*](https://arxiv.org/abs/2404.07972).
-8. Rhodes, J., and Kang, J. (2026). [*Proof of Execution*](https://arxiv.org/abs/2607.05397).
-9. Wang (2026). [*CAVA: Canonical Action Verification and Attestation*](https://arxiv.org/abs/2607.13716).
-10. He and Yu (2026). [*Agent-Native Telemetry*](https://arxiv.org/abs/2608.16178).
+8. Rhodes, J., and Kang, G. (2026). [*Proof of Execution: Runtime Verification for Governed AI Agent Actions*](https://arxiv.org/abs/2607.05397).
+9. Wang, Z. (2026). [*CAVA: Canonical Action Verification and Attestation for Runtime Governance of Agentic AI Systems*](https://arxiv.org/abs/2607.13716).
+10. He, J., and Yu, D. (2026). [*Agent-Native Telemetry: Verifiable State-Delta Evidence for Autonomous Operations*](https://arxiv.org/abs/2608.16178).
 11. W3C (2013). [*PROV-O*](https://www.w3.org/TR/prov-o/) and [*PROV Constraints*](https://www.w3.org/TR/prov-constraints/).
-12. Zhang, et al. (2026). [*When Agentic Executions Fail*](https://arxiv.org/abs/2608.14680).
-13. Zhu and Pu (2026). [*TelemetrySuffBench*](https://arxiv.org/abs/2608.07899).
+12. Zhang, C., et al. (2026). [*When Agentic Executions Fail: Detecting and Localizing Runtime Faults from Telemetry*](https://arxiv.org/abs/2608.14680).
+13. Zhu, Y., and Pu, P. (2026). [*TelemetrySuffBench: Is Agent Telemetry Sufficient for Failure-Origin Diagnosis?*](https://arxiv.org/abs/2608.07899).
 14. CNCF/Dapr (2026). [*Introducing Verifiable Execution in Dapr 1.18*](https://www.cncf.io/blog/2026/06/11/introducing-verifiable-execution-in-dapr-1-18/).
 15. Ang, et al. (2026). [*Agentic Data Environments*](https://arxiv.org/abs/2607.07397).
-16. Ang, et al. (2026). [*BranchBench*](https://arxiv.org/abs/2604.17180).
-17. Summers, C., and Wu, E. (2026). [*Data Flow Control*](https://arxiv.org/abs/2606.05679).
+16. Ang, E., et al. (2026). [*BranchBench: Aligning Database Branching with Agentic Demands*](https://arxiv.org/abs/2604.17180).
+17. Summers, C., and Wu, E. (2026). [*Data Flow Control: Data Safety Policies for AI Agents*](https://arxiv.org/abs/2606.05679).
 18. Reuel, A., et al. (2024). [*BetterBench*](https://arxiv.org/abs/2411.12990).
 19. OpenAI (2024; updated 2025). [*Introducing SWE-bench Verified*](https://openai.com/index/introducing-swe-bench-verified/).
 20. OpenAI (2026). [*Why SWE-bench Verified no longer measures frontier coding capabilities*](https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/).
@@ -1233,6 +1233,8 @@ be checked by another model or a human—while refusing to let opinion rewrite r
 The verifier's release claims remain false for capability, difficulty,
 pass-at-five, tail reliability, real-world validity, novelty, training use, and
 public raw-artifact release.
+
+\newpage
 
 ## Appendix B. Human-review decision ledger
 
