@@ -770,6 +770,8 @@ A unique model-failure plurality existed for 594 assignments, while 121 favored 
 measurement defect, 86 favored unresolved, and 88 had no unique disposition. These
 are machine votes, not validated failure counts.
 
+\Needspace{9\baselineskip}
+
 | Judge | Model failure | Measurement defect | Unresolved | Mean confidence |
 |---|---:|---:|---:|---:|
 | Claude Opus 5 | 252 | 209 | 428 | 0.526 |
