@@ -1,0 +1,37 @@
+{
+  "schema_version": "conditionally-approved-four-judge-alignment-public-summary.v1",
+  "status": "post_hoc_exploratory_machine_alignment_not_human_truth",
+  "assignment_count": 889,
+  "judge_count": 4,
+  "advisory_only": true,
+  "score_mutations": 0,
+  "raw_chain_of_thought_collected": false,
+  "every_vote_cited_frozen_evidence": true,
+  "descriptive_fleiss_kappa": 0.15113966615288058,
+  "unanimous_assignment_count": 232,
+  "unanimous_assignment_rate": 0.2609673790776153,
+  "consensus": {"unanimous": 232, "majority": 384, "plurality": 185, "tie": 88},
+  "consensus_disposition": {"model_failure": 594, "measurement_defect": 121, "unresolved": 86, "no_unique_disposition": 88},
+  "human_review_priority": {"critical": 126, "high": 556, "standard": 207},
+  "judges": [
+    {"provider": "anthropic", "model_pin": "claude-opus-5", "model_failure": 252, "measurement_defect": 209, "unresolved": 428, "mean_confidence": 0.5258942632170975, "mean_citations": 1.049493813273341, "mean_concise_rationale_words": 32.249718785151856},
+    {"provider": "gemini", "model_pin": "gemini-3.1-pro-preview", "model_failure": 746, "measurement_defect": 107, "unresolved": 36, "mean_confidence": 0.9682114735658066, "mean_citations": 1.528683914510686, "mean_concise_rationale_words": 37.87289088863892},
+    {"provider": "xai", "model_pin": "grok-4.6", "model_failure": 592, "measurement_defect": 128, "unresolved": 169, "mean_confidence": 0.7423284589426323, "mean_citations": 1.0404949381327333, "mean_concise_rationale_words": 33.61642294713161},
+    {"provider": "openai", "model_pin": "gpt-5.6-sol", "model_failure": 642, "measurement_defect": 178, "unresolved": 69, "mean_confidence": 0.9275894263217163, "mean_citations": 1.2733408323959505, "mean_concise_rationale_words": 28.061867266591676}
+  ],
+  "pairwise": [
+    {"judge_pair": "claude-opus-5 :: gemini-3.1-pro-preview", "exact_label_agreement": 0.3543307086614173, "evidence_anchor_jaccard": 0.0979565054368204, "zero_shared_anchor_among_label_agreements": 0.7777777777777778},
+    {"judge_pair": "claude-opus-5 :: grok-4.6", "exact_label_agreement": 0.4544431946006749, "evidence_anchor_jaccard": 0.26752905886764156, "zero_shared_anchor_among_label_agreements": 0.6163366336633663},
+    {"judge_pair": "claude-opus-5 :: gpt-5.6-sol", "exact_label_agreement": 0.4049493813273341, "evidence_anchor_jaccard": 0.25219347581552304, "zero_shared_anchor_among_label_agreements": 0.6027777777777777},
+    {"judge_pair": "gemini-3.1-pro-preview :: grok-4.6", "exact_label_agreement": 0.6681664791901012, "evidence_anchor_jaccard": 0.08877015373078366, "zero_shared_anchor_among_label_agreements": 0.8636363636363636},
+    {"judge_pair": "gemini-3.1-pro-preview :: gpt-5.6-sol", "exact_label_agreement": 0.6951631046119235, "evidence_anchor_jaccard": 0.09542557180352455, "zero_shared_anchor_among_label_agreements": 0.8511326860841424},
+    {"judge_pair": "grok-4.6 :: gpt-5.6-sol", "exact_label_agreement": 0.6906636670416197, "evidence_anchor_jaccard": 0.29231346081739784, "zero_shared_anchor_among_label_agreements": 0.6140065146579805}
+  ],
+  "criterion_family_unanimity": {"evidence_provenance": 0.1111111111111111, "derived_state_freshness": 0.11764705882352941, "belief_revision": 0.21176470588235294, "temporal_control": 0.22641509433962265, "authority": 0.23170731707317074, "document_truth": 0.4171779141104294, "action_safety": 0.6470588235294118},
+  "source_bindings": {
+    "blinded_packet_sha256": "0d0fa2c7b02d554a9e906dac9fca4ddbfd33324c6d28703ea70937e8c8b2b18c",
+    "four_judge_panel_sha256": "90ba3ddf73d843b405ba9d2ce0a5e00e4ec151747775e87312b0ce4c65113bf5",
+    "judge_bundle_sha256s": ["16f62e01d9934a5ba449560f32bb60fdd319dbdf0c1871f4e50fcc594e840725", "dea354fdd1b9914d305a3eb65c7e08bd37c41002669951a5afe234f71c5380b9", "97c437e33ecc56d806dd78eed1f00acebf920a13ddd149111b4f614537eef44a", "1abd2cbe68265c442ee23be895821c5b2070d9805b76387b94ecc9ca4a407068"]
+  },
+  "claim_boundary": {"cross_judge_agreement_is_truth": false, "human_validity_established": false, "machine_consensus_may_change_frozen_reward": false, "raw_chain_of_thought_analyzed": false, "single_judge_is_sufficient": false}
+}

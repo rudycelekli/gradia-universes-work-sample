@@ -67,6 +67,14 @@ The deterministic blinded-review packet is also frozen: 37 attempts, 889 red
 criterion assignments per reviewer, zero human decisions, packet digest
 `0d0fa2c7b02d554a9e906dac9fca4ddbfd33324c6d28703ea70937e8c8b2b18c`.
 
+The post-hoc assisted-attribution stress test is frozen too. Four independently
+pinned model judges reviewed all 889 assignments from identical proof-bound evidence:
+232 (26.1%) were unanimous, descriptive Fleiss' kappa was 0.151, pairwise exact-label
+agreement ranged from 35.4% to 69.5%, and cited-anchor Jaccard ranged from 0.089 to
+0.292. The panel is advisory, produced zero score mutations, and does not replace the
+two blinded humans. Its redacted aggregate is
+[`conditionally-approved-four-judge-alignment.json`](results/pre-results/conditionally-approved-four-judge-alignment.json).
+
 Three additional measurement protocols are now documented in the manuscript as
 **PRE-RESULTS engineering directions**:
 
@@ -93,7 +101,8 @@ The empirical benchmark manuscript is
 [Open its rendered preliminary-results PDF](output/pdf/CONDITIONALLY-APPROVED-PRELIMINARY-RESULTS.pdf).
 It reports the sealed 55-attempt execution inventory, exact-cell pass@2/pass²
 semantics, infrastructure exclusions, runtime-cohort refusal, cost and
-trajectory shape, engagement annotation, and machine diagnostic surfaces while
+trajectory shape, engagement annotation, machine diagnostic surfaces, and the
+four-judge evidence-alignment stress test while
 reserving behavioral attribution for blinded humans. Mortgage is the synthetic
 testbed; proof-bound evolving and branchable worlds are the research focus.
 It also records the subsequent private `v4r1` engineering remediation as scripted

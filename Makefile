@@ -1,4 +1,4 @@
-.PHONY: setup test reproduce verify study-a frontier axes cost-capped public-boundary all
+.PHONY: setup test reproduce verify study-a frontier axes cost-capped alignment public-boundary all
 
 setup:
 	python3 -m venv .venv
@@ -30,7 +30,10 @@ axes:
 cost-capped:
 	.venv/bin/gradia-universe cost-capped-verify
 
+alignment:
+	.venv/bin/python scripts/verify_four_judge_alignment.py
+
 public-boundary:
 	.venv/bin/gradia-universe verify-public
 
-all: test verify cost-capped public-boundary
+all: test verify cost-capped alignment public-boundary

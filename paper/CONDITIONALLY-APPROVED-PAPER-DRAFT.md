@@ -1,11 +1,12 @@
 ---
 title: "Conditionally Approved: Proof-Bound Branchable Universes for Long-Horizon AI Agents Under Changing Evidence, Authority, and Time"
 author: "Rudy M. Celekli, Gradia Research"
-date: "Preliminary machine results - human adjudication pending - 24 August 2026"
+date: "Completed instrument study and assisted-attribution stress test - human adjudication pending - 25 August 2026"
 ---
 
-> **Preliminary-results boundary.** The cost-capped execution is complete and its aggregate
-> was independently recomputed from 55 immutable attempt artifacts. This manuscript
+> **Completed-instrument boundary.** The cost-capped execution and four-judge
+> assisted-attribution stress test are complete. The execution aggregate was
+> independently recomputed from 55 immutable attempt artifacts. This manuscript
 > reports physical execution, exact machine-scored outcomes, infrastructure
 > exclusions, runtime cohorts, cost, and trajectory shape. It does **not** claim a
 > balanced model comparison, broad capability, frontier difficulty, tail reliability,
@@ -59,6 +60,14 @@ Behavioral attribution remains reserved for blinded human review. The benchmark 
 built and verified with the Gradia Universes platform; Gradia is the execution and
 evidence system, not the benchmark name.
 
+A post-hoc assisted-attribution stress test then asked four independently pinned
+model judges to classify all 889 red surfaces from identical frozen evidence. Only
+232 assignments (26.1%) were unanimous; descriptive Fleiss' kappa was 0.151,
+pairwise exact-label agreement ranged from 35.4% to 69.5%, and pairwise cited-anchor
+Jaccard ranged from 0.089 to 0.292. No machine judgment changed a frozen score. This
+is evidence that one confident judge is an unstable attribution authority, not
+evidence that plurality labels are human truth.
+
 ## 1. Why conditional approval is the right evaluation problem
 
 An agent can produce a plausible final answer and still fail the work. It may cite a
@@ -89,6 +98,10 @@ also conditional on a valid world, an admitted evaluator, and reviewable evidenc
 - **RQ5 — Operational cost.** What calls, tokens, tool actions, wall time, and provider
   spend are required for a valid attempt, and how much missingness is caused by
   infrastructure rather than behavior?
+- **RQ6 — Assisted-attribution stability.** When four independently pinned model
+  judges inspect the same proof-bound evidence, how stable are their labels, cited
+  anchors, and review priorities? This post-hoc question measures machine-review
+  stability and triage value, not human validity or reasoning faithfulness.
 
 ### 2.1 Contributions and evidence status
 
@@ -737,7 +750,84 @@ model-failure interpretations will be generated only after reviewer dispositions
 are sealed, and every interpretation must preserve contrary evidence, missingness,
 runtime cohort, engagement posture, and denominator eligibility.
 
-### 7.7 What the cost-capped panel established
+### 7.7 Four-judge attribution and evidence-alignment stress test
+
+The strict machine evaluator identifies red criterion surfaces; it does not assign
+their cause. To test whether one LLM judge could safely bridge that gap, four
+independently pinned judges—Claude Opus 5, Gemini 3.1 Pro Preview, Grok 4.6, and
+GPT-5.6-sol—received all 889 blinded assignments with the same frozen transcript,
+tool, event, root, and criterion evidence. Each judge returned one of
+`model_failure`, `measurement_defect`, or `unresolved`, plus confidence, a concise
+audit rationale, an uncertainty or alternative, a reviewer focus, and one or more
+evidence citations. Raw chain-of-thought was neither requested nor retained. Every
+vote was advisory, and the alignment verifier recorded **zero score mutations**.
+
+The stability result is stark. Only **232/889 (26.1%)** assignments were unanimous;
+384 had a 3–1 majority, 185 had a 2–1–1 plurality, and 88 tied 2–2. Descriptive
+Fleiss' $\kappa$ was **0.151**. The panel routed 126 assignments to critical and 556
+to high human-review priority, so **682/889 (76.7%)** remained priority review work.
+A unique model-failure plurality existed for 594 assignments, while 121 favored a
+measurement defect, 86 favored unresolved, and 88 had no unique disposition. These
+are machine votes, not validated failure counts.
+
+| Judge | Model failure | Measurement defect | Unresolved | Mean confidence |
+|---|---:|---:|---:|---:|
+| Claude Opus 5 | 252 | 209 | 428 | 0.526 |
+| Gemini 3.1 Pro Preview | 746 | 107 | 36 | 0.968 |
+| Grok 4.6 | 592 | 128 | 169 | 0.742 |
+| GPT-5.6-sol | 642 | 178 | 69 | 0.928 |
+
+The share labeled model failure ranged from 28.3% to 83.9%, even though all four
+judges inspected identical bytes. Self-reported confidence did not resolve this:
+the most model-failure-prone judge also reported 0.968 mean confidence. The result
+does not identify which judge was right. It shows that a single judge's confidence
+cannot substitute for independent attribution.
+
+| Judge pair | Exact label agreement | Mean cited-anchor Jaccard | Label agreements with zero shared anchor |
+|---|---:|---:|---:|
+| Claude–Gemini | 35.4% | 0.098 | 77.8% |
+| Claude–Grok | 45.4% | 0.268 | 61.6% |
+| Claude–GPT | 40.5% | 0.252 | 60.3% |
+| Gemini–Grok | 66.8% | 0.089 | 86.4% |
+| Gemini–GPT | 69.5% | 0.095 | 85.1% |
+| Grok–GPT | 69.1% | 0.292 | 61.4% |
+
+Label agreement was therefore much more common than shared-evidence agreement.
+Depending on pair, **60.3%–86.4%** of exact-label agreements shared no exact
+evidence-anchor identifier. Distinct anchors can support the same valid conclusion,
+so zero overlap is not itself contradiction. It is nevertheless a warning that
+consensus labels can conceal different evidentiary paths. Proof-bound citations
+make that divergence inspectable; a scalar label cannot.
+
+The dynamic-world families were also the least stable. Evidence provenance and
+derived-state freshness reached only 11.1% and 11.8% unanimity; the Epistemic
+Residue task reached 15.0%. The single Honest Handoff attempt reached 67.6%, but its
+sample cannot support a general comparison. These patterns are consistent with the
+hypothesis that changing evidence, visibility, and derived state create attribution
+questions a terminal evaluator cannot settle alone.
+
+This analysis tests three bounded value hypotheses:
+
+1. **Terminal-score insufficiency is supported descriptively.** Identical zeros
+   concealed two orders of magnitude in tool use, 12 criterion families, and
+   materially different attribution profiles.
+2. **Single-judge sufficiency is contradicted for this packet.** Low unanimity,
+   $\kappa=0.151$, and large vote-profile spread show that one judge is not a stable
+   causal authority, even when confident.
+3. **Proof-bound triage feasibility is demonstrated.** Every vote cited frozen
+   evidence, contrary evidence remained visible, 121 potential measurement defects
+   surfaced, and scores stayed immutable. Incremental accuracy or reviewer-time
+   savings versus transcript-only review remains unproven and requires a prospective
+   expert-controlled ablation.
+
+The machine panel is therefore an **accelerator, not an adjudicator**. It can rank
+review urgency, surface disagreements, and hand experts evidence-cited alternatives.
+It cannot turn plurality into truth or replace the separately sealed two-human study.
+The [public alignment summary](../results/pre-results/conditionally-approved-four-judge-alignment.json)
+preserves the exact aggregates, model pins, pairwise metrics, and source digests
+without releasing private traces.
+
+### 7.8 What the cost-capped panel established
 
 The run established seven facts.
 
@@ -960,9 +1050,12 @@ The present evidence licenses only the lower rungs:
    produce the intended deterministic distinctions.
 3. **Observed preliminary machine results:** 55 physical attempts and 37 gradable outcomes are
    frozen with exact denominators and machine diagnostics.
-4. **Pending human validity:** two blinded reviewers have not yet completed the 889
+4. **Machine-attribution stability measured:** four advisory judges reviewed all
+   889 red assignments; only 26.1% were unanimous and descriptive Fleiss' kappa was
+   0.151. This measures disagreement, not truth.
+5. **Pending human validity:** two blinded reviewers have not yet completed the 889
    applicable red assignments each.
-5. **Unestablished:** calibrated difficulty, provider ranking, real-domain validity,
+6. **Unestablished:** calibrated difficulty, provider ranking, real-domain validity,
    incremental witness value, causal attribution, training lift, deception
    detection and research novelty.
 
@@ -1036,6 +1129,13 @@ the sealed decisions. That review can support criterion-level findings and an
 Analytics+ failure analysis; it cannot retroactively make the panel balanced or
 authorize broader capability, difficulty, causal, novelty, or real-world claims.
 Those questions require separately preregistered follow-on studies.
+
+The four-judge stress test adds a completed result without weakening that boundary:
+only 26.1% of the 889 machine attributions were unanimous, and even exact label
+agreements frequently cited disjoint evidence anchors. The value of the Universe is
+therefore not that it makes an LLM judge infallible. It makes disagreement
+auditable—binding each opinion to the world, projection, act, and criterion that can
+be checked by another model or a human—while refusing to let opinion rewrite reward.
 
 ## References
 

@@ -144,6 +144,7 @@ failure, measurement defect, or unresolved.
 | Public redacted index | `3a99191719861d914616be689000c16fd0195e35499c3dbc31aef1f5f53eefa8` |
 | Verification report | `b8e013fc05b5f9868a892f89a2a0986d67978c68153b47d9b1756fbbec3b5777` |
 | Evaluator contract | `668383df2589330fac87fc2e2f8e8e786c5896fb5f8b4b2b74c5639fb2ccbb88` |
+| Four-judge alignment panel | `90ba3ddf73d843b405ba9d2ce0a5e00e4ec151747775e87312b0ce4c65113bf5` |
 
 The committed redacted index contains all 55 attempt identities, dispositions,
 cohorts, usage, cost, machine criterion vectors, and engagement annotations. Run
@@ -168,6 +169,20 @@ The only absent evidence in that packet is the human judgment itself. Two
 independent reviewers must disposition every assignment, disagreements must be
 resolved by a separately identified adjudicator, and agreement statistics must
 be recomputed from the sealed decisions.
+
+## Assisted-attribution stress test
+
+Four independently pinned model judges reviewed all 889 assignments from the same
+frozen evidence. Only 232 (26.1%) were unanimous; descriptive Fleiss' kappa was
+0.151. Pairwise exact-label agreement ranged from 35.4% to 69.5%, while cited-anchor
+Jaccard ranged from 0.089 to 0.292. The judges' model-failure vote rates ranged from
+28.3% to 83.9%, despite inspecting identical bytes. This contradicts single-judge
+sufficiency for this packet; it does not identify which judge is correct.
+
+Every vote contained a concise audit rationale and frozen-evidence citation. Raw
+chain-of-thought was not collected. All outputs are advisory, no vote changed reward,
+and two independent humans remain the validity gate. The exact public aggregate is
+`conditionally-approved-four-judge-alignment.json`.
 
 ## Next gates
 
