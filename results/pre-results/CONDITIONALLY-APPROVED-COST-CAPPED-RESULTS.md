@@ -179,6 +179,15 @@ Jaccard ranged from 0.089 to 0.292. The judges' model-failure vote rates ranged 
 28.3% to 83.9%, despite inspecting identical bytes. This contradicts single-judge
 sufficiency for this packet; it does not identify which judge is correct.
 
+The distribution separates frequency from attribution risk. Document truth and
+temporal control account for 36.2% of red surfaces, but evidence provenance and
+authority lack a unique model-failure plurality in 59.3% and 57.3% of assignments.
+The sharpest audit hotspots are runtime binding, receipt-chain integrity, root-event
+application, and narrative-versus-authority separation: each routes at least 94.7%
+of assignments to critical or high review, and 93.1%–100% lack a unique
+model-failure plurality. Those rows must be audited as measurement-chain risks before
+they can support behavioral claims.
+
 Every vote contained a concise audit rationale and frozen-evidence citation. Raw
 chain-of-thought was not collected. All outputs are advisory, no vote changed reward,
 and two independent humans remain the validity gate. The exact public aggregate is

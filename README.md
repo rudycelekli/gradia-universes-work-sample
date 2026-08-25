@@ -72,7 +72,10 @@ pinned model judges reviewed all 889 assignments from identical proof-bound evid
 232 (26.1%) were unanimous, descriptive Fleiss' kappa was 0.151, pairwise exact-label
 agreement ranged from 35.4% to 69.5%, and cited-anchor Jaccard ranged from 0.089 to
 0.292. The panel is advisory, produced zero score mutations, and does not replace the
-two blinded humans. Its redacted aggregate is
+two blinded humans. Criterion-family and task-normalized distributions now show where
+high-volume failures differ from measurement-risk hotspots: evidence provenance and
+authority had no unique model-failure plurality in 59.3% and 57.3% of assignments.
+Its redacted aggregate is
 [`conditionally-approved-four-judge-alignment.json`](results/pre-results/conditionally-approved-four-judge-alignment.json).
 
 Three additional measurement protocols are now documented in the manuscript as

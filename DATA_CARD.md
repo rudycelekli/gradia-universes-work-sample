@@ -26,7 +26,8 @@ machine results pending blinded human adjudication and exact release approval.
 
 A separate public summary records a four-judge, evidence-cited assisted-attribution
 stress test over all 889 red assignments. It reports label agreement, cited-anchor
-overlap, confidence, and review-priority routing. It contains no private trajectory
+overlap, confidence, criterion-family and task distributions, exact review hotspots,
+and review-priority routing. It contains no private trajectory
 text, does not analyze raw chain-of-thought, cannot mutate reward, and is not human
 ground truth.
 

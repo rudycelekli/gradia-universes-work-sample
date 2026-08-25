@@ -28,6 +28,36 @@
     {"judge_pair": "grok-4.6 :: gpt-5.6-sol", "exact_label_agreement": 0.6906636670416197, "evidence_anchor_jaccard": 0.29231346081739784, "zero_shared_anchor_among_label_agreements": 0.6140065146579805}
   ],
   "criterion_family_unanimity": {"evidence_provenance": 0.1111111111111111, "derived_state_freshness": 0.11764705882352941, "belief_revision": 0.21176470588235294, "temporal_control": 0.22641509433962265, "authority": 0.23170731707317074, "document_truth": 0.4171779141104294, "action_safety": 0.6470588235294118},
+  "criterion_family_distribution": [
+    {"family": "document_truth", "red": 163, "red_share": 0.18335208098987626, "unanimity_rate": 0.4171779141104294, "no_unique_model_failure_rate": 0.1656441717791411, "critical_or_high_priority_rate": 0.6012269938650306},
+    {"family": "temporal_control", "red": 159, "red_share": 0.17885264341957255, "unanimity_rate": 0.22641509433962265, "no_unique_model_failure_rate": 0.25157232704402516, "critical_or_high_priority_rate": 0.779874213836478},
+    {"family": "derived_state_freshness", "red": 119, "red_share": 0.13385826771653545, "unanimity_rate": 0.11764705882352941, "no_unique_model_failure_rate": 0.4117647058823529, "critical_or_high_priority_rate": 0.8823529411764706},
+    {"family": "belief_revision", "red": 85, "red_share": 0.09561304836895389, "unanimity_rate": 0.21176470588235294, "no_unique_model_failure_rate": 0.3058823529411765, "critical_or_high_priority_rate": 0.8117647058823529},
+    {"family": "authority", "red": 82, "red_share": 0.0922384701912261, "unanimity_rate": 0.23170731707317074, "no_unique_model_failure_rate": 0.573170731707317, "critical_or_high_priority_rate": 0.9024390243902439},
+    {"family": "evidence_provenance", "red": 81, "red_share": 0.09111361079865017, "unanimity_rate": 0.1111111111111111, "no_unique_model_failure_rate": 0.5925925925925926, "critical_or_high_priority_rate": 0.8888888888888888},
+    {"family": "terminal_integrity", "red": 77, "red_share": 0.08661417322834646, "unanimity_rate": 0.2727272727272727, "no_unique_model_failure_rate": 0.2857142857142857, "critical_or_high_priority_rate": 0.7272727272727273},
+    {"family": "portfolio_reasoning", "red": 66, "red_share": 0.07424071991001125, "unanimity_rate": 0.18181818181818182, "no_unique_model_failure_rate": 0.2727272727272727, "critical_or_high_priority_rate": 0.8181818181818182},
+    {"family": "action_safety", "red": 34, "red_share": 0.03824521934758155, "unanimity_rate": 0.6470588235294118, "no_unique_model_failure_rate": 0.5, "critical_or_high_priority_rate": 0.5882352941176471},
+    {"family": "completion", "red": 13, "red_share": 0.014623172103487064, "unanimity_rate": 0.46153846153846156, "no_unique_model_failure_rate": 0.07692307692307693, "critical_or_high_priority_rate": 0.5384615384615384},
+    {"family": "handoff_continuity", "red": 7, "red_share": 0.007874015748031496, "unanimity_rate": 0.5714285714285714, "no_unique_model_failure_rate": 0.0, "critical_or_high_priority_rate": 0.42857142857142855},
+    {"family": "fairness_safety", "red": 3, "red_share": 0.003374578177727784, "unanimity_rate": 1.0, "no_unique_model_failure_rate": 0.0, "critical_or_high_priority_rate": 0.0}
+  ],
+  "task_distribution": [
+    {"task": "document_truth", "attempts": 18, "red": 434, "applicable": 666, "diagnostic_red_rate": 0.6516516516516516, "red_per_attempt": 24.11111111111111, "unanimity_rate": 0.27419354838709675, "no_unique_model_failure_rate": 0.3548387096774194, "critical_or_high_priority_rate": 0.7442396313364056},
+    {"task": "epistemic_residue", "attempts": 12, "red": 280, "applicable": 468, "diagnostic_red_rate": 0.5982905982905983, "red_per_attempt": 23.333333333333332, "unanimity_rate": 0.15, "no_unique_model_failure_rate": 0.32142857142857145, "critical_or_high_priority_rate": 0.8785714285714286},
+    {"task": "authority", "attempts": 3, "red": 77, "applicable": 111, "diagnostic_red_rate": 0.6936936936936937, "red_per_attempt": 25.666666666666668, "unanimity_rate": 0.2987012987012987, "no_unique_model_failure_rate": 0.36363636363636365, "critical_or_high_priority_rate": 0.7272727272727273},
+    {"task": "temporal_control", "attempts": 3, "red": 64, "applicable": 93, "diagnostic_red_rate": 0.6881720430107527, "red_per_attempt": 21.333333333333332, "unanimity_rate": 0.390625, "no_unique_model_failure_rate": 0.28125, "critical_or_high_priority_rate": 0.6875},
+    {"task": "honest_handoff", "attempts": 1, "red": 34, "applicable": 37, "diagnostic_red_rate": 0.918918918918919, "red_per_attempt": 34.0, "unanimity_rate": 0.6764705882352942, "no_unique_model_failure_rate": 0.14705882352941177, "critical_or_high_priority_rate": 0.38235294117647056}
+  ],
+  "review_hotspots": [
+    {"criterion": "realism.root_event_applied", "assignments": 29, "unanimity_rate": 0.034482758620689655, "no_unique_model_failure_rate": 0.9310344827586207, "critical_or_high_priority_rate": 0.9655172413793104},
+    {"criterion": "realism.runtime_binding_exact", "assignments": 19, "unanimity_rate": 0.0, "no_unique_model_failure_rate": 1.0, "critical_or_high_priority_rate": 1.0},
+    {"criterion": "realism.tool_receipt_chain_exact", "assignments": 19, "unanimity_rate": 0.05263157894736842, "no_unique_model_failure_rate": 1.0, "critical_or_high_priority_rate": 0.9473684210526315},
+    {"criterion": "realism.narrative_not_condition_clear", "assignments": 19, "unanimity_rate": 0.3157894736842105, "no_unique_model_failure_rate": 1.0, "critical_or_high_priority_rate": 1.0},
+    {"criterion": "construct.temporal.unverified_pressure_observed_not_promoted", "assignments": 34, "unanimity_rate": 0.20588235294117646, "no_unique_model_failure_rate": 0.5588235294117647, "critical_or_high_priority_rate": 0.9411764705882353},
+    {"criterion": "construct.temporal.authoritative_market_read_after_reprice", "assignments": 35, "unanimity_rate": 0.05714285714285714, "no_unique_model_failure_rate": 0.42857142857142855, "critical_or_high_priority_rate": 0.9428571428571428},
+    {"criterion": "construct.temporal.local_work_during_source_outage", "assignments": 35, "unanimity_rate": 0.08571428571428572, "no_unique_model_failure_rate": 0.42857142857142855, "critical_or_high_priority_rate": 0.9428571428571428}
+  ],
   "source_bindings": {
     "blinded_packet_sha256": "0d0fa2c7b02d554a9e906dac9fca4ddbfd33324c6d28703ea70937e8c8b2b18c",
     "four_judge_panel_sha256": "90ba3ddf73d843b405ba9d2ce0a5e00e4ec151747775e87312b0ce4c65113bf5",

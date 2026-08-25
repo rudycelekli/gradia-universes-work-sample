@@ -799,12 +799,64 @@ so zero overlap is not itself contradiction. It is nevertheless a warning that
 consensus labels can conceal different evidentiary paths. Proof-bound citations
 make that divergence inspectable; a scalar label cannot.
 
-The dynamic-world families were also the least stable. Evidence provenance and
-derived-state freshness reached only 11.1% and 11.8% unanimity; the Epistemic
-Residue task reached 15.0%. The single Honest Handoff attempt reached 67.6%, but its
-sample cannot support a general comparison. These patterns are consistent with the
-hypothesis that changing evidence, visibility, and derived state create attribution
-questions a terminal evaluator cannot settle alone.
+#### Criterion-family distribution
+
+The family distribution separates three questions that a raw failure count merges:
+how often a surface is red, whether judges agree, and whether a unique model-failure
+plurality exists. “Priority” is critical or high routing. “No unique MF” combines a
+measurement-defect plurality, unresolved plurality, or tie. None is partial credit.
+
+| Criterion family | Red | Share of 889 | Unanimity | No unique MF | Priority |
+|---|---:|---:|---:|---:|---:|
+| Document truth | 163 | 18.3% | 41.7% | 16.6% | 60.1% |
+| Temporal control | 159 | 17.9% | 22.6% | 25.2% | 78.0% |
+| Derived-state freshness | 119 | 13.4% | 11.8% | 41.2% | 88.2% |
+| Belief revision | 85 | 9.6% | 21.2% | 30.6% | 81.2% |
+| Authority | 82 | 9.2% | 23.2% | 57.3% | 90.2% |
+| Evidence provenance | 81 | 9.1% | 11.1% | 59.3% | 88.9% |
+| Terminal integrity | 77 | 8.7% | 27.3% | 28.6% | 72.7% |
+| Portfolio reasoning | 66 | 7.4% | 18.2% | 27.3% | 81.8% |
+| Action safety | 34 | 3.8% | 64.7% | 50.0% | 58.8% |
+| Completion | 13 | 1.5% | 46.2% | 7.7% | 53.8% |
+| Handoff continuity | 7 | 0.8% | 57.1% | 0.0% | 42.9% |
+| Fairness safety | 3 | 0.3% | 100.0% | 0.0% | 0.0% |
+
+Document truth and temporal control contributed 322/889 red surfaces (36.2%), but
+volume and attribution uncertainty separated sharply. Document truth had 41.7%
+unanimity and only 16.6% without a unique model-failure plurality; evidence
+provenance had 11.1% unanimity and 59.3% without one. A frequency-only failure
+taxonomy would therefore prioritize common behavior while missing the families most
+likely to contain measurement ambiguity.
+
+#### Task-normalized distribution
+
+Applicable criterion counts differ by task, so red counts alone are not comparable.
+The table reports diagnostic density and review posture while preserving the strict
+binary reward. The Handoff row contains one attempt and is not a stable estimate.
+
+| Task | Red/applicable | Diagnostic red rate | Red/attempt | Unanimity | Priority |
+|---|---:|---:|---:|---:|---:|
+| Document truth | 434/666 | 65.2% | 24.1 | 27.4% | 74.4% |
+| Epistemic residue | 280/468 | 59.8% | 23.3 | 15.0% | 87.9% |
+| Authority | 77/111 | 69.4% | 25.7 | 29.9% | 72.7% |
+| Temporal control | 64/93 | 68.8% | 21.3 | 39.1% | 68.8% |
+| Honest handoff | 34/37 | 91.9% | 34.0 | 67.6% | 38.2% |
+
+The most valuable review hotspots were instrument-facing rather than simply
+frequent. Runtime binding and tool-receipt-chain integrity had no unique
+model-failure plurality in 100% of 19 assignments each; root-event application did
+so in 93.1% of 29; and narrative-versus-authority separation in 100% of 19.
+Unanimity was 0%, 5.3%, 3.4%, and 31.6% respectively, and all four routed at least
+94.7% of assignments to critical or high review. This is a concrete proof-bound use
+case: audit the runtime, receipt, event, and authority evidence before accusing the
+agent. The public JSON preserves their exact registered criterion identifiers.
+
+At the task level, Epistemic Residue combined the lowest unanimity (15.0%) with the
+highest priority routing among multi-attempt tasks (87.9%). The single Honest
+Handoff attempt reached 67.6% unanimity, so its apparent stability cannot be
+generalized. These patterns are consistent with the hypothesis that changing
+evidence, visibility, and derived state create attribution questions a terminal
+evaluator cannot settle alone.
 
 This analysis tests three bounded value hypotheses:
 
