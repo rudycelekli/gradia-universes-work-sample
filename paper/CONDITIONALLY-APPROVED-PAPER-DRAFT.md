@@ -307,6 +307,9 @@ statements: the event was frozen, it was applied exactly once, material state
 changed as declared, the agent could observe the permitted projection, the action
 occurred after that projection, and the evaluator read the same edition.
 
+![One witnessed episode binds logical boundaries, before/after roots, the
+actor-visible projection, restore generation, and terminal judgment.](figures/episode-timeline.pdf)
+
 ### 4.7 Evolution-witness formalism
 
 Let $W_k$ be the material world before occurrence $k$, $A_b$ the eligible act
@@ -769,6 +772,10 @@ to high human-review priority, so **682/889 (76.7%)** remained priority review w
 A unique model-failure plurality existed for 594 assignments, while 121 favored a
 measurement defect, 86 favored unresolved, and 88 had no unique disposition. These
 are machine votes, not validated failure counts.
+
+![Four judges received the same evidence but produced materially different
+attribution rates; matching labels frequently cited different evidence
+anchors.](figures/judge-instability.pdf)
 
 \Needspace{9\baselineskip}
 
