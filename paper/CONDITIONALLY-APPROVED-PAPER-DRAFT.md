@@ -174,6 +174,15 @@ paper therefore tests a composition and its incremental detection value; it does
 not present hashing, logging, branching, provenance, or checkpointing as novel in
 isolation.
 
+Current execution software sharpens that boundary. Harbor standardizes tasks,
+agent adapters, provider-backed execution, artifacts, and portable conversation
+trajectories, while Daytona supplies isolated sandboxes and Linux VM forks that can
+duplicate filesystem and memory state [21,22]. These are valuable prospective
+interoperability and runtime substrates, not semantic attribution instruments. The
+reported panel used neither. A native fork, environment hash, task checksum, or
+conversation replay cannot by itself prove the application-to-projection-to-
+authority-to-judgment chain tested here.
+
 Reference [10] is a verified August 2026 preprint whose scope is agent-native,
 verifiable state-delta telemetry. We use it only as adjacent evidence architecture;
 we do not treat its existence as validation of this benchmark, claim its results as
@@ -206,11 +215,12 @@ exact task and cell identifier.
 
 ### 4.2 Long-horizon execution
 
-The safe scripted controls require 113–150 actions under full load. That observation
-establishes instrument solvability and the existence of a long execution path; it
-does not establish frontier difficulty. Model attempts may use fewer or more actions.
-Act count, verbosity, latency, and cost are diagnostic variables rather than reward
-criteria unless a task explicitly binds a deadline or resource limit.
+The safe scripted controls require substantially longer trajectories under full
+load. That observation establishes instrument solvability and the existence of a
+long execution path; it does not establish frontier difficulty. Model attempts may
+use fewer or more actions. Act count, verbosity, latency, and cost are diagnostic
+variables rather than reward criteria unless a task explicitly binds a deadline or
+resource limit.
 
 ### 4.3 Evolving-world evidence
 
@@ -253,7 +263,7 @@ preferred outcome.
 
 Gradia Universes is the execution and evidence apparatus used to build and verify
 this benchmark; it is not the benchmark's name. Its purpose is to turn an episode
-from a transcript plus score into a versioned scientific object. Seven design
+from a transcript plus score into a versioned scientific object. Eight design
 choices matter for this study:
 
 1. **Material world and visible world are separate commitments.** The runtime binds
@@ -282,6 +292,12 @@ choices matter for this study:
    shape, human adjudication, causal inference, and training labels are separate
    evidence products. Analytics+ may summarize only the claims licensed by the
    exact evidence edition rather than upgrading correlations into mechanisms.
+8. **The execution substrate is not the semantic authority.** A sandbox or harness
+   may run an agent, fork a VM, hash an environment, or serialize a trajectory. The
+   Universe still must prove the exact frozen edition, material and visible roots,
+   authority, occurrence/restore lineage, evaluator admission, and disposition.
+   Provider features can satisfy a runtime prerequisite; they cannot mint these
+   scientific claims.
 
 Dynamic worlds, interruption handling, snapshots, event logs, and provenance are
 all established prior art. The candidate research contribution is narrower: the
@@ -686,18 +702,16 @@ new outcome is observed. The frozen attempts remain unchanged.
 private `v4r1` edition now implements those three requirements at Gradia commit
 `c5e0f72`. The base terminal accepts only the exact root-owned `draft_sha256`; the
 branch terminal refuses until that base receipt exists; and generic submit routes to
-the branch terminal. Its merged-tree control suite passed 10/10 tests: one exact
-historical-shortcut reproduction, two malformed-or-premature terminal refusals,
-five complete scripted-world positives, one provider/model identity and manifest
-drift check, and one key-free write-once preflight check. The five positive scripts
-contain 138, 150, 153, 153, and 117 acts respectively, and act count is not a reward
-input. This establishes solvability of the corrected protocol and sensitivity to
-the observed interface defect. It does **not** establish that Gemini, or any live
-model, would engage successfully with `v4r1`; no paid replacement attempt exists.
-The private correction is named for auditability but is not public-repository
-reproduction evidence. A fresh result still requires independent edition review,
-an exact-model smoke receipt, a prospectively latched manifest, and a separately
-labeled cohort.
+the branch terminal. Private engineering controls reproduce the historical shortcut,
+refuse malformed or premature terminal submissions, and complete every replacement
+task path. Because those edition bytes are not part of this public repository, their
+control counts are intentionally excluded from the independently reproducible result
+ledger. This establishes remediation evidence, not a public control result. It does
+**not** establish that Gemini, or any live model, would engage successfully with
+`v4r1`; no paid replacement attempt exists. The private correction is named for
+auditability but is not public-repository reproduction evidence. A fresh result still
+requires independent edition review, an exact-model smoke receipt, a prospectively
+latched manifest, and a separately labeled cohort.
 
 The scale matters operationally but is not itself a difficulty metric. A long trace
 can reveal expensive context accumulation, repeated reconciliation, or provider
@@ -744,7 +758,7 @@ unresolved rate-lock risk (37/37), stale authoritative market state after repric
 (35/37), unsafe use of the document-source outage interval (35/37), unevidenced
 handling of unverified pressure (34/37), uninspected material documents (34/37),
 terminal packet mismatch (34/37), and unreconciled post-change histories (34/37).
-These denominators are all gradable attempts because those criteria are shared
+These eight denominators are all gradable attempts because those criteria are shared
 across the composed v4 contract; task-local criteria have smaller applicable
 denominators and must be read from the released index.
 
@@ -766,7 +780,7 @@ engagement, and provider-failure surfaces. The current pre-adjudication register
 | Infrastructure censor | 18/55 physical attempts | Operational reliability and cost evidence; never model failure |
 | Low engagement | 13/37 gradable, including 7/21 primary | Protocol-engagement annotation; not efficiency or incapability |
 | Gemini branch short-circuit | 10 attempts across two tasks followed the same two-action shape | Repeatable model/scaffold interaction; causal share unresolved |
-| Near-universal red criteria | Six exact criteria red on 34–37/37 attempts | Highest-priority measurement audit; not mass model attribution |
+| Near-universal red criteria | Eight exact criteria red on 34–37/37 attempts | Highest-priority measurement audit; not mass model attribution |
 | Substantive but non-passing traces | Complete cells range from 145 to 303 tool actions per pair while all strict outcomes are zero | Genuine terminal non-completion with mechanism pending human review |
 | Runtime drift and missing cells | Six exact pairs, nine singletons, five unobserved cells | Cohort comparability defect; no pooled provider ranking |
 
@@ -895,7 +909,7 @@ evaluator cannot settle alone.
 This analysis tests three bounded value hypotheses:
 
 1. **Terminal-score insufficiency is supported descriptively.** Identical zeros
-   concealed two orders of magnitude in tool use, 12 criterion families, and
+   concealed a 75.8x range in selected-pair tool use, 12 criterion families, and
    materially different attribution profiles.
 2. **Single-judge sufficiency is contradicted for this packet.** Low unanimity,
    $\kappa=0.151$, and large vote-profile spread show that one judge is not a stable
@@ -928,8 +942,8 @@ The run established seven facts.
 5. The remaining uncertainty is now concentrated in a human-reviewable question:
    which deterministic red criteria represent agent behavior, and which reveal
    measurement defects?
-6. Identical terminal scores concealed two-order-of-magnitude differences in tool
-   activity and transcript length across complete cells, motivating process-level
+6. Identical terminal scores concealed a 75.8x range in selected-pair tool use,
+   motivating process-level
    analysis without turning trajectory length into reward.
 7. A deterministic non-reward engagement descriptor separated 13 low-engagement
    gradable traces from substantive evidence interaction without rewriting their
@@ -1201,8 +1215,8 @@ The result is already informative without pretending to be broader than it is.
 Document Truth supplies a complete same-runtime two-attempt slice across all four
 providers, with zero perfect completions in eight attempts; three of those eight
 selected attempts carry low-engagement daggers. Across complete cells, identical
-terminal outcomes conceal nearly two orders of magnitude of variation in tool
-activity and transcript length. The criterion ledger further exposes 486 green and
+terminal outcomes conceal a 75.8x range in selected-pair tool use. The criterion
+ledger further exposes 486 green and
 889 red diagnostic assignments without converting either into partial reward. That
 makes proof-bound process evidence—not merely a final score—necessary for diagnosis.
 It does not yet tell us whether each red criterion is a genuine agent failure,
@@ -1245,6 +1259,8 @@ be checked by another model or a human—while refusing to let opinion rewrite r
 18. Reuel, A., et al. (2024). [*BetterBench*](https://arxiv.org/abs/2411.12990).
 19. OpenAI (2024; updated 2025). [*Introducing SWE-bench Verified*](https://openai.com/index/introducing-swe-bench-verified/).
 20. OpenAI (2026). [*Why SWE-bench Verified no longer measures frontier coding capabilities*](https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/).
+21. Harbor Framework (2026). [*Harbor: Framework for evaluating and improving agents*](https://www.harborframework.com/).
+22. Daytona (2026). [*Sandboxes, VM forks, and snapshots*](https://www.daytona.io/docs/sandboxes/).
 
 ## Appendix A. Frozen identity registry
 

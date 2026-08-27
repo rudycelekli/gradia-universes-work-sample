@@ -1,4 +1,4 @@
-.PHONY: setup test reproduce verify study-a frontier axes cost-capped alignment public-boundary all
+.PHONY: setup test reproduce verify study-a frontier axes cost-capped alignment public-boundary paper-numbers all
 
 setup:
 	python3 -m venv .venv
@@ -6,7 +6,7 @@ setup:
 
 test:
 	.venv/bin/pytest -q
-	.venv/bin/ruff check src tests
+	.venv/bin/ruff check src tests scripts/verify_paper_numeric_claims.py
 	.venv/bin/mypy --strict src tests
 
 reproduce:
@@ -36,4 +36,8 @@ alignment:
 public-boundary:
 	.venv/bin/gradia-universe verify-public
 
-all: test verify cost-capped alignment public-boundary
+paper-numbers:
+	$(MAKE) -C paper conditionally-approved
+	.venv/bin/python scripts/verify_paper_numeric_claims.py
+
+all: test verify cost-capped alignment public-boundary paper-numbers

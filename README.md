@@ -156,6 +156,11 @@ The verifier does not trust committed hashes. It reruns all 15 episodes,
 rebuilds every event and episode receipt, and requires byte-identical panel and
 Markdown outputs.
 
+The [numerical claim trust note](docs/NUMERICAL-CLAIM-TRUST.md) documents the
+attempt-to-PDF evidence chain, which numerical classes are machine-bound, the
+corrections caught by the first full audit, and the scientific questions that
+remain legitimately open.
+
 The same keyless gate also reconstructs a 26-fork Study A engineering corpus:
 
 ```bash
@@ -407,10 +412,17 @@ gradia-universe frontier-verify
 gradia-universe axes-verify
 gradia-universe cost-capped-verify
 gradia-universe verify-public
+make all
 ```
 
 CI uses the committed `uv.lock`, SHA-pinned GitHub actions and Python 3.11/3.12.
-It fails if rerunning the universe changes a committed result.
+It fails if rerunning the universe changes a committed result. The final
+`paper-numbers` gate rebuilds the branded paper, recomputes the cost-capped
+index, four-judge packet, scripted-control receipts, and projection-ablation
+report, then binds their derived values to both the Markdown source and rendered
+PDF. Bibliographic years, identifiers, and prospectively declared design
+parameters are kept outside that empirical-result ledger rather than being
+misrepresented as measured outcomes.
 
 ## Citation
 
