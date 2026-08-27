@@ -82,6 +82,17 @@ The title has a deliberate double meaning. In mortgage operations, approval is o
 conditional on unresolved evidence. In this benchmark, every evaluation claim is
 also conditional on a valid world, an admitted evaluator, and reviewable evidence.
 
+![The attribution chain evaluated in this paper. A changed world must be
+materially applied, disclosed to the agent under valid authority, and reflected
+in correct downstream behavior. Only the final fault class is eligible for
+model attribution after evaluator admission and blinded review.](figures/attribution-chain.png){width=100%}
+
+The contribution is the chain, not any one component in isolation:
+**world changed $\rightarrow$ materially applied? $\rightarrow$ agent saw it?
+$\rightarrow$ authority valid? $\rightarrow$ agent acted correctly?** A failed
+link localizes an environment, disclosure, authority, or agent-fault candidate;
+it does not permit every red criterion to be counted as model behavior.
+
 ## 2. Research questions
 
 - **RQ1 — Exact completion.** Does an identity-pinned frontier agent produce a
@@ -135,6 +146,20 @@ and tau-bench, tau2-bench, AppWorld, ToolSandbox, and OSWorld evaluate agents th
 actions that alter persistent environments [1--7]. Those systems occupy the broad
 territory of dynamic environments, interruptions, and stateful tool use. This work
 does not claim those ideas as new.
+
+The compact comparison below makes the nearest-neighbor distinction explicit. It
+compares each cited paper's primary evaluation object rather than claiming that an
+unlisted implementation feature is absent.
+
+| System | Primary object in the cited work | Relationship to this paper |
+|---|---|---|
+| $\tau^2$-bench [4] | Shared dual-control agent--user task | Binds application $\rightarrow$ projection $\rightarrow$ authority $\rightarrow$ judgment |
+| AppWorld [5] | Stateful multi-app coding; state and collateral-effect tests | Adds time-indexed world/view roots, restore lineage, and typed refusal |
+| ToolSandbox [6] | Stateful tool use; user simulation; milestone grading | Separates environment, disclosure, authority, and behavior faults |
+| Gaia2 [1] | Asynchronous evolving worlds; write-action verification | Jointly recomputes occurrence, roots, projection, restore, evaluator, and disposition |
+| BranchBench [16] | Branchable-database performance under branch--mutate--evaluate | Uses branches as evaluation interventions with whole-world comparability |
+| Proof of Execution [8] | Authorized, tamper-evident, replayable execution | Adds semantic attribution: what changed, was seen, was authorized, and was correct |
+| **Conditionally Approved** | **Attribution in changing-world agent evaluation** | **Tests the full application $\rightarrow$ visibility $\rightarrow$ authority $\rightarrow$ behavior chain with fail-closed denominators** |
 
 The narrower measurement problem is whether a benchmark can prove the chain from a
 declared occurrence to the material world transition, the exact projection visible

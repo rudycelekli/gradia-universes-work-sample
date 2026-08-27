@@ -85,6 +85,108 @@ def evolution_witness() -> None:
     _save(fig, "evolution-witness")
 
 
+def attribution_chain() -> None:
+    """Make the causal attribution question legible before formal notation."""
+
+    stages = [
+        ("World changed", "declared occurrence"),
+        ("Materially applied?", "before/after roots"),
+        ("Agent saw it?", "exact visible projection"),
+        ("Authority valid?", "source, scope, precedence"),
+        ("Correct action?", "action + terminal account"),
+    ]
+    fault_labels = [
+        "environment fault",
+        "disclosure fault",
+        "authority fault",
+        "agent-fault candidate",
+    ]
+    fig, ax = plt.subplots(figsize=(12.5, 3.35))
+    ax.set_xlim(0, 12.5)
+    ax.set_ylim(0, 3.35)
+    ax.axis("off")
+
+    box_width = 2.12
+    gap = 0.34
+    start = 0.28
+    y = 1.43
+    for index, (title, subtitle) in enumerate(stages):
+        x = start + index * (box_width + gap)
+        patch = FancyBboxPatch(
+            (x, y),
+            box_width,
+            1.12,
+            boxstyle="round,pad=0.06,rounding_size=0.08",
+            linewidth=1.25,
+            edgecolor=ORANGE if index in {0, 4} else LINE,
+            facecolor=SAND if index % 2 == 0 else "white",
+        )
+        ax.add_patch(patch)
+        ax.text(
+            x + box_width / 2,
+            y + 0.70,
+            title,
+            ha="center",
+            va="center",
+            color=INK,
+            fontsize=10.1,
+            weight="bold",
+        )
+        ax.text(
+            x + box_width / 2,
+            y + 0.30,
+            subtitle,
+            ha="center",
+            va="center",
+            color=WARM,
+            fontsize=8.4,
+        )
+        if index < len(stages) - 1:
+            arrow_start = x + box_width + 0.03
+            arrow_end = x + box_width + gap - 0.03
+            ax.add_patch(
+                FancyArrowPatch(
+                    (arrow_start, y + 0.56),
+                    (arrow_end, y + 0.56),
+                    arrowstyle="-|>",
+                    mutation_scale=12,
+                    linewidth=1.15,
+                    color=BLUE,
+                )
+            )
+            ax.text(
+                (arrow_start + arrow_end) / 2,
+                0.92,
+                fault_labels[index],
+                ha="center",
+                va="center",
+                color=ORANGE,
+                fontsize=8.0,
+                weight="semibold",
+            )
+
+    ax.text(
+        6.25,
+        3.04,
+        "One changing-world episode, four attribution gates",
+        ha="center",
+        va="center",
+        color=INK,
+        fontsize=12,
+        weight="bold",
+    )
+    ax.text(
+        6.25,
+        0.35,
+        "Only the final class is eligible for model attribution - after evaluator admission and blinded review.",
+        ha="center",
+        va="center",
+        color=WARM,
+        fontsize=9.2,
+    )
+    _save(fig, "attribution-chain")
+
+
 def harness_sensitivity() -> None:
     panel = json.loads((ROOT / "results/reference/panel.json").read_text(encoding="utf-8"))
     rows = panel["by_agent"]
@@ -403,6 +505,7 @@ def fault_attribution() -> None:
 
 if __name__ == "__main__":
     evolution_witness()
+    attribution_chain()
     harness_sensitivity()
     episode_timeline()
     judge_instability()
