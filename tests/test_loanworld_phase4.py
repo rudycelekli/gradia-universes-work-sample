@@ -139,7 +139,7 @@ def test_vault_editions_verify() -> None:
 
 
 def test_latest_attack_round_reproduces_with_zero_exploits() -> None:
-    committed = load_json(ROOT / "results" / "loanworld" / "windtunnel-round-06.json")
-    rerun = run_round(ROOT, 6, edition=max(EDITIONS))
+    committed = load_json(ROOT / "results" / "loanworld" / "windtunnel-round-09.json")
+    rerun = run_round(ROOT, 9, edition=max(EDITIONS))
     assert canonical_bytes(rerun) == canonical_bytes(committed)
     assert rerun["exploits"] == 0 and rerun["false_rejections"] == 0

@@ -144,3 +144,23 @@ def test_text_only_turns_are_nudged_then_censored() -> None:
     _result, agent, _, client = _run([chat, chat, chat])
     assert agent.stop == "model_stopped_without_submit"
     assert len(client.messages.calls) == 3
+
+
+def test_budget_ledger_appends_every_request(tmp_path: Path) -> None:
+    ledger = tmp_path / "spend-ledger.jsonl"
+    budget = Budget(cap_usd=5.0, model="claude-opus-5-5", ledger_path=ledger)
+    budget.record("FK-00", Usage(), "tool_use")
+    budget.record("FK-00", Usage(), "end_turn")
+    lines = ledger.read_text().splitlines()
+    assert len(lines) == 2 and '"stop_reason": "end_turn"' in lines[1]
+
+
+def test_live_regrade_is_bound_to_recorded_proof_packs() -> None:
+    from gradia_universes.canonical import canonical_bytes
+    from gradia_universes.loanworld.live import regrade_live
+
+    committed = load_json(ROOT / "results" / "loanworld" / "live" / "regrade-oracle-0.4.2.json")
+    rerun = regrade_live(ROOT)
+    assert canonical_bytes(rerun) == canonical_bytes(committed)
+    assert all(e["replay_bound_to_proof_pack"] for e in rerun["episodes"])
+    assert rerun["status"].startswith("POST-HOC")

@@ -74,7 +74,13 @@ def test_solver_is_fork_aware_not_one_size(parts: Any) -> None:
         s.fork_id: solver_plan(fork_by_id(parent, contract, s.fork_id), s.fork_id)
         for s in CATALOG
     }
-    assert plans["FK-09"][-1][1]["open_conditions"] == ["C-001", "C-002", "C-007"]
+    assert plans["FK-09"][-1][1]["open_conditions"] == [
+        "C-001",
+        "C-002",
+        "C-003",
+        "C-004",
+        "C-007",
+    ]
     assert plans["FK-03"] != plans["FK-00"]
     with pytest.raises(ValueError, match="solver_fork_unknown"):
         solver_plan(fork_by_id(parent, contract, "FK-00"), "FK-99")
@@ -114,4 +120,3 @@ def test_isolation_gate_catches_an_event_firing_early(
     monkeypatch.setattr(LoanEngine, "advance", early)
     row = isolation_row(parent_bundle, overlay, witnesses["FK-08"])
     assert row["acts_differing_before_boundary"] and not row["isolated"]
-
