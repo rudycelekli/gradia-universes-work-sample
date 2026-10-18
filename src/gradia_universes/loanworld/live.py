@@ -679,3 +679,87 @@ def run_live_diagnostic(
     }
     write_canonical(out / "summary.json", {**summary, "summary_sha256": digest(summary)})
     return summary
+
+
+# ---------------------------------------------------------------- post-hoc re-grade
+
+
+def replay_live_episode(root: Path, fork_id: str) -> dict[str, Any]:
+    """Rebuild an episode's final state from its transcript; prove it via the proof pack.
+
+    The environment is deterministic, so replaying the model's tool calls in order must
+    reproduce the recorded proof-pack digest exactly. A mismatch raises: the re-grade is
+    only as good as this binding.
+    """
+    from ..canonical import load_json
+    from .forks import fork_by_id
+    from .policies import plan_agent
+
+    out = root / "results" / "loanworld" / "live"
+    record = load_json(out / f"{fork_id}.json")
+    transcript = load_json(out / "transcripts" / f"{fork_id}.json")
+    plan = [
+        (b["name"], b["input"])
+        for m in transcript["messages"]
+        if m["role"] == "assistant"
+        for b in m["content"]
+        if b.get("type") == "tool_use"
+    ]
+    lw = root / "fixtures" / "loanworld"
+    parent = load_json(lw / "parents" / "loanworld-parent-dev-001.json")
+    contract = load_json(lw / "counterparts" / "loanworld-parent-dev-001.json")
+    bundle = fork_by_id(parent, contract, fork_id)
+    result = run_python_agent(
+        LoanScenario.parse(deepcopy(bundle["scenario"])),
+        plan_agent(plan),
+        max_acts=60,
+        counterparts=bundle["counterparts"],
+    )
+    if result["proof_pack"]["pack_sha256"] != record["proof_pack_sha256"]:
+        raise ValueError(f"live_replay_not_bound:{fork_id}")
+    return {"bundle": bundle, "result": result, "record": record}
+
+
+def regrade_live(root: Path) -> dict[str, Any]:
+    from ..canonical import load_json
+    from .oracle import ORACLE_VERSION, grade_episode
+
+    out = root / "results" / "loanworld" / "live"
+    labels = {
+        w["fork_id"]: w["expected_draft"]
+        for w in load_json(
+            root / "fixtures" / "loanworld" / "forks" / "loanworld-parent-dev-001.json"
+        )["forks"]
+    }
+    rows = []
+    for path in sorted(out.glob("FK-*.json")):
+        fork_id = path.stem
+        replay = replay_live_episode(root, fork_id)
+        grade = grade_episode(replay["bundle"], labels[fork_id], replay["result"], fork_id)
+        before = replay["record"]["grade"]
+        rows.append(
+            {
+                "fork_id": fork_id,
+                "replay_bound_to_proof_pack": True,
+                "preregistered_oracle": {
+                    "terminal_pass": before["terminal_pass"],
+                    "critical_codes": sorted({f["code"] for f in before["critical_failures"]}),
+                    "failed_criteria": before["failed_criteria"],
+                },
+                "post_hoc_oracle": {
+                    "version": ORACLE_VERSION,
+                    "terminal_pass": grade["terminal_pass"],
+                    "autonomous": grade["autonomous"],
+                    "critical_failures": grade["critical_failures"],
+                    "failed_criteria": sorted(k for k, v in grade["criteria"].items() if not v),
+                    "diagnostics": grade["diagnostics"],
+                },
+            }
+        )
+    body = {
+        "schema": "gradia.loanworld.live-regrade.v0",
+        "status": "POST-HOC: oracle changes were informed by these same transcripts",
+        "primary_result": "the preregistered oracle-0.3.0 grades in each episode record",
+        "episodes": rows,
+    }
+    return {**body, "regrade_sha256": digest(body)}
