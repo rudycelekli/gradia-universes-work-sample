@@ -208,6 +208,26 @@ def command_windtunnel_round(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_gates(args: argparse.Namespace) -> int:
+    from .gates import run_gates
+
+    report = run_gates(args.root)
+    path = args.root / "results" / "loanworld" / "phase5-gates.json"
+    write_canonical(path, report)
+    print(
+        json.dumps(
+            {
+                "written": str(path.relative_to(args.root)),
+                "all_solvable": report["all_solvable"],
+                "all_isolated": report["all_isolated"],
+                "baseline_summary": report["baseline_summary"],
+            },
+            sort_keys=True,
+        )
+    )
+    return 0 if report["all_solvable"] and report["all_isolated"] else 1
+
+
 def register(sub: Any) -> None:
     build = sub.add_parser("loanworld-build", help="generate a seeded LoanWorld gold parent")
     build.add_argument("--seed", required=True)
@@ -237,6 +257,10 @@ def register(sub: Any) -> None:
     attack.add_argument("--round", type=int, required=True)
     attack.add_argument("--edition", type=int, default=1)
     attack.set_defaults(func=command_windtunnel_round)
+    gates = sub.add_parser(
+        "loanworld-gates", help="solvability, branch isolation and $0 baselines on every fork"
+    )
+    gates.set_defaults(func=command_gates)
     tools = sub.add_parser("loanworld-tools", help="print the agent tool manifest")
     tools.set_defaults(func=command_tools)
     prereg = sub.add_parser(
