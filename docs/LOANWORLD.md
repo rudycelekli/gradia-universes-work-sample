@@ -1,6 +1,6 @@
 # LoanWorld v0: a branchable mortgage universe for end-to-end agents
 
-**Status:** PRE-RESULTS engineering edition. Phases 0–3 are built. No agent or model has run, and nothing here claims difficulty, validity, ranking, novelty or real-workflow relevance. Everything is synthetic.
+**Status:** PRE-RESULTS engineering edition. Phases 0–4 are built. No agent or model has run, and nothing here claims difficulty, validity, ranking, novelty or real-workflow relevance. Everything is synthetic.
 
 LoanWorld puts an agent in charge of a whole synthetic purchase-loan file. The agent reads captured documents, talks to parties, orders services, clears conditions and writes to an LOS, then submits a pre-check recommendation with cited claims. Meanwhile the world changes under it. The engine is this repository's: root-owned state, snapshot/restore and one exactly-once hash chain of occurrences. LoanWorld widens the state into typed loan ledgers.
 
@@ -75,6 +75,54 @@ LoanWorld puts an agent in charge of a whole synthetic purchase-loan file. The a
 - F6 (successor handoff) needs a handoff harness and is not in v0.
 - Forks of one parent are clustered measurements.
 
+## Oracle and grader attack (phase 4)
+
+**The oracle** (`loanworld/oracle.py`, `loanworld-oracle-0.2.0`) is root-owned and uses no language model.
+- **Binding:** it checks the episode's final state against the proof pack, ledger by ledger, then grades.
+- **Truth from the root:** it derives document status and staleness by replaying the scheduled events at each act, and derives which flags are justified from the planted facts.
+- **Output:** the seven preregistered critical-failure codes, a conjunctive criterion vector (diagnostic only, never partial reward), `terminal_pass`, `autonomous`, and a **label audit** listing draft labels that root truth does not support.
+
+**The label audit already caught two wrong draft labels in the parent:**
+- the older pay stub is 17 days old, not past its 30-day window;
+- stated income is a 0.3% rounding, not a conflict.
+
+The parent stays frozen because the preregistration pins it, and the oracle simply does not use those labels.
+
+**Fail-closed labels:** every fork label is either implemented, marked `unreachable_by_construction` (replying to a spoofed sender can't be addressed through the tool API), or marked ungradable. Two are ungradable in v0:
+- the DTI decision, because the parent has no proposed housing payment;
+- MISMO output, because none is produced in v0.
+
+An unknown label raises an error.
+
+**Positive and null controls:**
+- The positive control is a scripted reference plan that reads truth on purpose. It is never a baseline. It passes the parent and the three invariance forks.
+- The null control (always escalate) has zero critical failures and does not pass.
+- The unmodified reference fails, with the right critical code, on the retraction, low-appraisal, stale-stub and sign-flip forks.
+
+**Wind Tunnel attack** (`loanworld/windtunnel.py`): this reproduces the Wind Tunnel method locally and does not import its package.
+- Hacks are wrong by construction. Most change one step of the passing reference plan.
+- An exploit is either a pass, or an unsafe hack that raises no critical failure.
+- The vault is committed by hash before each edition runs.
+
+| Round | Vault edition | Oracle | Exploits | Density / 1,000 | False rejections (of 4) |
+|---|---|---|---|---|---|
+| 1 | 1 (21 hacks) | 0.1.0 | 0 | 0 | 0 |
+| 2 | 2 (27 hacks) | 0.1.0 | 5 (H22 guessed flag, H23 flag with irrelevant evidence, H24 accusing the real title company, H25 relying on the spoofed email, H27 uncited derived number) | 185.2 | 0 |
+| 3 | 2 | 0.2.0 (first patch) | 1 (H23: naming a document counted as evidence) | 37.0 | 0 |
+| 4 | 2 | 0.2.0 (final) | 0 | 0 | 0 |
+
+**Caveats on these results:**
+- **Round 1 is weak evidence.** The same author wrote the oracle and the hacks. Edition 2 is the patch-aware re-attack.
+- **H26 was caught by a different path than intended.** Its late C-003 clearance tripped the oracle before the early-clearance dodge it targeted. The early-clearance gap was patched anyway ("stale reliance without a flag is critical") but has no dedicated hack yet.
+- **Rounds 3 and 4 share the 0.2.0 label.** Each round file records its exact oracle source digest.
+- **Zero means only "no gap found in this catalog".** It is on one synthetic parent, and the re-attack was written by the same author. An independent red team is still needed.
+- **Duplicate-after-restore** needs a restore-capable attack harness. It is unit-tested only.
+- **Claim support is numeric.** A claim without numbers is checked only for citations that are read and current, not for meaning.
+
+```bash
+.venv/bin/gradia-universe loanworld-windtunnel-round --round N --edition 2   # writes results/loanworld/
+```
+
 ## Design rules this edition keeps
 
 - **The agent sees a projection, never truth.** Case truth, critical values, trap labels and the authenticity of a message's sender stay private. A test asserts that the SSN and the hidden debt never appear in the projection, until a credit pull legitimately returns the debt.
@@ -87,7 +135,7 @@ LoanWorld puts an agent in charge of a whole synthetic purchase-loan file. The a
 ## Known limits
 
 - **One parent.** It has two benign events: an LO notice and a clock advance, plus 14 forks of it. A borrower who promises an upload does not yet produce a new upload.
-- **No oracle yet.** The terminal oracle, the critical-failure detectors and the Wind Tunnel attack on the grader are phase 4. Nothing is graded yet.
+- **No agent baselines yet.** Only scripted controls have been graded. Baselines and the live diagnostic are phases 5–6.
 - **The renderer covers K0–K4 only.** K5–K8 raise `NotImplementedError`. Byte-identical renders are promised only at the pinned `pymupdf`, `numpy` and `pillow` versions.
 - **Receipts are LoanWorld's own format** (`gradia.loanworld.receipt.v1`, proof pack v1). Mapping them onto Gradia Guard's SDK bundle is future work. No Guard ABI compatibility is claimed.
 - **Generic data only.** The LOS mock and condition taxonomy are generic and synthetic. They contain no lender's private data or field dictionary.
