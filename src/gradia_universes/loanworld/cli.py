@@ -228,6 +228,53 @@ def command_gates(args: argparse.Namespace) -> int:
     return 0 if report["all_solvable"] and report["all_isolated"] else 1
 
 
+def _live_client() -> Any:
+    import anthropic  # optional extra: loanworld-live
+
+    return anthropic.Anthropic()
+
+
+def command_live_prereg(args: argparse.Namespace) -> int:
+    from .forks import fork_by_id
+    from .live import build_live_preregistration, estimate_episode_cost
+
+    parent = load_json(args.root / PARENTS / "loanworld-parent-dev-001.json")
+    contract = load_json(args.root / COUNTERPARTS / "loanworld-parent-dev-001.json")
+    estimate = estimate_episode_cost(
+        _live_client(),
+        fork_by_id(parent, contract, "FK-00"),
+        model="claude-opus-5-5",
+        render_dir=args.render_dir,
+    )
+    value = build_live_preregistration(args.root, args.created_at, estimate)
+    path = (
+        args.root
+        / "preregistrations"
+        / (f"loanworld-v0-live-diagnostic-{args.created_at[:10].replace('-', '')}.json")
+    )
+    if path.exists():
+        raise ValueError(f"prereg_already_frozen:{path.name}")
+    write_canonical(path, value)
+    print(
+        json.dumps(
+            {
+                "written": str(path.relative_to(args.root)),
+                "digest": value["digest"],
+                "estimate_usd": estimate["estimated_usd"],
+            }
+        )
+    )
+    return 0
+
+
+def command_live_run(args: argparse.Namespace) -> int:
+    from .live import run_live_diagnostic
+
+    summary = run_live_diagnostic(args.root, args.prereg, _live_client(), args.render_dir)
+    print(json.dumps(summary, sort_keys=True, indent=2))
+    return 0
+
+
 def register(sub: Any) -> None:
     build = sub.add_parser("loanworld-build", help="generate a seeded LoanWorld gold parent")
     build.add_argument("--seed", required=True)
@@ -261,6 +308,18 @@ def register(sub: Any) -> None:
         "loanworld-gates", help="solvability, branch isolation and $0 baselines on every fork"
     )
     gates.set_defaults(func=command_gates)
+    live_prereg = sub.add_parser(
+        "loanworld-live-prereg", help="free token-count estimate, then freeze the live prereg"
+    )
+    live_prereg.add_argument("--created-at", required=True)
+    live_prereg.add_argument("--render-dir", type=Path, required=True)
+    live_prereg.set_defaults(func=command_live_prereg)
+    live_run = sub.add_parser(
+        "loanworld-live-run", help="run the preregistered live diagnostic (spends money)"
+    )
+    live_run.add_argument("--prereg", type=Path, required=True)
+    live_run.add_argument("--render-dir", type=Path, required=True)
+    live_run.set_defaults(func=command_live_run)
     tools = sub.add_parser("loanworld-tools", help="print the agent tool manifest")
     tools.set_defaults(func=command_tools)
     prereg = sub.add_parser(
