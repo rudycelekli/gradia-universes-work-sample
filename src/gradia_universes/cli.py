@@ -27,6 +27,7 @@ from .frontier import (
 from .gradia_client import GradiaClient
 from .human_review import agreement, write_packet
 from .live_runner import SCAFFOLD_VERSION, run_live_episode
+from .loanworld.cli import register as register_loanworld
 from .preregistration import (
     build_frontier_preregistration,
     clean_git_sha,
@@ -833,6 +834,7 @@ def parser() -> argparse.ArgumentParser:
     diagnostic_run.add_argument("--preregistration", type=Path, required=True)
     diagnostic_run.add_argument("--confirm-live-spend", action="store_true")
     diagnostic_run.set_defaults(func=command_frontier_diagnostic_run)
+    register_loanworld(sub)
     return cli
 
 
