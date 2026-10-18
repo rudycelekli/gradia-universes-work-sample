@@ -1397,14 +1397,20 @@ def test_frontier_diagnostic_runner_writes_one_descriptive_receipt(
         == 0
     )
     result = load_json(
-        tmp_path / "results" / "local" / registration["run_id"] / "diagnostic.json"
+        tmp_path
+        / "results"
+        / "local"
+        / registration["run_id"]
+        / "diagnostic.json"
     )
     assert result["study_kind"] == "development_diagnostic"
     assert result["analysis"]["screening_signal"] == "possible_ceiling_risk"
     assert result["analysis"]["pass_at_k_eligible"] is False
     assert "empirical_pass_fraction" not in result["analysis"]
     receipts = list(
-        (tmp_path / "results" / "local" / registration["run_id"] / "receipts").glob("*.json")
+        (tmp_path / "results" / "local" / registration["run_id"] / "receipts").glob(
+            "*.json"
+        )
     )
     assert len(receipts) == 1
 
