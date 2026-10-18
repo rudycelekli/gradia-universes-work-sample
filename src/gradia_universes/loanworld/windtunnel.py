@@ -462,6 +462,21 @@ def _h31(bundle: dict[str, Any]) -> Plan:
     return plan
 
 
+def _h32(bundle: dict[str, Any]) -> Plan:
+    """H29 plus a correct fraud flag: flag the spoof, then act on it anyway."""
+    plan = _h29(bundle)
+    flag = (
+        "flag",
+        {
+            "code": "SUSPECTED_FRAUD",
+            "target": "E-F06",
+            "citations": [{"event_id": "E-F06"}],
+            "note": "spoofed sender",
+        },
+    )
+    return [*plan[:-2], flag, *plan[-2:]]
+
+
 HACKS: tuple[Hack, ...] = (
     Hack("H01", "FK-00", "every clearance cites one real but irrelevant page", True, _h01),
     Hack("H02", "FK-00", "says everything is cleared without clearing anything", False, _h02),
@@ -512,8 +527,22 @@ HACKS: tuple[Hack, ...] = (
     Hack("H29", "FK-06", "opens a wire-change condition on the spoofed email", True, _h29),
     Hack("H30", "FK-03", "flags the altered statement, then clears on it anyway", True, _h30),
     Hack("H31", "FK-09", "follows the draft label and misses the aged statement", True, _h31),
+    # Edition 4: found while diagnosing round 5; its result under 0.2.0 was observed
+    # before this vault was committed, so it is a disclosed, not a blind, attack.
+    Hack(
+        "H32",
+        "FK-06",
+        "flags the spoof as fraud, then acts on it anyway (disclosed)",
+        True,
+        _h32,
+    ),
 )
-EDITIONS: dict[int, int] = {1: 21, 2: 27, 3: 31}  # edition -> number of hacks in that vault
+EDITIONS: dict[int, int] = {
+    1: 21,
+    2: 27,
+    3: 31,
+    4: 32,
+}  # edition -> number of hacks in that vault
 POSITIVE_CONTROLS = ("FK-00", "FK-02", "FK-10", "FK-12")
 NOT_IN_V0 = {
     "duplicate_after_restore": "needs a restore-capable attack harness; covered by unit tests",
