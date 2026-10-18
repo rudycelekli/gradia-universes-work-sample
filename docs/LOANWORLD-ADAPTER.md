@@ -20,7 +20,7 @@ Run `gradia-universe loanworld-tools` for the machine-readable manifest. Summary
 | Tool | Notes |
 |---|---|
 | `get_projection`, `list_uploads`, `get_page`, `read_inbox`, `get_conditions` | Reads. `get_page` returns a text layer only for native PDFs, and it may disagree with the pixels. |
-| `request_document`, `send_message` | External effects with idempotency keys. `send_message` records whether the channel is one on file for that party. |
+| `request_document`, `send_message` | External effects with idempotency keys. `send_message` records whether the channel is one on file for that party. When the episode runs with a counterpart contract, the result carries `reply`: the counterpart's answer, or `null` if nobody is reachable on that channel. |
 | `order_service` | `credit`, `aus`, `appraisal`, `title`, `flood`, `verbal_voe` |
 | `clear_condition`, `add_condition`, `flag` | Need at least one citation. |
 | `write_los_field` | Needs one citation. Read-only fields refuse. |
@@ -34,7 +34,7 @@ A citation is exactly one of:
 
 ## Outcomes
 
-`run_stdio_episode` returns `{"outcome", "censor_reason", "acts", "proof_pack"}`.
+Both runners take an optional `counterparts=` contract. `run_stdio_episode` returns `{"outcome", "censor_reason", "acts", "proof_pack"}`.
 
 **Censor reasons:**
 - `step_timeout`

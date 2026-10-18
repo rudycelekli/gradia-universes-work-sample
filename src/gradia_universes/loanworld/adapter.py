@@ -96,9 +96,10 @@ def run_python_agent(
     scenario: LoanScenario,
     agent: Callable[[dict[str, Any]], dict[str, Any]],
     max_acts: int = 200,
+    counterparts: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """In-process variant of the same protocol, for scripted and reference policies."""
-    session = LoanWorldSession(scenario, max_acts)
+    session = LoanWorldSession(scenario, max_acts, counterparts)
     message = _start_message(session)
     while True:
         call = _parse_call(agent(message))
@@ -119,8 +120,9 @@ def run_stdio_episode(
     max_acts: int = 200,
     step_timeout_s: float = 30.0,
     total_timeout_s: float = 1800.0,
+    counterparts: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    session = LoanWorldSession(scenario, max_acts)
+    session = LoanWorldSession(scenario, max_acts, counterparts)
     started = time.monotonic()
     process = subprocess.Popen(
         command,

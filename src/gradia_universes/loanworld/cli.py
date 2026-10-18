@@ -9,12 +9,16 @@ from typing import Any
 
 from ..canonical import canonical_bytes, load_json, write_canonical
 from .adapter import run_python_agent, tool_manifest
+from .counterparts import build_counterparts, validate_counterparts
+from .forks import CATALOG, build_fork_manifest, fork_by_id
 from .generator import build_gold_parent
 from .policies import null_agent
 from .schema import LoanScenario
 from .tools import verify_proof_pack
 
 PARENTS = Path("fixtures") / "loanworld" / "parents"
+COUNTERPARTS = Path("fixtures") / "loanworld" / "counterparts"
+FORKS = Path("fixtures") / "loanworld" / "forks"
 
 
 def command_build(args: argparse.Namespace) -> int:
@@ -66,8 +70,63 @@ def verify_parents(root: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def command_forks_build(args: argparse.Namespace) -> int:
+    written = []
+    for path in sorted((args.root / PARENTS).glob("*.json")):
+        parent = load_json(path)
+        counterparts = build_counterparts(parent)
+        write_canonical(args.root / COUNTERPARTS / path.name, counterparts)
+        manifest = build_fork_manifest(parent, counterparts)
+        write_canonical(args.root / FORKS / path.name, manifest)
+        written.append(
+            {
+                "parent": parent["scenario_id"],
+                "forks": len(manifest["forks"]),
+                "manifest_sha256": manifest["manifest_sha256"],
+            }
+        )
+    print(json.dumps({"written": written}, sort_keys=True))
+    return 0
+
+
+def verify_forks(root: Path) -> list[dict[str, Any]]:
+    """Rebuild counterparts and every fork from the parent; run the null control on each."""
+    rows = []
+    for path in sorted((root / PARENTS).glob("*.json")):
+        parent = load_json(path)
+        committed_counterparts = load_json(root / COUNTERPARTS / path.name)
+        validate_counterparts(committed_counterparts)
+        if canonical_bytes(build_counterparts(parent)) != canonical_bytes(
+            committed_counterparts
+        ):
+            raise ValueError(f"loanworld_counterparts_not_reproducible:{path.name}")
+        committed = load_json(root / FORKS / path.name)
+        rebuilt = build_fork_manifest(parent, committed_counterparts)
+        if canonical_bytes(rebuilt) != canonical_bytes(committed):
+            raise ValueError(f"loanworld_fork_manifest_not_reproducible:{path.name}")
+        for spec in CATALOG:
+            bundle = fork_by_id(parent, committed_counterparts, spec.fork_id)
+            result = run_python_agent(
+                LoanScenario.parse(bundle["scenario"]),
+                null_agent,
+                counterparts=bundle["counterparts"],
+            )
+            verify_proof_pack(result["proof_pack"])
+            if result["outcome"] != "terminal":
+                raise ValueError(f"loanworld_fork_null_control_censored:{spec.fork_id}")
+        rows.append(
+            {
+                "parent": parent["scenario_id"],
+                "forks": len(committed["forks"]),
+                "manifest_sha256": committed["manifest_sha256"],
+            }
+        )
+    return rows
+
+
 def command_verify(args: argparse.Namespace) -> int:
-    print(json.dumps({"verified": verify_parents(args.root)}, sort_keys=True, indent=2))
+    report = {"parents": verify_parents(args.root), "forks": verify_forks(args.root)}
+    print(json.dumps({"verified": report}, sort_keys=True, indent=2))
     return 0
 
 
@@ -126,6 +185,10 @@ def register(sub: Any) -> None:
     render.add_argument("--scenario", type=Path, required=True)
     render.add_argument("--out", type=Path, required=True)
     render.set_defaults(func=command_render)
+    forks = sub.add_parser(
+        "loanworld-forks-build", help="write counterpart contracts and fork manifests"
+    )
+    forks.set_defaults(func=command_forks_build)
     tools = sub.add_parser("loanworld-tools", help="print the agent tool manifest")
     tools.set_defaults(func=command_tools)
     prereg = sub.add_parser(

@@ -13,7 +13,7 @@ same effect is sent again after a restore, it is recorded with
 ``duplicate_after_restore: true`` so a grader can count it; the call still
 succeeds, because real channels do not refuse duplicates either.
 
-The receipt chain is LoanWorld's own format (``gradia.loanworld.receipt.v0``). It
+The receipt chain is LoanWorld's own format (``gradia.loanworld.receipt.v1``). It
 is designed to map onto Gradia Guard's SDK bundle later; this module does not
 claim Guard ABI compatibility.
 """
@@ -25,11 +25,12 @@ from typing import Any
 
 from ..canonical import digest
 from ..world import verify_occurrence_chain
+from .counterparts import CounterpartRuntime
 from .schema import LoanScenario
 from .world import LoanEngine, LoanWorld
 
-RECEIPT_SCHEMA = "gradia.loanworld.receipt.v0"
-PROOF_PACK_SCHEMA = "gradia.loanworld.proof-pack.v0"
+RECEIPT_SCHEMA = "gradia.loanworld.receipt.v1"
+PROOF_PACK_SCHEMA = "gradia.loanworld.proof-pack.v1"
 RECOMMENDATIONS = frozenset({"PRECHECK_PASS", "CONDITIONAL", "ESCALATE", "DECLINE_RECOMMENDED"})
 FLAG_CODES = frozenset(
     {
@@ -128,8 +129,14 @@ def _check_args(tool: str, args: dict[str, Any]) -> None:
 
 
 class LoanWorldSession:
-    def __init__(self, scenario: LoanScenario, max_acts: int = 200) -> None:
+    def __init__(
+        self,
+        scenario: LoanScenario,
+        max_acts: int = 200,
+        counterparts: dict[str, Any] | None = None,
+    ) -> None:
         self.scenario = scenario
+        self.counterparts = CounterpartRuntime(counterparts) if counterparts else None
         self.world = LoanWorld(scenario)
         self.engine = LoanEngine(scenario)
         self.act = 0
@@ -157,6 +164,7 @@ class LoanWorldSession:
         snapshot: dict[str, Any],
         max_acts: int = 200,
         already_sent: set[str] | None = None,
+        counterparts: dict[str, Any] | None = None,
     ) -> LoanWorldSession:
         """Restore a snapshot; ``already_sent`` carries effects that left the world.
 
@@ -164,7 +172,7 @@ class LoanWorldSession:
         the abandoned branch already delivered so a re-send is recorded as a
         duplicate external effect.
         """
-        session = cls(scenario, max_acts)
+        session = cls(scenario, max_acts, counterparts)
         session.world = LoanWorld.restore(scenario, snapshot["world"])
         session.engine = LoanEngine.restore(scenario, snapshot["engine"])
         session.act = int(snapshot["act"])
@@ -190,6 +198,7 @@ class LoanWorldSession:
             response: dict[str, Any] = {"ok": True, "result": result}
         except ToolError as error:
             response = {"ok": False, "error": str(error)}
+        after_effect = self.world.root
         fired = self.engine.advance(self.act, self.world)
         if fired:
             response["events"] = [
@@ -205,7 +214,8 @@ class LoanWorldSession:
             "args_sha256": digest(args),
             "response_sha256": digest(response),
             "world_root_before": before,
-            "world_root_after_effect": self.world.root,
+            "world_root_after_effect": after_effect,
+            "world_root_after_events": self.world.root,
             "occurrence_ids": [row.event_id for row in fired],
             "previous_receipt_sha256": previous,
         }
@@ -321,7 +331,11 @@ class LoanWorldSession:
             "document_request", {"party": party, "doc_type": doc_type, "reason": reason}
         )
         self.world.ledgers["outbox"]["document_requests"].append(effect)
-        return {"queued": True, "duplicate_after_restore": effect["duplicate_after_restore"]}
+        return {
+            "queued": True,
+            "duplicate_after_restore": effect["duplicate_after_restore"],
+            "reply": self._reply(effect, "document_request"),
+        }
 
     def _tool_send_message(self, party: str, channel: str, text: str) -> dict[str, Any]:
         principal = self._principal(party)
@@ -329,7 +343,16 @@ class LoanWorldSession:
         effect = self._effect("message", {"party": party, "channel": channel, "text": text})
         effect["channel_on_file"] = channel in on_file
         self.world.ledgers["outbox"]["messages"].append(effect)
-        return {"queued": True, "duplicate_after_restore": effect["duplicate_after_restore"]}
+        return {
+            "queued": True,
+            "duplicate_after_restore": effect["duplicate_after_restore"],
+            "reply": self._reply(effect, "message"),
+        }
+
+    def _reply(self, effect: dict[str, Any], kind: str) -> dict[str, Any] | None:
+        if self.counterparts is None:
+            return None
+        return self.counterparts.respond(self.world, self.act, effect, kind)
 
     def _tool_order_service(self, kind: str) -> dict[str, Any]:
         service = self.world.ledgers["services"].get(kind)
@@ -477,6 +500,9 @@ class LoanWorldSession:
                 else None
             ),
             "terminal": deepcopy(self.terminal),
+            "counterparts_sha256": (
+                self.counterparts.contract_sha256 if self.counterparts else None
+            ),
         }
         return {
             **body,
@@ -522,6 +548,7 @@ def verify_proof_pack(pack: dict[str, Any]) -> None:
         "receipt_count",
         "occurrence_head",
         "terminal",
+        "counterparts_sha256",
     }
     body = {key: pack[key] for key in body_keys}
     if pack["receipt_count"] != len(pack["receipts"]):
