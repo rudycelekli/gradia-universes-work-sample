@@ -172,12 +172,12 @@ def command_prereg_verify(args: argparse.Namespace) -> int:
 
 
 def command_windtunnel_vault(args: argparse.Namespace) -> int:
-    from .windtunnel import build_vault
+    from .windtunnel import build_vault, vault_path
 
-    path = args.root / "fixtures" / "loanworld" / "windtunnel" / "vault.json"
+    path = vault_path(args.root, args.edition)
     if path.exists():
         raise ValueError("windtunnel_vault_already_committed")
-    vault = build_vault()
+    vault = build_vault(args.edition)
     write_canonical(path, vault)
     print(
         json.dumps(
@@ -190,7 +190,7 @@ def command_windtunnel_vault(args: argparse.Namespace) -> int:
 def command_windtunnel_round(args: argparse.Namespace) -> int:
     from .windtunnel import run_round
 
-    report = run_round(args.root, args.round)
+    report = run_round(args.root, args.round, edition=args.edition)
     path = args.root / "results" / "loanworld" / f"windtunnel-round-{args.round:02d}.json"
     if path.exists():
         raise ValueError(f"windtunnel_round_already_written:{path.name}")
@@ -229,11 +229,13 @@ def register(sub: Any) -> None:
     vault = sub.add_parser(
         "loanworld-windtunnel-vault", help="commit the hack catalog by hash (once)"
     )
+    vault.add_argument("--edition", type=int, default=1)
     vault.set_defaults(func=command_windtunnel_vault)
     attack = sub.add_parser(
         "loanworld-windtunnel-round", help="attack the oracle with the committed vault"
     )
     attack.add_argument("--round", type=int, required=True)
+    attack.add_argument("--edition", type=int, default=1)
     attack.set_defaults(func=command_windtunnel_round)
     tools = sub.add_parser("loanworld-tools", help="print the agent tool manifest")
     tools.set_defaults(func=command_tools)
