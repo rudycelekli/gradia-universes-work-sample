@@ -89,6 +89,8 @@ def _result(session: LoanWorldSession, outcome: str, reason: str | None) -> dict
         "censor_reason": reason,
         "acts": session.act,
         "proof_pack": session.proof_pack(),
+        # Harness-side only (never sent to the agent): the oracle binds this to the pack.
+        "final_state": session.snapshot(),
     }
 
 
