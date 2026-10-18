@@ -173,7 +173,10 @@ def _before_submit(plan: Plan, *steps: tuple[str, dict[str, Any]]) -> Plan:
 
 
 def _set_open(plan: Plan, open_conditions: list[str]) -> Plan:
-    plan[-1][1]["open_conditions"] = sorted(open_conditions)
+    """Add to the reference plan's open conditions (it already leaves C-003/C-004 open)."""
+    plan[-1][1]["open_conditions"] = sorted(
+        set(plan[-1][1]["open_conditions"]) | set(open_conditions)
+    )
     return plan
 
 

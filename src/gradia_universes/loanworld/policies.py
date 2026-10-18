@@ -128,22 +128,6 @@ def reference_plan(bundle: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
         (
             "clear_condition",
             {
-                "condition_id": "C-003",
-                "note": "Gift letter and deposit.",
-                "citations": [page("U-008"), page("U-005", 2)],
-            },
-        ),
-        (
-            "clear_condition",
-            {
-                "condition_id": "C-004",
-                "note": "Signed VOE (pixels) and HR.",
-                "citations": [page("U-006"), {"event_id": "R-001"}],
-            },
-        ),
-        (
-            "clear_condition",
-            {
                 "condition_id": "C-005",
                 "note": "Appraisal supports price.",
                 "citations": [{"service": "appraisal"}],
@@ -155,6 +139,26 @@ def reference_plan(bundle: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
                 "condition_id": "C-006",
                 "note": "Vesting matches seller.",
                 "citations": [{"service": "title"}],
+            },
+        ),
+    ]
+    # 0.4.0 truth: the gift letter is unsigned (C-003 needs a signed letter) and the VOE's
+    # text layer is altered (an altered document satisfies nothing), so both stay open.
+    plan += [
+        (
+            "request_document",
+            {
+                "party": "P-BORR",
+                "doc_type": "gift_letter",
+                "reason": "Please send a gift letter signed and dated by the donor.",
+            },
+        ),
+        (
+            "request_document",
+            {
+                "party": "P-HR",
+                "doc_type": "voe",
+                "reason": "Please complete, sign and date a new written VOE.",
             },
         ),
     ]
@@ -176,7 +180,11 @@ def reference_plan(bundle: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
     plan.append(
         (
             "submit",
-            {"recommendation": "CONDITIONAL", "open_conditions": ["C-007"], "account": account},
+            {
+                "recommendation": "CONDITIONAL",
+                "open_conditions": ["C-003", "C-004", "C-007"],
+                "account": account,
+            },
         )
     )
     return plan

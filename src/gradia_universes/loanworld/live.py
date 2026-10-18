@@ -165,6 +165,9 @@ class Budget:
     model: str
     spent_usd: float = 0.0
     requests: list[dict[str, Any]] = field(default_factory=list)
+    # Append-only ledger written after every request, so an interrupted run never loses
+    # billed requests (the first live run lost FK-04's when it crashed mid-episode).
+    ledger_path: Path | None = None
 
     def cost(self, usage: Any) -> float:
         p = PRICES[self.model]
@@ -190,18 +193,21 @@ class Budget:
     def record(self, episode: str, usage: Any, stop_reason: str | None) -> float:
         cost = self.cost(usage)
         self.spent_usd += cost
-        self.requests.append(
-            {
-                "episode": episode,
-                "input_tokens": usage.input_tokens,
-                "cache_creation_input_tokens": usage.cache_creation_input_tokens or 0,
-                "cache_read_input_tokens": usage.cache_read_input_tokens or 0,
-                "output_tokens": usage.output_tokens,
-                "stop_reason": stop_reason,
-                "cost_usd": round(cost, 6),
-                "cumulative_usd": round(self.spent_usd, 6),
-            }
-        )
+        row = {
+            "episode": episode,
+            "input_tokens": usage.input_tokens,
+            "cache_creation_input_tokens": usage.cache_creation_input_tokens or 0,
+            "cache_read_input_tokens": usage.cache_read_input_tokens or 0,
+            "output_tokens": usage.output_tokens,
+            "stop_reason": stop_reason,
+            "cost_usd": round(cost, 6),
+            "cumulative_usd": round(self.spent_usd, 6),
+        }
+        self.requests.append(row)
+        if self.ledger_path is not None:
+            self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
+            with self.ledger_path.open("a", encoding="utf-8") as handle:
+                handle.write(json.dumps(row, sort_keys=True) + "\n")
         return cost
 
 
@@ -604,7 +610,11 @@ def run_live_diagnostic(
         for w in load_json(lw / "forks" / f"{parent_id}.json")["forks"]
     }
     out = root / "results" / "loanworld" / "live"
-    budget = Budget(cap_usd=prereg["spend_cap_usd"], model=prereg["model"])
+    budget = Budget(
+        cap_usd=prereg["spend_cap_usd"],
+        model=prereg["model"],
+        ledger_path=out / "spend-ledger.jsonl",
+    )
     records: list[dict[str, Any]] = []
     most_expensive = 0.0
     for fork_id in prereg["fork_order"]:
@@ -634,6 +644,8 @@ def run_live_diagnostic(
         record = episode_record(fork_id, result, agent, grade, images.manifest_sha256)
         write_canonical(out / f"{fork_id}.json", record)
         write_transcript(out / "transcripts" / f"{fork_id}.json", agent)
+        # Final state lets anyone re-grade under a later oracle without replaying.
+        write_canonical(out / "final-state" / f"{fork_id}.json", result["final_state"])
         write_canonical(
             out / "spend.json",
             {
