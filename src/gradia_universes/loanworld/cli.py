@@ -11,7 +11,7 @@ from ..canonical import canonical_bytes, load_json, write_canonical
 from .adapter import run_python_agent, tool_manifest
 from .counterparts import build_counterparts, validate_counterparts
 from .forks import CATALOG, build_fork_manifest, fork_by_id
-from .generator import build_gold_parent
+from .generator import build_for_version, build_gold_parent
 from .policies import null_agent
 from .schema import LoanScenario
 from .tools import verify_proof_pack
@@ -46,8 +46,10 @@ def verify_parents(root: Path) -> list[dict[str, Any]]:
         raise ValueError("loanworld_no_parents")
     for path in paths:
         committed = load_json(path)
-        regenerated = build_gold_parent(
-            committed["generator"]["seed"], committed["scenario_id"]
+        regenerated = build_for_version(
+            committed["generator"]["version"],
+            committed["generator"]["seed"],
+            committed["scenario_id"],
         )
         if canonical_bytes(regenerated) != canonical_bytes(committed):
             raise ValueError(f"loanworld_parent_not_reproducible:{path.name}")
@@ -208,11 +210,57 @@ def command_windtunnel_round(args: argparse.Namespace) -> int:
     return 0
 
 
-def command_gates(args: argparse.Namespace) -> int:
-    from .gates import run_gates
+def command_dev_parents(args: argparse.Namespace) -> int:
+    from .splits import DEV_INDEXES, dev_parent
 
-    report = run_gates(args.root)
-    path = args.root / "results" / "loanworld" / "phase5-gates.json"
+    written = []
+    for index in DEV_INDEXES:
+        scenario = dev_parent(index)
+        LoanScenario.parse(scenario)
+        path = args.root / PARENTS / f"{scenario['scenario_id']}.json"
+        write_canonical(path, scenario)
+        written.append(str(path.relative_to(args.root)))
+    print(json.dumps({"written": written}, sort_keys=True))
+    return 0
+
+
+def command_heldout_commit(args: argparse.Namespace) -> int:
+    """Commit the held-out split. The master is read from a file outside the repo."""
+    from .gates import gates_for
+    from .splits import (
+        COMMITMENT_PATH,
+        HELDOUT_COUNT,
+        build_commitment,
+        heldout_bundle,
+        heldout_forks,
+    )
+
+    master_path = Path(args.master_file).expanduser().resolve()
+    if args.root.resolve() in master_path.parents:
+        raise ValueError("heldout_master_must_live_outside_the_repo")
+    master = master_path.read_text().strip()
+    path = args.root / COMMITMENT_PATH
+    if path.exists():
+        raise ValueError("heldout_commitment_already_written")
+    gates: dict[int, dict[str, bool]] = {}
+    for index in range(1, HELDOUT_COUNT + 1):
+        _seed, bundle = heldout_bundle(master, index)
+        witnesses = {w["fork_id"]: w for w in heldout_forks(bundle)["forks"]}
+        report = gates_for(
+            bundle["scenario"], bundle["counterparts"], witnesses, f"heldout-{index}"
+        )
+        gates[index] = {"solvable": report["all_solvable"], "isolated": report["all_isolated"]}
+    commitment = build_commitment(master, gates)
+    write_canonical(path, commitment)
+    print(json.dumps({"written": str(COMMITMENT_PATH), "gates": gates}, sort_keys=True))
+    return 0
+
+
+def command_gates(args: argparse.Namespace) -> int:
+    from .gates import run_phase7_gates
+
+    report = run_phase7_gates(args.root)
+    path = args.root / "results" / "loanworld" / "phase7-gates.json"
     write_canonical(path, report)
     print(
         json.dumps(
@@ -220,7 +268,10 @@ def command_gates(args: argparse.Namespace) -> int:
                 "written": str(path.relative_to(args.root)),
                 "all_solvable": report["all_solvable"],
                 "all_isolated": report["all_isolated"],
-                "baseline_summary": report["baseline_summary"],
+                "parents": [
+                    {k: row[k] for k in ("parent_id", "solvable", "isolated", "forks")}
+                    for row in report["parents"]
+                ],
             },
             sort_keys=True,
         )
@@ -276,6 +327,16 @@ def command_live_run(args: argparse.Namespace) -> int:
 
 
 def register(sub: Any) -> None:
+    dev = sub.add_parser(
+        "loanworld-dev-parents", help="write the generator-0.2.0 dev parents (derived seeds)"
+    )
+    dev.set_defaults(func=command_dev_parents)
+    heldout = sub.add_parser(
+        "loanworld-heldout-commit",
+        help="commit sha256 hashes of the held-out split (master read from outside the repo)",
+    )
+    heldout.add_argument("--master-file", required=True)
+    heldout.set_defaults(func=command_heldout_commit)
     build = sub.add_parser("loanworld-build", help="generate a seeded LoanWorld gold parent")
     build.add_argument("--seed", required=True)
     build.set_defaults(func=command_build)

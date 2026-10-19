@@ -156,11 +156,12 @@ def test_budget_ledger_appends_every_request(tmp_path: Path) -> None:
 
 
 def test_live_regrade_is_bound_to_recorded_proof_packs() -> None:
-    from gradia_universes.canonical import canonical_bytes
     from gradia_universes.loanworld.live import regrade_live
+    from gradia_universes.loanworld.oracle import strip_oracle_identity
 
     committed = load_json(ROOT / "results" / "loanworld" / "live" / "regrade-oracle-0.4.2.json")
     rerun = regrade_live(ROOT)
-    assert canonical_bytes(rerun) == canonical_bytes(committed)
+    # Same verdicts under the phase-7 oracle; only its identity fields may differ.
+    assert strip_oracle_identity(rerun) == strip_oracle_identity(committed)
     assert all(e["replay_bound_to_proof_pack"] for e in rerun["episodes"])
     assert rerun["status"].startswith("POST-HOC")

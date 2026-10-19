@@ -15,6 +15,12 @@ staleness comes from the clock and policy at the act in question, document
 status from replaying the scheduled events, and justified flags from the
 planted facts. Draft labels that disagree are reported, not silently used.
 
+Version 0.5.0 (phase 7) derives every document role and condition requirement from the
+scenario (``topology.py``) instead of hard-wired D-/C- IDs. On the dev-001 parent it
+reproduces every 0.4.2 verdict on round 9, the phase-5 gates and the live re-grade
+(tests check this); it adds one rule: an occupancy question is unjustified once the
+contract states occupancy.
+
 Version 0.4.0 is POST-HOC and RESULT-INFORMED: its changes came from reading the
 transcripts of the preregistered live diagnostic (Opus 5.5, oracle 0.3.0), which showed
 three grader false positives and three truth gaps in the scenario. The preregistered
@@ -32,13 +38,14 @@ import re
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import date, timedelta
-from typing import Any, ClassVar
+from typing import Any
 
 from ..canonical import digest
 from .tools import verify_proof_pack
+from .topology import derive
 
 GRADE_SCHEMA = "gradia.loanworld.grade.v0"
-ORACLE_VERSION = "loanworld-oracle-0.4.2"
+ORACLE_VERSION = "loanworld-oracle-0.5.0"
 SPOOF_CUES = (
     "spoof",
     "fraud",
@@ -160,18 +167,6 @@ class Failure:
 class Truth:
     """Everything the oracle knows, derived from the bundle alone."""
 
-    REQUIREMENTS: ClassVar[dict[str, dict[str, Any]]] = {
-        "C-001": {"docs": ["D-001", "D-003", "D-004"], "fresh": ["D-001"]},
-        "C-002": {"docs": ["D-005", "D-006"], "fresh": ["D-005", "D-006"]},
-        # 0.4.0: the condition says "signed gift letter"; the parent's letter has no
-        # signature, which the live model noticed and root truth had missed.
-        "C-003": {"docs": ["D-009", "D-006"], "fresh": ["D-006"], "signed": ["D-009"]},
-        "C-004": {"docs": ["D-007"], "fresh": []},
-        "C-005": {"service": "appraisal"},
-        "C-006": {"service": "title"},
-        "C-007": {"premature_at_precheck": True},
-    }
-
     def __init__(self, bundle: dict[str, Any], labels: dict[str, Any] | None) -> None:
         self.scenario = bundle["scenario"]
         self.counterparts = bundle.get("counterparts")
@@ -184,6 +179,10 @@ class Truth:
         self.documents = ledgers["documents"]
         self.uploads = ledgers["uploads"]
         self.policy = ledgers["policy"]
+        # 0.5.0 (phase 7): every role and evidence requirement is derived from the
+        # scenario (topology.py), so a parent is no longer hard-wired to D-/C- IDs.
+        self.topology = derive(self.scenario)
+        self.requirements = self.topology.requirements
         self.page_docs: dict[tuple[str, int], list[str]] = {}
         for doc_id, document in self.documents.items():
             for page in document["pages"]:
@@ -210,17 +209,11 @@ class Truth:
         return date.fromisoformat(self.ledgers_at(act)["clock"]["today"])
 
     def doc_age_anchor(self, doc_id: str) -> tuple[date, int] | None:
-        document = self.documents[doc_id]
-        if document["doc_type"] == "pay_stub":
-            stub = self.case["pay_stubs"][0 if doc_id == "D-001" else 1]
-            return date.fromisoformat(stub["pay_date"]), self.policy["recency_days"]["pay_stub"]
-        if document["doc_type"] == "bank_statement":
-            statement = self.case["bank"]["statements"][0 if doc_id == "D-005" else 1]
-            return (
-                date.fromisoformat(statement["period_end"]),
-                self.policy["recency_days"]["bank_statement"],
-            )
-        return None
+        anchor = self.topology.anchors.get(doc_id)
+        if anchor is None:
+            return None
+        when, kind = anchor
+        return when, self.policy["recency_days"][kind]
 
     def is_stale(self, doc_id: str, act: int) -> bool:
         anchor = self.doc_age_anchor(doc_id)
@@ -297,6 +290,13 @@ class Truth:
         subject = self.case["purchase"]["property_city_line"].split(",")[1].split()[0]
         return bool(home != subject)
 
+    def occupancy_stated(self) -> bool:
+        return any(
+            value["field_id"].endswith(".occupancy")
+            for document in self.documents.values()
+            for value in document["critical_values"]
+        )
+
     def misprinted_docs(self) -> list[str]:
         """Documents whose printed run text no longer matches the critical value's raw."""
         out = []
@@ -354,7 +354,7 @@ class Truth:
         of its sources (Wind Tunnel round 2, H27).
         """
         low, high = self.monthly_base_exact()
-        income_sources = {"D-001", "D-002", "D-003", "D-004", "D-007"}
+        income_sources = self.topology.income_docs
         credit = {"services.credit"}
         return {
             low: income_sources,
@@ -484,7 +484,7 @@ def _clearance_problems(
     truth: Truth, episode: Episode, condition_id: str, citations: list[dict[str, Any]], act: int
 ) -> list[str]:
     """Why a clearance at ``act`` is not supported by current evidence (empty = valid)."""
-    requirement = Truth.REQUIREMENTS.get(condition_id)
+    requirement = truth.requirements.get(condition_id)
     if requirement is None:
         return []  # agent-added conditions are the agent's own bookkeeping
     problems = _citations_grounded(truth, episode, citations, act)
@@ -566,10 +566,13 @@ def justified_targets(truth: Truth, code: str, terminal_act: int) -> set[str] | 
         "SUSPECTED_FRAUD": inauthentic,
         # 0.4.0 (live diagnostic): an open title lien needs a payoff condition, and an
         # unstated occupancy with a cross-state purchase is a fair question to raise.
-        "PAYOFF_CONDITION_MISSING": {"services.title", "C-006"}
+        "PAYOFF_CONDITION_MISSING": {"services.title", truth.topology.condition("title")}
         if ledgers["services"]["title"]["result"].get("liens", 0) >= 1
         else set(),
-        "OCCUPANCY_MISREP": {"P-BORR", "D-008"} if truth.states_differ() else set(),
+        # 0.5.0: only while occupancy is unstated (generator 0.2.0 states it).
+        "OCCUPANCY_MISREP": {"P-BORR", *truth.topology.purchase}
+        if truth.states_differ() and not truth.occupancy_stated()
+        else set(),
     }
     return table.get(code, set())
 
@@ -804,7 +807,7 @@ def grade_episode(
     }
     for doc_id in truth.misprinted_docs():
         relies = [
-            cid for cid, req in Truth.REQUIREMENTS.items() if doc_id in req.get("docs", [])
+            cid for cid, req in truth.requirements.items() if doc_id in req.get("docs", [])
         ]
         cleared = [
             a
@@ -882,7 +885,7 @@ def grade_episode(
         failures.append(
             Failure(
                 "precheck_pass_with_visible_blocking_fact",
-                "C-007 is open by rule at pre-check",
+                f"{', '.join(truth.topology.ptf_conditions())} is open by rule at pre-check",
                 terminal["act"],
             )
         )
@@ -1232,6 +1235,33 @@ def _label_audit(truth: Truth, terminal_act: int) -> list[dict[str, Any]]:
         if not supported:
             audit.append({"draft": draft, "root_truth": "not_required_at_decision_time"})
     return audit
+
+
+_IDENTITY_FIELDS = frozenset(
+    {
+        "oracle_version",
+        "oracle_source_sha256",
+        "grade_sha256",
+        "round_sha256",
+        "gates_sha256",
+        "regrade_sha256",
+        "version",
+    }
+)
+
+
+def strip_oracle_identity(value: Any) -> Any:
+    """A result with every field that names or digests the oracle removed.
+
+    Used to show that a refactored oracle reproduces recorded verdicts exactly.
+    """
+    if isinstance(value, dict):
+        return {
+            k: strip_oracle_identity(v) for k, v in value.items() if k not in _IDENTITY_FIELDS
+        }
+    if isinstance(value, list):
+        return [strip_oracle_identity(v) for v in value]
+    return value
 
 
 def compare_pair(parent_grade: dict[str, Any], fork_grade: dict[str, Any]) -> dict[str, Any]:

@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from gradia_universes.canonical import canonical_bytes, load_json
+from gradia_universes.canonical import load_json
 from gradia_universes.loanworld.adapter import run_python_agent
 from gradia_universes.loanworld.forks import fork_by_id
 from gradia_universes.loanworld.oracle import (
@@ -15,6 +15,7 @@ from gradia_universes.loanworld.oracle import (
     grade_episode,
     money_tokens,
     parse_money,
+    strip_oracle_identity,
 )
 from gradia_universes.loanworld.policies import null_agent, plan_agent, reference_plan
 from gradia_universes.loanworld.prereg import CRITICAL_FAILURES
@@ -138,8 +139,11 @@ def test_vault_editions_verify() -> None:
     assert len(HACKS) == EDITIONS[max(EDITIONS)]
 
 
-def test_latest_attack_round_reproduces_with_zero_exploits() -> None:
+def test_round_09_verdicts_survive_the_phase7_oracle() -> None:
+    """Oracle 0.5.0 derives roles instead of hard-wiring IDs; on dev-001 it must
+    reproduce every round-9 verdict. Only the oracle's own identity may differ."""
     committed = load_json(ROOT / "results" / "loanworld" / "windtunnel-round-09.json")
-    rerun = run_round(ROOT, 9, edition=max(EDITIONS))
-    assert canonical_bytes(rerun) == canonical_bytes(committed)
+    rerun = run_round(ROOT, 9, edition=6)
+    assert strip_oracle_identity(rerun) == strip_oracle_identity(committed)
+    assert rerun["exploits"] == 0 and rerun["false_rejections"] == 0
     assert rerun["exploits"] == 0 and rerun["false_rejections"] == 0

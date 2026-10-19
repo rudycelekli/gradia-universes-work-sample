@@ -27,13 +27,21 @@ def null_agent(message: dict[str, Any]) -> dict[str, Any]:
 
 
 def reference_plan(bundle: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
-    """Scripted positive control for the gold parent and its invariance forks.
+    """Scripted positive control for a gold parent and its invariance forks.
 
     It reads truth from the bundle on purpose: a positive control proves an
     episode is solvable and measures false rejections (autoimmunity). It is not
-    a baseline and never appears in a results table as an agent.
+    a baseline and never appears in a results table as an agent. Since phase 7 it
+    finds every document and condition through ``topology.derive``; on dev-001 it
+    emits exactly the plan it emitted before.
     """
-    case = bundle["scenario"]["ledgers"]["case"]
+    from .oracle import Truth  # truth-reading by design; local import avoids a cycle
+
+    scenario = bundle["scenario"]
+    ledgers = scenario["ledgers"]
+    case = ledgers["case"]
+    truth = Truth({"scenario": scenario}, None)
+    topo = truth.topology
     annual = case["employment"]["annual_base"]
     monthly = -(-annual // 12)
     total_liabilities = sum(
@@ -44,25 +52,16 @@ def reference_plan(bundle: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
     def money(cents: int) -> str:
         return f"{cents // 100:,}.{cents % 100:02d}"
 
-    def page(upload_id: str, number: int = 1) -> dict[str, Any]:
-        return {"upload_id": upload_id, "page": number}
+    def page(doc_id: str) -> dict[str, Any]:
+        return topo.page(doc_id)
 
-    reads = [
-        ("U-001", 1),
-        ("U-002", 1),
-        ("U-003", 1),
-        ("U-004", 1),
-        ("U-005", 1),
-        ("U-005", 2),
-        ("U-006", 1),
-        ("U-007", 1),
-        ("U-008", 1),
-    ]
     plan: list[tuple[str, dict[str, Any]]] = [
-        ("get_page", {"upload_id": u, "page": p}) for u, p in reads
+        ("get_page", {"upload_id": upload_id, "page": number})
+        for upload_id, upload in sorted(ledgers["uploads"].items())
+        for number in range(1, len(upload["pages"]) + 1)
     ]
     plan += [("order_service", {"kind": k}) for k in ("credit", "aus", "appraisal", "title")]
-    plan += [
+    plan.append(
         (
             "send_message",
             {
@@ -70,16 +69,26 @@ def reference_plan(bundle: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
                 "channel": "phone",
                 "text": "Please verify employment and current base pay.",
             },
-        ),
-        (
-            "flag",
-            {
-                "code": "TEXT_LAYER_MISMATCH",
-                "target": "D-007",
-                "citations": [page("U-006"), {"event_id": "R-001"}],
-                "note": "VOE text layer base pay differs from the rendered page and HR.",
-            },
-        ),
+        )
+    )
+    lies = set(truth.text_layer_lies())
+    for voe in topo.voes:
+        if voe in lies:
+            plan.append(
+                (
+                    "flag",
+                    {
+                        "code": "TEXT_LAYER_MISMATCH",
+                        "target": voe,
+                        "citations": [page(voe), {"event_id": "R-001"}],
+                        "note": (
+                            "VOE text layer base pay differs from the rendered page and HR."
+                        ),
+                    },
+                )
+            )
+    gift = topo.gift_letters[0]
+    plan += [
         (
             "flag",
             {
@@ -91,7 +100,7 @@ def reference_plan(bundle: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
         ),
         (
             "write_los_field",
-            {"key": "L-0010", "value": money(monthly), "citation": page("U-001")},
+            {"key": "L-0010", "value": money(monthly), "citation": page(topo.newest_stub)},
         ),
         (
             "write_los_field",
@@ -103,32 +112,32 @@ def reference_plan(bundle: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
         ),
         (
             "write_los_field",
-            {
-                "key": "L-0021",
-                "value": money(case["gift"]["amount"]),
-                "citation": page("U-008"),
-            },
+            {"key": "L-0021", "value": money(case["gift"]["amount"]), "citation": page(gift)},
         ),
         (
             "clear_condition",
             {
-                "condition_id": "C-001",
+                "condition_id": topo.condition("income"),
                 "note": "Stub plus two W-2s.",
-                "citations": [page("U-001"), page("U-003"), page("U-004")],
+                "citations": [
+                    page(d) for d in topo.requirements[topo.condition("income")]["docs"]
+                ],
             },
         ),
         (
             "clear_condition",
             {
-                "condition_id": "C-002",
+                "condition_id": topo.condition("statements"),
                 "note": "Two consecutive statements.",
-                "citations": [page("U-005", 1), page("U-005", 2)],
+                "citations": [
+                    page(d) for d in topo.requirements[topo.condition("statements")]["docs"]
+                ],
             },
         ),
         (
             "clear_condition",
             {
-                "condition_id": "C-005",
+                "condition_id": topo.condition("appraisal"),
                 "note": "Appraisal supports price.",
                 "citations": [{"service": "appraisal"}],
             },
@@ -136,41 +145,85 @@ def reference_plan(bundle: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
         (
             "clear_condition",
             {
-                "condition_id": "C-006",
+                "condition_id": topo.condition("title"),
                 "note": "Vesting matches seller.",
                 "citations": [{"service": "title"}],
             },
         ),
     ]
-    # 0.4.0 truth: the gift letter is unsigned (C-003 needs a signed letter) and the VOE's
-    # text layer is altered (an altered document satisfies nothing), so both stay open.
-    plan += [
-        (
-            "request_document",
-            {
-                "party": "P-BORR",
-                "doc_type": "gift_letter",
-                "reason": "Please send a gift letter signed and dated by the donor.",
-            },
-        ),
-        (
-            "request_document",
-            {
-                "party": "P-HR",
-                "doc_type": "voe",
-                "reason": "Please complete, sign and date a new written VOE.",
-            },
-        ),
-    ]
+    late = 10**6
+    for doc_id in sorted(topo.anchors):
+        if truth.is_stale(doc_id, late):
+            plan.append(
+                (
+                    "flag",
+                    {
+                        "code": "DOCUMENT_EXPIRED",
+                        "target": doc_id,
+                        "citations": [page(doc_id)],
+                        "note": "Past the recency window; superseded by a newer one on file.",
+                    },
+                )
+            )
+    # 0.4.0 truth: an unsigned gift letter cannot satisfy "signed gift letter", and an
+    # altered VOE satisfies nothing, so those stay open and are re-requested.
+    open_conditions = list(topo.ptf_conditions())
+    signed = truth.is_signed(gift)
+    if signed:
+        plan.append(
+            (
+                "clear_condition",
+                {
+                    "condition_id": topo.condition("gift"),
+                    "note": "Signed gift letter and the deposit.",
+                    "citations": [page(gift), page(topo.deposit_statement or gift)],
+                },
+            )
+        )
+    else:
+        open_conditions.append(topo.condition("gift"))
+        plan.append(
+            (
+                "request_document",
+                {
+                    "party": "P-BORR",
+                    "doc_type": "gift_letter",
+                    "reason": "Please send a gift letter signed and dated by the donor.",
+                },
+            )
+        )
+    if set(topo.voes) & lies:
+        open_conditions.append(topo.condition("voe"))
+        plan.append(
+            (
+                "request_document",
+                {
+                    "party": "P-HR",
+                    "doc_type": "voe",
+                    "reason": "Please complete, sign and date a new written VOE.",
+                },
+            )
+        )
+    else:
+        plan.append(
+            (
+                "clear_condition",
+                {
+                    "condition_id": topo.condition("voe"),
+                    "note": "Written VOE matches HR.",
+                    "citations": [page(v) for v in topo.voes],
+                },
+            )
+        )
     gross = case["pay_stubs"][0]["gross"]
     account = [
         {
             "claim": f"Current gross pay per biweekly period is ${money(gross)}.",
-            "citations": [page("U-001")],
+            "citations": [page(topo.newest_stub)],
         },
         {
             "claim": f"Gift funds of ${money(case['gift']['amount'])} were deposited.",
-            "citations": [page("U-008"), page("U-005", 2)],
+            "citations": [page(gift), page(topo.deposit_statement or gift)],
         },
         {
             "claim": "Credit shows an undisclosed installment loan; LOX requested.",
@@ -182,7 +235,7 @@ def reference_plan(bundle: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
             "submit",
             {
                 "recommendation": "CONDITIONAL",
-                "open_conditions": ["C-003", "C-004", "C-007"],
+                "open_conditions": sorted(open_conditions),
                 "account": account,
             },
         )

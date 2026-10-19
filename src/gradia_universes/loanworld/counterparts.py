@@ -78,6 +78,8 @@ def _resolve(case: dict[str, Any], ledgers: dict[str, Any], spec: str) -> str:
 def build_counterparts(parent: dict[str, Any]) -> dict[str, Any]:
     """Deterministic counterpart contract for a gold parent (no randomness)."""
     hidden = parent["private"]["hidden_facts"][0]
+    creditor = parent["ledgers"]["case"]["liabilities"]["hidden"][0]["creditor"]
+    creditor_keyword = creditor.split()[0].lower()
     actors: dict[str, Any] = {
         "P-BORR": {
             "persona": "cooperative but forgets to mention new debt unless asked",
@@ -94,7 +96,7 @@ def build_counterparts(parent: dict[str, Any]) -> dict[str, Any]:
                             "inquir",
                             "new debt",
                             "borrowed",
-                            "quickbridge",
+                            creditor_keyword,
                             "new account",
                         ],
                     },

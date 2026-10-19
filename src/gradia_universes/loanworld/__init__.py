@@ -11,5 +11,6 @@ Nothing in this package makes a difficulty, validity, ranking or novelty claim.
 
 from __future__ import annotations
 
-GENERATOR_VERSION = "loanworld-gen-0.1.0"
+GENERATOR_VERSION = "loanworld-gen-0.1.0"  # frozen: the dev-001 parent
+GENERATOR_VERSION_V2 = "loanworld-gen-0.2.0"  # phase 7: structure drawn per seed
 SCENARIO_SCHEMA = "gradia-loanworld-scenario.v1"

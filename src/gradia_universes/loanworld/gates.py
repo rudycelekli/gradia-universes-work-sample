@@ -127,6 +127,15 @@ def isolation_row(
 
 def run_gates(root: Path, parent_id: str = "loanworld-parent-dev-001") -> dict[str, Any]:
     parent, contract, witnesses = _load(root, parent_id)
+    return gates_for(parent, contract, witnesses, parent_id)
+
+
+def gates_for(
+    parent: dict[str, Any],
+    contract: dict[str, Any],
+    witnesses: dict[str, dict[str, Any]],
+    parent_id: str,
+) -> dict[str, Any]:
     parent_bundle = {"scenario": parent, "counterparts": contract}
     solvability, isolation, baselines = [], [], []
     for spec in CATALOG:
@@ -173,6 +182,44 @@ def run_gates(root: Path, parent_id: str = "loanworld-parent-dev-001") -> dict[s
         "interpretation": (
             "Scripted $0 controls and baselines on one synthetic parent and its forks, "
             "clustered by parent. No model has run; nothing here ranks agents."
+        ),
+    }
+    return {**body, "gates_sha256": digest(body)}
+
+
+PHASE7_SCHEMA = "gradia.loanworld.phase7-gates.v0"
+
+
+def run_phase7_gates(root: Path) -> dict[str, Any]:
+    """Phase-5 gates re-run on every committed dev parent (phase 7)."""
+    parents = sorted(
+        p.stem for p in (root / "fixtures" / "loanworld" / "parents").glob("*.json")
+    )
+    reports = [run_gates(root, parent_id) for parent_id in parents]
+    rows = [
+        {
+            "parent_id": r["parent_id"],
+            "all_solvable": r["all_solvable"],
+            "all_isolated": r["all_isolated"],
+            "solvable": sum(row["solvable"] for row in r["solvability"]),
+            "isolated": sum(row["isolated"] for row in r["isolation"]),
+            "forks": len(r["solvability"]),
+            "baseline_summary": r["baseline_summary"],
+            "gates_sha256": r["gates_sha256"],
+        }
+        for r in reports
+    ]
+    body = {
+        "schema": PHASE7_SCHEMA,
+        "oracle_version": oracle_module.ORACLE_VERSION,
+        "oracle_source_sha256": digest(__import__("inspect").getsource(oracle_module)),
+        "parents": rows,
+        "all_solvable": all(r["all_solvable"] for r in reports),
+        "all_isolated": all(r["all_isolated"] for r in reports),
+        "detail": reports,
+        "interpretation": (
+            "Scripted $0 controls and baselines on the public dev parents, clustered by "
+            "parent. No model has run in phase 7; nothing here ranks agents."
         ),
     }
     return {**body, "gates_sha256": digest(body)}

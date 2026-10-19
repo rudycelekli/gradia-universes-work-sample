@@ -5,11 +5,12 @@ from typing import Any
 
 import pytest
 
-from gradia_universes.canonical import canonical_bytes, load_json
+from gradia_universes.canonical import load_json
 from gradia_universes.loanworld.adapter import run_python_agent
 from gradia_universes.loanworld.baselines import credulous_agent, solver_plan
 from gradia_universes.loanworld.forks import CATALOG, fork_by_id
 from gradia_universes.loanworld.gates import isolation_row, run_gates
+from gradia_universes.loanworld.oracle import strip_oracle_identity
 from gradia_universes.loanworld.schema import LoanScenario
 from gradia_universes.loanworld.world import LoanEngine, LoanWorld
 
@@ -29,7 +30,8 @@ def parts() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
 def test_committed_gates_reproduce_and_hold() -> None:
     committed = load_json(ROOT / "results" / "loanworld" / "phase5-gates.json")
     rerun = run_gates(ROOT)
-    assert canonical_bytes(rerun) == canonical_bytes(committed)
+    # Recorded under oracle 0.4.2; 0.5.0 must give the same verdicts on dev-001.
+    assert strip_oracle_identity(rerun) == strip_oracle_identity(committed)
     assert rerun["all_solvable"] and rerun["all_isolated"]
     assert {r["fork_id"] for r in rerun["solvability"]} == {s.fork_id for s in CATALOG}
 

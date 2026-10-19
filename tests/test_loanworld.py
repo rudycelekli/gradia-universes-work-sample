@@ -58,7 +58,9 @@ def test_generator_is_byte_reproducible(raw: dict[str, Any]) -> None:
 
 def test_committed_parents_regenerate_and_pass_null_control() -> None:
     rows = verify_parents(ROOT)
-    assert rows and all(row["documents"] == 9 for row in rows)
+    by_id = {row["scenario_id"]: row for row in rows}
+    assert by_id["loanworld-parent-dev-001"]["documents"] == 9  # frozen generator 0.1.0
+    assert len(rows) == 4 and all(9 <= row["documents"] <= 11 for row in rows)
 
 
 # ---------------------------------------------------------------- case truth
