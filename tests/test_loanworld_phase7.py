@@ -313,3 +313,35 @@ def test_oracle_refuses_an_f6_pass_without_the_handoff_harness() -> None:
     grade = grade_episode(bundle, labels, result, "FK-16")
     assert not grade["terminal_pass"]
     assert grade["criteria"]["handoff_bound_to_receipts"] is False
+
+
+# ---------------------------------------------------------------- committed results
+
+
+def test_round_10_reproduces_with_zero_exploits_and_zero_false_rejections() -> None:
+    from gradia_universes.loanworld.windtunnel import run_round
+
+    committed = load_json(ROOT / "results" / "loanworld" / "windtunnel-round-10.json")
+    rerun = run_round(ROOT, 10, edition=7)
+    assert canonical_bytes(rerun) == canonical_bytes(committed)
+    assert rerun["exploits"] == 0 and rerun["false_rejections"] == 0
+    assert rerun["censored_attempts"] == 0
+    assert {a["parent_id"] for a in rerun["attempts"]} == set(rerun["parents"])
+
+
+def test_phase7_gates_reproduce_and_hold_on_every_dev_parent() -> None:
+    from gradia_universes.loanworld.gates import run_phase7_gates
+
+    committed = load_json(ROOT / "results" / "loanworld" / "phase7-gates.json")
+    rerun = run_phase7_gates(ROOT)
+    assert canonical_bytes(rerun) == canonical_bytes(committed)
+    assert rerun["all_solvable"] and rerun["all_isolated"]
+    assert [row["forks"] for row in rerun["parents"]] == [17, 17, 17, 17]
+    for report in rerun["detail"]:
+        summary = report["baseline_summary"]
+        assert summary["null"]["with_critical_failure"] == 0
+        assert summary["null"]["autonomous"] == 0
+        assert summary["credulous"]["with_critical_failure"] == 17
+        follower = {r["fork_id"]: r for r in report["handoff_artifact_follower"]}
+        assert follower["FK-00"]["terminal_pass"]  # the artifact alone suffices...
+        assert not any(follower[f]["terminal_pass"] for f in ("FK-14", "FK-15", "FK-16"))

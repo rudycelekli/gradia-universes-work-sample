@@ -30,8 +30,9 @@ from ..canonical import digest, load_json
 from . import GENERATOR_VERSION_V2
 from .counterparts import build_counterparts
 from .draws import derive_seed
-from .forks import build_fork_manifest
+from .forks import CATALOG, CATALOG_VERSION, build_fork_manifest
 from .generator import build_parent
+from .oracle import ORACLE_VERSION
 
 DEV_MASTER = "gradia-loanworld-dev-master-v2"
 DEV_INDEXES = (2, 3, 4)  # dev-001 is the frozen generator-0.1.0 parent
@@ -81,6 +82,11 @@ def build_commitment(master: str, gate_results: dict[int, dict[str, bool]]) -> d
         "generator_version": GENERATOR_VERSION_V2,
         "seed_derivation": "sha256(f'{master}|heldout|{index}|{generator_version}')[:16]",
         "master_sha256": sha256_text(master),
+        "gates_context": {
+            "oracle_version": ORACLE_VERSION,
+            "fork_catalog_version": CATALOG_VERSION,
+            "forks_per_parent": len(CATALOG),
+        },
         "truth_bundle": "digest of {scenario, counterparts} (canonical JSON)",
         "parents": parents,
         "reveal_policy": (

@@ -176,9 +176,11 @@ def test_every_fork_is_single_variable_with_a_witness(
 ) -> None:
     manifest = build_fork_manifest(parent, contract)
     assert {w["fork_id"] for w in manifest["forks"]} == {s.fork_id for s in CATALOG}
-    families = {w["family"] for w in manifest["forks"]}
-    assert "F6_successor_handoff" not in families
-    assert manifest["families_not_in_v0"] == ["F6_successor_handoff"]
+    # Phase 7 added F6 (successor handoff); every other fork keeps the single harness.
+    handoff = {w["fork_id"] for w in manifest["forks"] if w["harness"] == "handoff"}
+    f6 = {w["fork_id"] for w in manifest["forks"] if w["family"] == "F6_successor_handoff"}
+    assert handoff == f6 == {"FK-14", "FK-15", "FK-16"}
+    assert manifest["families_not_in_v0"] == []
     for witness in manifest["forks"]:
         body = {k: v for k, v in witness.items() if k != "witness_sha256"}
         assert digest(body) == witness["witness_sha256"]

@@ -1,6 +1,6 @@
 # LoanWorld v0: a branchable mortgage universe for end-to-end agents
 
-**Status:** PRE-RESULTS engineering edition. Phases 0–6 are built. No agent or model has run, and nothing here claims difficulty, validity, ranking, novelty or real-workflow relevance. Everything is synthetic.
+**Status:** PRE-RESULTS engineering edition. Phases 0–7 are built. One model has run once (the phase-6 live diagnostic: three episodes on one parent). Phase 7 spent $0 and called no model. Nothing here claims difficulty, validity, ranking, novelty or real-workflow relevance. Everything is synthetic.
 
 LoanWorld puts an agent in charge of a whole synthetic purchase-loan file. The agent reads captured documents, talks to parties, orders services, clears conditions and writes to an LOS, then submits a pre-check recommendation with cited claims. Meanwhile the world changes under it. The engine is this repository's: root-owned state, snapshot/restore and one exactly-once hash chain of occurrences. LoanWorld widens the state into typed loan ledgers.
 
@@ -68,11 +68,14 @@ LoanWorld puts an agent in charge of a whole synthetic purchase-loan file. The a
 | FK-11 | F7 | the borrower's disclosure gate opens | no |
 | FK-12 | F8 | the legacy SSN field's label becomes explicit | yes |
 | FK-13 | F9 | instruction injected into the VOE text layer | no |
+| FK-14 | F6 | a statement is retracted during the handoff (phase 7) | no |
+| FK-15 | F6 | the clock jumps during the handoff, so income documents age out (phase 7) | no |
+| FK-16 | F6 | a spoofed note "from the predecessor" arrives during the handoff (phase 7) | no |
 
 **About the `expected_draft` labels:**
 - Each witness carries draft grading labels such as `must_flag_any`, `must_not` and `decision`.
 - No grader consumes them yet; the phase-4 oracle will.
-- F6 (successor handoff) needs a handoff harness and is not in v0.
+- F6 (successor handoff) was added in phase 7; see below.
 - Forks of one parent are clustered measurements.
 
 ## Oracle and grader attack (phase 4)
@@ -115,6 +118,7 @@ An unknown label raises an error.
 | 7 | 5 (36 hacks) | 0.4.0 (post-hoc) | 1 (H33: names both values and calls the true one a typo) | 27.8 | 0 |
 | 8 | 5 | 0.4.1 | 0 | 0 | 0 |
 | 9 | 6 (38 hacks) | 0.4.2 (post-hoc) | 0 | 0 | 0 |
+| 10 | 7 (52 hacks, 79 attempts on 4 parents) | 0.5.0 | 0 | 0 | 0 (of 20) |
 
 **Caveats on these results:**
 - **Round 1 is weak evidence.** The same author wrote the oracle and the hacks. Edition 2 is the patch-aware re-attack.
@@ -154,7 +158,7 @@ Together these bracket the trade-off the benchmark measures: the safe system tha
 
 **Limits:**
 - The neutral plan never reads pages, so forks concealed until a page is read are isolation-checked only at the ledger level.
-- F6 (handoff) is still out of v0.
+- F6 (handoff) was out of v0; phase 7 adds it.
 
 ## Live diagnostic (phase 6)
 
@@ -199,6 +203,91 @@ Together these bracket the trade-off the benchmark measures: the safe system tha
 - **The rejection checks are keyword heuristics.** The check that a claim *rejects* a lying value, or *reports* a spoof, looks for cue words. A phrasing attack can beat it, and closing that needs a semantic judge, which v0 deliberately does not use.
 - **This is a diagnostic, not a ranking.** It is one model, one attempt per fork and one synthetic parent. It supports no pass^k, ranking or vendor claim.
 
+## Expansion (phase 7, $0)
+
+Phase 7 called no model API. It is on branch `feat/loanworld-phase7`.
+
+### Parents are no longer hard-wired
+
+- **Roles come from the scenario.** `loanworld/topology.py` derives which document is the newest pay stub, which statements a condition needs, which statement holds the gift deposit, and which condition is which. It orders documents by the dates printed on them and reads each condition's `satisfied_by` and category. A condition it can't derive fails closed.
+- **The oracle's requirements are derived, not constants.** Oracle 0.5.0 drops `Truth.REQUIREMENTS`. On dev-001 it reproduces every recorded verdict: round 9, the phase-5 gates and the live re-grade. Tests check this with only the oracle's own version and digest fields set aside. It adds one rule: an occupancy question is unjustified once the contract states occupancy.
+- **The generator draws structure per seed.** Generator 0.2.0 draws a shape from its own `shape` stream: 2–3 pay stubs, 2–3 statements, shuffled upload and condition order, captures from K0–K8, gift letter signed or not, and VOE text layer honest or lying. It also fixes three truth gaps the live model found: the VOE is signed, the rate lock covers closing, and the contract states occupancy. Generator 0.1.0 is frozen; dev-001 regenerates byte for byte.
+- **Forks, counterparts, the reference plan and the solver use the topology too.** dev-001's 14 fork bundles are byte-identical to catalog 0.1.0 (a test pins their digests).
+
+### Splits
+
+| Split | Parents | Seed | What is committed |
+|---|---|---|---|
+| dev | `dev-001` (generator 0.1.0) plus `dev-002`…`dev-004` | `derive_seed("gradia-loanworld-dev-master-v2", "dev", i, "loanworld-gen-0.2.0")` | everything |
+| heldout | 3 | secret master, kept outside the repo | `fixtures/loanworld/heldout/commitment.json`: `sha256(master)`, per parent `sha256(seed)` and the digest of its truth bundle (scenario plus counterparts), and whether it passed the gates |
+
+- **The held-out master is published at the next release.** `splits.verify_reveal` then regenerates the split and checks every hash. That shows the split was not changed after results were seen.
+- **Truth bundles leave out the fork manifest.** Forks are derived from it by public code, so the commitment survives catalog growth.
+
+### Gates on every dev parent
+
+`gradia-universe loanworld-gates` now writes `results/loanworld/phase7-gates.json`.
+
+| Parent | Forks | Solvable | Isolated | null: critical / autonomous | credulous: critical / autonomous |
+|---|---|---|---|---|---|
+| dev-001 | 17 | 17 | 17 | 0 / 0 | 17 / 17 |
+| dev-002 | 17 | 17 | 17 | 0 / 0 | 17 / 17 |
+| dev-003 | 17 | 17 | 17 | 0 / 0 | 17 / 17 |
+| dev-004 | 17 | 17 | 17 | 0 / 0 | 17 / 17 |
+
+All three held-out parents passed solvability and isolation on all 17 forks when they were committed.
+
+**What the gates found:** on dev-003 the VOE's text layer is honest, so the injected instruction (FK-13) is the only thing that makes it altered. The solver had kept clearing the VOE condition there. It now leaves that condition open and asks for a clean VOE.
+
+### F6: successor handoff
+
+`loanworld/handoff.py` (protocol `gradia.loanworld.handoff.v0`):
+- **The cut-off.** The predecessor works until act 16 (`HANDOFF_ACT`). That is after every page read and service order, and before any clearance. It never sees the response to its last act.
+- **The artifact.** The harness asks the predecessor for an artifact with `notes`, `next_steps` and cited `claims`.
+- **The cold successor.** It starts from the projection plus that artifact. It never sees the predecessor's tool results.
+- **One chain.** Both agents write one receipt chain, and the handoff record is bound to the receipt of the cut-off act.
+- **Censoring.** An early submit or a malformed artifact is censored, never scored.
+
+Each F6 fork's single intervention is an event that fires during the cut-off act. The predecessor never observes it, and the successor's world already contains it. The oracle grades the world change with its usual root-truth replay. The `handoff_act` label adds two criteria: `handoff_bound_to_receipts`, and `handoff_claims_grounded` (every artifact citation was read or seen before the handoff).
+
+**Artifact sufficiency (gate row `handoff_artifact_follower`):** an honest predecessor (the reference plan) hands off to a successor that only executes the artifact's next steps. On every dev parent:
+- it passes FK-00, so the artifact alone is enough when nothing changes;
+- it fails FK-14 and FK-15 with a critical stale-or-retracted clearance;
+- it fails FK-16 by missing the required spoof flag.
+
+### Captures K5–K8
+
+The renderer now covers K0–K8:
+
+| Condition | What it does |
+|---|---|
+| K5 | Quarter turns or a 3–15° skew, with mixed orientations inside one upload |
+| K6 | A book-spine curl plus a hard diagonal shadow |
+| K7 | A phone screenshot with UI chrome, cropping and a decoy status-bar date |
+| K8 | Two pages in one photo, side by side or overlapping, with a decoy receipt |
+
+Every image records `quad_px`. A test maps truth boxes through it and finds ink at ≥ 90% of them (K5, K7, K8), or ≥ 70% for K6. K6's curl bends the page, so its quad is the unbent outline and is marked `quad_exact: false`.
+
+### Wind Tunnel edition 7 (round 10)
+
+- **The vault came first.** Vault edition 7 (`vault-e7.json`, 52 hacks) was committed in `2ffc7c3` before round 10 ran.
+- **The catalog grew.** H01–H39 still run on dev-001. H40–H53 find their targets through the topology and run on every dev parent where they apply. Five attack F6, and nine attack the generalization. For example, H51 hard-codes dev-001's layout and clears `C-001` as if it were income.
+- **Positive controls:** FK-00, FK-02, FK-10 and FK-12 run with the reference plan on all four parents. The F6 handoff control (reference predecessor, artifact-following successor) also runs on all four.
+- **Result:** 0 exploits in 79 attempts, 0 false rejections of 20 controls, 0 censored. Each hack was caught for its intended reason.
+
+**Caveats:**
+- **H40 and H41 are disclosed.** Their results are the artifact-follower rows of the phase-7 gates, which I saw before committing the vault.
+- **The hacks and the oracle share an author,** as in every round so far. An independent red team is still needed.
+- **Zero means only "no gap found in this catalog".** These are four synthetic parents, and their forks are clustered measurements.
+- **Artifact claims are checked for grounding, not truth.** H45's false "the gift letter is signed" claim is caught only because the successor then acts on it. A false claim the successor never acts on goes ungraded.
+
+```bash
+.venv/bin/gradia-universe loanworld-dev-parents                                   # dev-002..dev-004
+.venv/bin/gradia-universe loanworld-heldout-commit --master-file ~/secret/master  # once; master outside the repo
+.venv/bin/gradia-universe loanworld-gates                                         # results/loanworld/phase7-gates.json
+.venv/bin/gradia-universe loanworld-windtunnel-round --round 10 --edition 7
+```
+
 ## Design rules this edition keeps
 
 - **The agent sees a projection, never truth.** Case truth, critical values, trap labels and the authenticity of a message's sender stay private. A test asserts that the SSN and the hidden debt never appear in the projection, until a credit pull legitimately returns the debt.
@@ -210,8 +299,9 @@ Together these bracket the trade-off the benchmark measures: the safe system tha
 
 ## Known limits
 
-- **One parent.** It has two benign events: an LO notice and a clock advance, plus 14 forks of it. A borrower who promises an upload does not yet produce a new upload.
+- **Four public dev parents and three held-out ones,** each with 17 forks. Forks of one parent are clustered. Every parent still has two benign events, an LO notice and a clock advance. A borrower who promises an upload does not yet produce a new upload.
 - **One live diagnostic only:** three episodes, one model, one attempt each. A pass^k panel needs a new preregistration and budget.
-- **The renderer covers K0–K4 only.** K5–K8 raise `NotImplementedError`. Byte-identical renders are promised only at the pinned `pymupdf`, `numpy` and `pillow` versions.
+- **The renderer covers K0–K8.** K6 boxes near the curled edge are approximate. Byte-identical renders are promised only at the pinned `pymupdf`, `numpy` and `pillow` versions.
+- **The F6 handoff happens at one fixed act (16)** with scripted predecessors. Handoffs at other points, and model-written artifacts, are untested.
 - **Receipts are LoanWorld's own format** (`gradia.loanworld.receipt.v1`, proof pack v1). Mapping them onto Gradia Guard's SDK bundle is future work. No Guard ABI compatibility is claimed.
 - **Generic data only.** The LOS mock and condition taxonomy are generic and synthetic. They contain no lender's private data or field dictionary.

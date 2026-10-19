@@ -127,7 +127,18 @@ def verify_forks(root: Path) -> list[dict[str, Any]]:
 
 
 def command_verify(args: argparse.Namespace) -> int:
-    report = {"parents": verify_parents(args.root), "forks": verify_forks(args.root)}
+    from .splits import COMMITMENT_PATH, verify_commitment_shape
+
+    heldout = verify_commitment_shape(args.root / COMMITMENT_PATH)
+    report = {
+        "parents": verify_parents(args.root),
+        "forks": verify_forks(args.root),
+        "heldout_commitment": {
+            "commitment_sha256": heldout["commitment_sha256"],
+            "parents": len(heldout["parents"]),
+            "all_gates_passed_at_commit": True,
+        },
+    }
     print(json.dumps({"verified": report}, sort_keys=True, indent=2))
     return 0
 
