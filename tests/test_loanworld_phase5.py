@@ -30,8 +30,12 @@ def parts() -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
 def test_committed_gates_reproduce_and_hold() -> None:
     committed = load_json(ROOT / "results" / "loanworld" / "phase5-gates.json")
     rerun = run_gates(ROOT)
-    # Recorded under oracle 0.4.2; 0.5.0 must give the same verdicts on dev-001.
-    assert strip_oracle_identity(rerun) == strip_oracle_identity(committed)
+    # Recorded under oracle 0.4.2 for FK-00..FK-13; oracle 0.5.0 must give the same
+    # verdicts on those forks. Phase 7 adds the F6 forks on top.
+    original = {r["fork_id"] for r in committed["solvability"]}
+    for key in ("solvability", "isolation", "baselines"):
+        rows = [r for r in rerun[key] if r["fork_id"] in original]
+        assert strip_oracle_identity(rows) == strip_oracle_identity(committed[key])
     assert rerun["all_solvable"] and rerun["all_isolated"]
     assert {r["fork_id"] for r in rerun["solvability"]} == {s.fork_id for s in CATALOG}
 

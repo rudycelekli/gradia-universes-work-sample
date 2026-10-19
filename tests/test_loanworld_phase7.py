@@ -187,3 +187,129 @@ def test_new_capture_conditions_render_deterministically_with_usable_quads(
             ]
             hits += bool(window.min() < image.mean() - 60)
     assert total >= 5 and hits / total >= (0.7 if condition == "K6" else 0.9)
+
+
+# ---------------------------------------------------------------- F6 successor handoff
+
+DEV_001_BUNDLES = {  # fork_bundle_sha256[:16] from catalog 0.1.0, before phase 7
+    "FK-00": "69dbac68d22ece72",
+    "FK-01": "0fbaa6f062d990ee",
+    "FK-02": "8d1983287c24531c",
+    "FK-03": "69a5352b76415be3",
+    "FK-04": "92b12cc4a26f5192",
+    "FK-05": "6709487fee52ea18",
+    "FK-06": "e9fb8e65a82a12d7",
+    "FK-07": "87317154e3641701",
+    "FK-08": "45b558ac2cadc289",
+    "FK-09": "51c841dba7eb9fb8",
+    "FK-10": "e0cc359aadf9e16b",
+    "FK-11": "ad8f11c5b47f6721",
+    "FK-12": "c159aae2521160ea",
+    "FK-13": "96182be5936041dc",
+}
+
+
+def _bundle(parent_id: str, fork_id: str) -> dict[str, Any]:
+    from gradia_universes.loanworld.forks import fork_by_id
+
+    return fork_by_id(
+        _parent(parent_id), load_json(LW / "counterparts" / f"{parent_id}.json"), fork_id
+    )
+
+
+def test_generalized_catalog_leaves_every_dev_001_fork_bundle_unchanged() -> None:
+    manifest = load_json(LW / "forks" / "loanworld-parent-dev-001.json")
+    witnesses = {w["fork_id"]: w for w in manifest["forks"]}
+    for fork_id, prefix in DEV_001_BUNDLES.items():
+        assert witnesses[fork_id]["fork_bundle_sha256"].startswith(prefix)
+    assert [w["fork_id"] for w in manifest["forks"] if w["harness"] == "handoff"] == [
+        "FK-14",
+        "FK-15",
+        "FK-16",
+    ]
+    assert manifest["families_not_in_v0"] == []
+
+
+def test_f6_change_lands_after_the_predecessor_and_before_the_successor() -> None:
+    from gradia_universes.loanworld.forks import HANDOFF_ACT
+    from gradia_universes.loanworld.handoff import (
+        artifact_follower,
+        handoff_bound,
+        run_handoff_episode,
+        scripted_predecessor,
+    )
+    from gradia_universes.loanworld.policies import reference_plan
+    from gradia_universes.loanworld.schema import LoanScenario
+
+    bundle = _bundle("loanworld-parent-dev-002", "FK-14")
+    plan = reference_plan(bundle)
+    seen: list[dict[str, Any]] = []
+    inner = scripted_predecessor(plan, HANDOFF_ACT)
+
+    def predecessor(message: dict[str, Any]) -> dict[str, Any]:
+        seen.append(message)
+        return inner(message)
+
+    follower = artifact_follower()
+    first: dict[str, Any] = {}
+
+    def successor(message: dict[str, Any]) -> dict[str, Any]:
+        first.setdefault("start", message)
+        return follower(message)
+
+    result = run_handoff_episode(
+        LoanScenario.parse(bundle["scenario"]),
+        predecessor,
+        successor,
+        HANDOFF_ACT,
+        counterparts=bundle["counterparts"],
+    )
+    assert result["outcome"] == "terminal" and handoff_bound(result, HANDOFF_ACT)
+    assert seen[-1] == {"type": "handoff_request", "act": HANDOFF_ACT}
+    assert not any("E-F14" in str(m) for m in seen)  # the predecessor never sees it
+    inbox_ids = [row["event_id"] for row in first["start"]["projection"]["inbox"]]
+    assert "E-F14" in inbox_ids  # the cold successor's world already has it
+    assert first["start"]["acts_used"] == HANDOFF_ACT
+    assert set(first["start"]) >= {"handoff", "projection", "tools"}
+
+
+def test_handoff_failures_are_censored_not_scored() -> None:
+    from gradia_universes.loanworld.handoff import run_handoff_episode
+    from gradia_universes.loanworld.policies import null_agent
+    from gradia_universes.loanworld.schema import LoanScenario
+
+    bundle = _bundle("loanworld-parent-dev-001", "FK-00")
+    scenario = LoanScenario.parse(bundle["scenario"])
+    early = run_handoff_episode(scenario, null_agent, null_agent, 5)
+    assert (early["outcome"], early["censor_reason"]) == (
+        "censored",
+        "finished_before_handoff",
+    )
+
+    def bad(message: dict[str, Any]) -> dict[str, Any]:
+        if message["type"] == "handoff_request":
+            return {"type": "handoff", "artifact": {"notes": "x"}}
+        return {"type": "call", "tool": "get_conditions", "args": {}}
+
+    broken = run_handoff_episode(scenario, bad, null_agent, 3)
+    assert broken["censor_reason"] == "malformed_handoff"
+
+
+def test_oracle_refuses_an_f6_pass_without_the_handoff_harness() -> None:
+    from gradia_universes.loanworld.adapter import run_python_agent
+    from gradia_universes.loanworld.baselines import solver_plan
+    from gradia_universes.loanworld.oracle import grade_episode
+    from gradia_universes.loanworld.policies import plan_agent
+    from gradia_universes.loanworld.schema import LoanScenario
+
+    bundle = _bundle("loanworld-parent-dev-001", "FK-16")
+    manifest = load_json(LW / "forks" / "loanworld-parent-dev-001.json")
+    labels = next(w for w in manifest["forks"] if w["fork_id"] == "FK-16")["expected_draft"]
+    result = run_python_agent(
+        LoanScenario.parse(bundle["scenario"]),
+        plan_agent(solver_plan(bundle, "FK-16")),
+        counterparts=bundle["counterparts"],
+    )
+    grade = grade_episode(bundle, labels, result, "FK-16")
+    assert not grade["terminal_pass"]
+    assert grade["criteria"]["handoff_bound_to_receipts"] is False

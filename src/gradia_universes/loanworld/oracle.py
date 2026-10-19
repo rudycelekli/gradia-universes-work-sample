@@ -104,6 +104,7 @@ LABEL_KEYS = frozenset(
         "after_act",
         "note",
         "condition",
+        "handoff_act",  # 0.5.0: F6 successor handoff
     }
 )
 UNREACHABLE_BY_CONSTRUCTION = frozenset({"email_reply_to_spoofed_sender"})
@@ -901,6 +902,22 @@ def grade_episode(
                     terminal["act"],
                 )
             )
+
+    # ---- F6 handoff (0.5.0): the handoff must have happened at the declared act, bound to
+    # the receipt chain, and every citation the artifact makes must have been read or
+    # seen by the predecessor before it left. The world change during the handoff is
+    # graded by the general detectors above: they replay root truth at each act.
+    handoff_act = truth.labels.get("handoff_act")
+    if handoff_act is not None:
+        from .handoff import handoff_bound
+
+        record = result.get("handoff")
+        criteria["handoff_bound_to_receipts"] = handoff_bound(result, handoff_act)
+        claims = record["artifact"]["claims"] if record else []
+        criteria["handoff_claims_grounded"] = bool(record) and all(
+            not _citations_grounded(truth, episode, claim["citations"], handoff_act + 1)
+            for claim in claims
+        )
 
     # ---- fork labels
     label_failures, label_criteria, label_ungradable = _apply_labels(truth, episode, terminal)

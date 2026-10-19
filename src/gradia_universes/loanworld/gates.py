@@ -21,10 +21,11 @@ from typing import Any
 from ..canonical import digest, load_json
 from . import oracle as oracle_module
 from .adapter import run_python_agent
-from .baselines import credulous_agent, solver_plan
-from .forks import CATALOG, fork_by_id
+from .baselines import credulous_agent, credulous_predecessor, solver_plan
+from .forks import CATALOG, HANDOFF_ACT, ForkSpec, fork_by_id
+from .handoff import artifact_follower, run_handoff_episode, scripted_predecessor
 from .oracle import Truth, grade_episode
-from .policies import null_agent, plan_agent
+from .policies import null_agent, plan_agent, reference_plan
 from .schema import LEDGERS, LoanScenario
 
 GATES_SCHEMA = "gradia.loanworld.phase5-gates.v0"
@@ -58,8 +59,36 @@ def _summary(grade: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _neutral_plan() -> list[tuple[str, dict[str, Any]]]:
-    plan: list[tuple[str, dict[str, Any]]] = [("get_conditions", {})] * NEUTRAL_ACTS
+def _handoff(bundle: dict[str, Any], predecessor: Any, successor: Any) -> dict[str, Any]:
+    return run_handoff_episode(
+        LoanScenario.parse(deepcopy(bundle["scenario"])),
+        predecessor,
+        successor,
+        HANDOFF_ACT,
+        counterparts=bundle["counterparts"],
+    )
+
+
+def _solve(bundle: dict[str, Any], spec: ForkSpec) -> dict[str, Any]:
+    plan = solver_plan(bundle, spec.fork_id)
+    if spec.harness == "handoff":
+        return _handoff(
+            bundle, scripted_predecessor(plan, HANDOFF_ACT), plan_agent(plan[HANDOFF_ACT:])
+        )
+    return _episode(bundle, plan_agent(plan))
+
+
+def _baseline(bundle: dict[str, Any], spec: ForkSpec, name: str) -> dict[str, Any]:
+    if spec.harness != "handoff":
+        return _episode(bundle, null_agent if name == "null" else credulous_agent())
+    if name == "null":  # an idle predecessor, then a successor that escalates
+        idle = scripted_predecessor([("get_conditions", {})] * HANDOFF_ACT, HANDOFF_ACT)
+        return _handoff(bundle, idle, null_agent)
+    return _handoff(bundle, credulous_predecessor(), credulous_agent())
+
+
+def _neutral_plan(acts: int = NEUTRAL_ACTS) -> list[tuple[str, dict[str, Any]]]:
+    plan: list[tuple[str, dict[str, Any]]] = [("get_conditions", {})] * acts
     plan.append(("escalate", {"reason": "Neutral isolation probe."}))
     plan.append(
         ("submit", {"recommendation": "ESCALATE", "open_conditions": [], "account": []})
@@ -88,8 +117,10 @@ def expected_changed_ledgers(parent: dict[str, Any], fork: dict[str, Any]) -> li
 def isolation_row(
     parent_bundle: dict[str, Any], fork_bundle: dict[str, Any], witness: dict[str, Any]
 ) -> dict[str, Any]:
-    base = _episode(parent_bundle, plan_agent(_neutral_plan()))
-    fork = _episode(fork_bundle, plan_agent(_neutral_plan()))
+    # Long enough for every scheduled event to fire (F6 events fire at the handoff act).
+    acts = max(NEUTRAL_ACTS, *(e["after_act"] + 1 for e in fork_bundle["scenario"]["events"]))
+    base = _episode(parent_bundle, plan_agent(_neutral_plan(acts)))
+    fork = _episode(fork_bundle, plan_agent(_neutral_plan(acts)))
     observed = sorted(
         n for n in LEDGERS if digest(_comparable(base, n)) != digest(_comparable(fork, n))
     )
@@ -141,12 +172,7 @@ def gates_for(
     for spec in CATALOG:
         bundle = fork_by_id(parent, contract, spec.fork_id)
         labels = witnesses[spec.fork_id]["expected_draft"]
-        solved = grade_episode(
-            bundle,
-            labels,
-            _episode(bundle, plan_agent(solver_plan(bundle, spec.fork_id))),
-            spec.fork_id,
-        )
+        solved = grade_episode(bundle, labels, _solve(bundle, spec), spec.fork_id)
         solvability.append(
             {
                 "fork_id": spec.fork_id,
@@ -155,9 +181,24 @@ def gates_for(
             }
         )
         isolation.append(isolation_row(parent_bundle, bundle, witnesses[spec.fork_id]))
-        for name, agent in (("null", null_agent), ("credulous", credulous_agent())):
-            grade = grade_episode(bundle, labels, _episode(bundle, agent), spec.fork_id)
+        for name in ("null", "credulous"):
+            grade = grade_episode(bundle, labels, _baseline(bundle, spec, name), spec.fork_id)
             baselines.append({"policy": name, "fork_id": spec.fork_id, **_summary(grade)})
+
+    # F6 artifact sufficiency: an honest predecessor (the reference plan) hands off, and a
+    # successor that only executes the artifact's next steps finishes. It should pass
+    # when nothing changes during the handoff (FK-00) and fail when something does.
+    handoff_follower = []
+    for spec in CATALOG:
+        if spec.fork_id != "FK-00" and spec.harness != "handoff":
+            continue
+        bundle = fork_by_id(parent, contract, spec.fork_id)
+        plan = reference_plan(bundle)
+        result = _handoff(bundle, scripted_predecessor(plan, HANDOFF_ACT), artifact_follower())
+        grade = grade_episode(
+            bundle, witnesses[spec.fork_id]["expected_draft"], result, spec.fork_id
+        )
+        handoff_follower.append({"fork_id": spec.fork_id, **_summary(grade)})
 
     def tally(policy: str) -> dict[str, Any]:
         rows = [r for r in baselines if r["policy"] == policy]
@@ -179,6 +220,7 @@ def gates_for(
         "all_isolated": all(r["isolated"] for r in isolation),
         "baselines": baselines,
         "baseline_summary": {"null": tally("null"), "credulous": tally("credulous")},
+        "handoff_artifact_follower": handoff_follower,
         "interpretation": (
             "Scripted $0 controls and baselines on one synthetic parent and its forks, "
             "clustered by parent. No model has run; nothing here ranks agents."
