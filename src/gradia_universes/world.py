@@ -137,26 +137,34 @@ class ScenarioEngine:
         return engine
 
     def verify_chain(self) -> None:
-        previous: str | None = None
-        seen: set[str] = set()
-        for row in self.occurrences:
-            if row.event_id in seen:
-                raise ValueError("duplicate_event_occurrence")
-            body = {
-                "event_id": row.event_id,
-                "event_sha256": row.event_sha256,
-                "boundary_act": row.boundary_act,
-                "before_world_root": row.before_world_root,
-                "after_world_root": row.after_world_root,
-                "visible_projection_sha256": row.visible_projection_sha256,
-                "restore_generation": row.restore_generation,
-                "previous_occurrence_sha256": row.previous_occurrence_sha256,
-            }
-            if row.previous_occurrence_sha256 != previous:
-                raise ValueError("occurrence_chain_previous_mismatch")
-            if digest(row.visible_projection) != row.visible_projection_sha256:
-                raise ValueError("occurrence_projection_digest_mismatch")
-            if digest(body) != row.occurrence_sha256:
-                raise ValueError("occurrence_digest_mismatch")
-            previous = row.occurrence_sha256
-            seen.add(row.event_id)
+        verify_occurrence_chain(self.occurrences)
+
+
+def occurrence_body(row: AppliedEvent) -> dict[str, Any]:
+    return {
+        "event_id": row.event_id,
+        "event_sha256": row.event_sha256,
+        "boundary_act": row.boundary_act,
+        "before_world_root": row.before_world_root,
+        "after_world_root": row.after_world_root,
+        "visible_projection_sha256": row.visible_projection_sha256,
+        "restore_generation": row.restore_generation,
+        "previous_occurrence_sha256": row.previous_occurrence_sha256,
+    }
+
+
+def verify_occurrence_chain(occurrences: list[AppliedEvent]) -> None:
+    """Fail closed unless the occurrences form one exactly-once hash chain."""
+    previous: str | None = None
+    seen: set[str] = set()
+    for row in occurrences:
+        if row.event_id in seen:
+            raise ValueError("duplicate_event_occurrence")
+        if row.previous_occurrence_sha256 != previous:
+            raise ValueError("occurrence_chain_previous_mismatch")
+        if digest(row.visible_projection) != row.visible_projection_sha256:
+            raise ValueError("occurrence_projection_digest_mismatch")
+        if digest(occurrence_body(row)) != row.occurrence_sha256:
+            raise ValueError("occurrence_digest_mismatch")
+        previous = row.occurrence_sha256
+        seen.add(row.event_id)

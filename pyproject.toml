@@ -21,6 +21,8 @@ dependencies = []
 
 [project.optional-dependencies]
 dev = ["pytest>=8.3", "ruff>=0.9", "mypy>=1.14"]
+loanworld-render = ["pymupdf==1.27.1", "numpy==2.5.1", "pillow==12.3.0"]
+loanworld-live = ["anthropic==1.15.0"]
 
 [project.scripts]
 gradia-universe = "gradia_universes.cli:main"
@@ -42,4 +44,8 @@ select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 python_version = "3.11"
 strict = true
 files = ["src", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["fitz", "fitz.*", "numpy", "numpy.*", "PIL", "PIL.*", "anthropic", "anthropic.*"]
+ignore_missing_imports = true
 
