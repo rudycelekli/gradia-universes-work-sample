@@ -1,4 +1,6 @@
-"""Export a LoanWorld live episode as an ATIF trajectory (Harbor's Agent Trajectory Interchange Format).
+"""Export a LoanWorld live episode as an ATIF trajectory.
+
+ATIF is Harbor's Agent Trajectory Interchange Format.
 
 The input is the pair the live runner writes: ``results/loanworld/live/transcripts/<fork>.json``
 (Anthropic Messages, ``{"episode", "messages"}``) and ``results/loanworld/live/<fork>.json``
@@ -74,7 +76,9 @@ def episode_to_atif(
     if record.get("schema") != EPISODE_SCHEMA:
         raise AtifExportError(f"record schema must be {EPISODE_SCHEMA}")
     if not parent_id.startswith(DEV_PARENT_PREFIX):
-        raise AtifExportError("only dev parents export; held-out episodes are evaluation access")
+        raise AtifExportError(
+            "only dev parents export; held-out episodes are evaluation access"
+        )
     if transcript.get("episode") != record.get("fork_id"):
         raise AtifExportError("transcript and record are for different episodes")
     if HELDOUT_MARKER in json.dumps(transcript):

@@ -6,6 +6,7 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -16,7 +17,7 @@ LIVE = ROOT / "results" / "loanworld" / "live"
 PARENT = "loanworld-parent-dev-001"
 
 
-def _load(fork: str) -> tuple[dict, dict]:
+def _load(fork: str) -> tuple[dict[str, Any], dict[str, Any]]:
     transcript = json.loads((LIVE / "transcripts" / f"{fork}.json").read_text())
     record = json.loads((LIVE / f"{fork}.json").read_text())
     return transcript, record

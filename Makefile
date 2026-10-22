@@ -1,8 +1,11 @@
-.PHONY: setup test reproduce verify study-a frontier axes cost-capped alignment public-boundary paper-numbers all
+.PHONY: setup harbor test reproduce verify study-a frontier axes cost-capped alignment public-boundary paper-numbers all
 
 setup:
 	python3 -m venv .venv
 	.venv/bin/pip install -e '.[dev]'
+
+harbor:
+	.venv/bin/python -m gradia_universes.loanworld.harbor --out harbor/loanworld
 
 test:
 	.venv/bin/pytest -q

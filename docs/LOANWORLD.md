@@ -288,6 +288,25 @@ Every image records `quad_px`. A test maps truth boxes through it and finds ink 
 .venv/bin/gradia-universe loanworld-windtunnel-round --round 10 --edition 7
 ```
 
+## Harbor tasks and ATIF export
+
+Every dev episode runs under [Harbor](https://github.com/laude-institute/harbor), the framework behind Terminal-Bench, so any of Harbor's standard agents (Claude Code, Codex, OpenHands and the rest) can work a LoanWorld file without a custom adapter.
+
+```bash
+make harbor                                      # 56 tasks under harbor/loanworld (4 dev parents x 14 single-agent forks)
+harbor run -p harbor/loanworld -a oracle         # reference plan: 1.0 expected on every task
+harbor run -p harbor/loanworld -a nop            # does nothing: 0.0 expected on every task
+harbor run -p harbor/loanworld -a claude-code -m <model> -k 5   # a real agent, 5 attempts per task (paid)
+```
+
+- **Two containers per task.** The agent's `main` container holds Python and the `lw` command only. LoanWorld, the fork bundle and the oracle run in a separate `world` service (`harbor_world.py`), so an agent with root in `main` cannot read case truth. Checked from inside `main`: no bundle or LoanWorld source on disk, no grader token in the environment, `/grade` returns 403 without the token, and every other path returns 404.
+- **`lw` is the only door** (`harbor_client.py`). `lw start` prints the tools, the 60-act budget and the projection; `lw <tool> '<json>'` spends one act; `get_page` saves the page image under `/app/pages/`.
+- **The verifier asks the world for the grade.** `tests/grade.py` posts to `/grade` with a per-task random token that only the verifier and the world hold, writes `reward.txt` (1.0 only for a terminal pass) and `grade.json` (criteria, critical failures, diagnostics), and freezes the world.
+- **The instruction never names the fork.** It is the same processor brief for every fork of a parent; the construct lives in the world and in `task.toml` tags, which the agent never sees.
+- **Validated.** In-repo tests run all 56 tasks in process: the reference plan scores 1.0 on all 56, doing nothing and the null policy score 0.0 on all 56. Real Harbor 0.18 runs (Docker): `oracle` 1.0 on dev-001 FK-00 and FK-13 and dev-003 FK-03; `nop` 0.0 on dev-001 FK-00 and FK-13.
+- **Not emitted:** held-out parents (evaluation access, not files) and the F6 handoff forks FK-14 to FK-16 (two agents; a Harbor trial runs one). Emitted tasks carry fresh random tokens, so they are generated, not committed.
+- **ATIF export.** `loanworld/atif.py` turns a live episode into an ATIF-v1.7 trajectory (tool calls bound to their results; grade, cost and tokens in `final_metrics` and `extra`). It refuses held-out parents and drops thinking blocks and their signatures.
+
 ## Design rules this edition keeps
 
 - **The agent sees a projection, never truth.** Case truth, critical values, trap labels and the authenticity of a message's sender stay private. A test asserts that the SSN and the hidden debt never appear in the projection, until a credit pull legitimately returns the debt.
@@ -300,6 +319,7 @@ Every image records `quad_px`. A test maps truth boxes through it and finds ink 
 ## Known limits
 
 - **Four public dev parents and three held-out ones,** each with 17 forks. Forks of one parent are clustered. Every parent still has two benign events, an LO notice and a clock advance. A borrower who promises an upload does not yet produce a new upload.
+- **Dev tasks are public.** Their parents, forks and oracle are in this repo, so a networked agent could look them up; only held-out parents measure an agent that has not seen the file.
 - **One live diagnostic only:** three episodes, one model, one attempt each. A pass^k panel needs a new preregistration and budget.
 - **The renderer covers K0–K8.** K6 boxes near the curled edge are approximate. Byte-identical renders are promised only at the pinned `pymupdf`, `numpy` and `pillow` versions.
 - **The F6 handoff happens at one fixed act (16)** with scripted predecessors. Handoffs at other points, and model-written artifacts, are untested.
